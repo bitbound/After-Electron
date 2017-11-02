@@ -1,0 +1,5 @@
+node_modules
+.vs
+*.js
+*.js.map
+dist

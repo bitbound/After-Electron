@@ -1,0 +1,88 @@
+﻿<div id="divCreateCharacter" style="overflow: auto; color:white; text-align:center">
+    <div style="text-align: center; margin-bottom: 10px">
+        <div id="divCharacterColorPreview" style="border-radius: 100%; width:150px; height: 50px; display:inline-block; background: radial-gradient(white 5%, gray 50%, rgba(0,0,0,0) 75%);"></div>
+    </div>
+    <div>
+        <div id="divTopBorder" style="margin: auto; height:3px; width:200px; background-color:white; border-radius:100%"></div>
+        <div id="divTitle" style="font-size:large; font-weight:bold; margin-top: 10px; margin-bottom: 10px;">What color is your soul?</div>
+        <div id="divBottomBorder" style="margin:auto; height:3px; width:200px; background-color:white; border-radius:100%"></div>
+
+        <div id="divCharacterForm" style="display:inline-block; margin-top:25px; text-align:left">
+            <span style="margin-left:-50px">Create a Color:</span>
+            <br />
+            <label style="color:red">Red:</label>
+            <br />
+            <input id="inputRed" type="range" min="0" max="255" value="125" style="width:100%; margin: 0" onchange="temp.EvaluateColor()"/>
+            <br />
+            <label style="color:green">Green:</label>
+            <br />
+            <input id="inputGreen" type="range" min="0" max="255" value="125" style="width:100%; margin: 0" onchange="temp.EvaluateColor()"/>
+            <br />
+            <label style="color:blue">Blue:</label>
+            <br />
+            <input id="inputBlue" type="range" min="0" max="255" value="125" style="width:100%; margin: 0" onchange="temp.EvaluateColor()"/>
+            <br />
+            <br />
+            <span style="margin-left:-50px">Pick a Color Name:</span>
+            <br />
+            <select id="selectColor" onchange="temp.ColorSelected()" style="width:100%; background-color: black; color: white"></select>
+            <br />
+            <br />
+            <div style="text-align:right">
+                <button id="buttonSubmit" onclick="temp.SubmitColor()">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var temp = {};
+    temp.EvaluateColor = function () {
+        $("#selectColor")[0].selectedIndex = 0;
+        while (Number($("#inputRed").val()) + Number($("#inputGreen").val()) + Number($("#inputBlue").val()) < 125) {
+            $("#inputRed")[0].value = String(Number($("#inputRed")[0].value) + 1);
+            $("#inputGreen")[0].value = String(Number($("#inputGreen")[0].value) + 1);
+            $("#inputBlue")[0].value = String(Number($("#inputBlue")[0].value) + 1);
+        }
+        temp.SoulColor = "rgb(" + $("#inputRed").val() + ", " + $("#inputGreen").val() + ", " + $("#inputBlue").val() + ")";
+        $("#divCharacterColorPreview").css("background", "radial-gradient(white 5%, " + temp.SoulColor + "50%, rgba(0,0,0,0) 75%)");
+    };
+    temp.SubmitColor = function () {
+        After.Storage.Me.Color = temp.SoulColor;
+        $.when($("#divCreateCharacter").animate({ opacity: 0 }, 1000)).then(function () {
+            delete temp;
+            After.Storage.Me.ID = After.Utilities.CreateGUID();
+            After.Storage.Me.CoreEnergy = 100;
+            After.Storage.Me.CurrentEnergy = 100;
+            After.Storage.Me.Save("0");
+            After.UI.MessageWindow.html("");
+            After.UI.AddMessageText("Welcome to the afterlife, " + After.Storage.Me.Name + ".", 2);
+        });
+    }
+    temp.ColorSelected = function () {
+        if ($("#selectColor").val() == "") {
+            $("#inputRed").val(125);
+            $("#inputGreen").val(125);
+            $("#inputBlue").val(125);
+            return;
+        }
+        var hexColor = After.Utilities.ColorNameToHex($("#selectColor").val());
+        var rgbColor = After.Utilities.HexToRGB(hexColor);
+        temp.SoulColor = rgbColor;
+        $("#inputRed").val(rgbColor.replace("rgb(", "").split(",")[0]);
+        $("#inputGreen").val(rgbColor.split(",")[1]);
+        $("#inputBlue").val(rgbColor.replace(")", "").split(",")[2]);
+        $("#divCharacterColorPreview").css("background", "radial-gradient(white 5%, " + temp.SoulColor + "50%, rgba(0,0,0,0) 75%)");
+    };
+    After.Utilities.ColorNames.forEach(function (value, index) {
+        var option = document.createElement("option");
+        option.innerHTML = value;
+        option.value = value;
+        option.style.color = value;
+
+        document.getElementById("selectColor").appendChild(option);
+    });
+    window.setTimeout(function(){
+        After.UI.MessageWindow.scrollTop(0);
+    }, 500);
+</script>

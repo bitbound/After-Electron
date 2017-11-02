@@ -1,0 +1,117 @@
+﻿<div id="divPainter">
+    <!-- Brush Options -->
+    <div id="divOptions" class="closed">
+        <img id="imgPalette" src="Images/ColorPalette_24x.png" />
+        <div id="divInnerOptions">
+            <div class="option-block">
+                <div style="text-align: center">
+                    <strong>Brush Color</strong>
+                    <br />
+                    <div id="divBrushPreview" class="preview-circle" style="background-color: rgba(125,125,125, 1)"></div>
+                </div>
+
+                <label style="color:red">Red:</label>
+                <br />
+                <input id="inputBrushRed" type="range" min="0" max="255" value="125" onchange="setBrushColor()" />
+                <br />
+                <label style="color:green">Green:</label>
+                <br />
+                <input id="inputBrushGreen" type="range" min="0" max="255" value="125"  onchange="setBrushColor()" />
+                <br />
+                <label style="color:blue">Blue:</label>
+                <br />
+                <input id="inputBrushBlue" type="range" min="0" max="255" value="125" onchange="setBrushColor()" />
+                <br />
+                <label style="color:white">Alpha:</label>
+                <br />
+                <input id="inputBrushAlpha" type="range" min="0" max="1" value="1" step=".01" onchange="setBrushColor()" />
+                <br />
+                <label>Brush Thickness:</label>
+                <br />
+                <input id="inputBrushThickness" type="number" value="3" onchange="Canvas.BrushThickness = this.value;" />
+            </div>
+
+            <div class="option-block">
+                <div style="text-align: center">
+                    <strong>Glow Color</strong>
+                    <br />
+                    <div id="divShadowPreview" class="preview-circle" style="background-color: rgba(255,255,255,1)"></div>
+                </div>
+
+                <label style="color:red">Red:</label>
+                <br />
+                <input id="inputShadowRed" type="range" min="0" max="255" value="255" onchange="setShadowColor()" />
+                <br />
+                <label style="color:green">Green:</label>
+                <br />
+                <input id="inputShadowGreen" type="range" min="0" max="255" value="255" onchange="setShadowColor()" />
+                <br />
+                <label style="color:blue">Blue:</label>
+                <br />
+                <input id="inputShadowBlue" type="range" min="0" max="255" value="255" onchange="setShadowColor()" />
+                <br />
+                <label style="color:white">Alpha:</label>
+                <br />
+                <input id="inputShadowAlpha" type="range" min="0" max="1" value="1" step=".01" onchange="setShadowColor()" />
+            </div>
+            <div class="option-block">
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <strong>Glow Options</strong>
+                </div>
+
+                <label>Blur Amount:</label>
+                <br />
+                <input id="inputShadowBlur" type="number" value="10" onchange="Canvas.ShadowBlurAmount = this.value;" />
+                <br />
+                <label>Offset X:</label>
+                <br />
+                <input id="inputShadowOffsetX" type="number" value="0" onchange="Canvas.ShadowOffsetX = this.value;" />
+                <br />
+                <label>Offset Y:</label>
+                <br />
+                <input id="inputShadowOffsetY" type="number" value="0" onchange="Canvas.ShadowOffsetY = this.value;" />
+            </div>
+            <img id="imgCloseOptions" src="Images/UpLeftArrow.png"/>
+        </div>
+    </div>
+
+    <!-- Header Controls -->
+    <button type="button" onclick="saveCanvas()" style="height:40px; float:right; clear:both;">Save Canvas</button>
+    <div style="color:white">
+        <div id="divDrawModes" class="option-block" style="margin-bottom: 25px;">
+            <div style="margin-bottom: 10px; font-weight:bold;">
+                Draw Mode:
+            </div>
+            <button type="button" class="toggle-button" onclick="changeDrawMode(event)">Normal</button>
+            <button type="button" class="toggle-button" selected="true" onclick="changeDrawMode(event)">Glow</button>
+            <button type="button" class="toggle-button" onclick="changeDrawMode(event)">Chalk</button>
+            <button type="button" class="toggle-button" onclick="changeDrawMode(event)">Shine</button>
+        </div>
+        <div class="option-block" style="margin-left: 50px;">
+            <div style="margin-bottom: 10px; font-weight: bold">
+                New Canvas:
+            </div>
+            <table>
+                <tr>
+                    <td>Width:</td>
+                    <td><input type="number" value="800" style="width:100px" onchange="Canvas.CanvasWidth = this.value;" /></td>
+                </tr>
+                <tr>
+                    <td>Height:</td>
+                    <td><input type="number" value="600" style="width:100px" onchange="Canvas.CanvasHeight = this.value;" /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td style="text-align:right">
+                        <button type="button" class="toggle-button" onclick="newCanvas(event)">Create</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <canvas id="canvasMain"></canvas>
+
+    <link href="Styles.css" rel="stylesheet" />
+    <script src="scripts/main.js"></script>
+
+</div>

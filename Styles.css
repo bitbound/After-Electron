@@ -1,0 +1,190 @@
+/* Basic Elements */
+body {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: black;
+    color: white;
+}
+
+button {
+    cursor: pointer;
+    border: 1px solid lightgray;
+    color: white;
+    background-color: black;
+}
+
+button:hover {
+    background-color: rgb(125, 125, 125);
+    border: 1px solid white;
+}
+button:active {
+    background-color: rgb(50, 50, 50);
+}
+
+/* Main Game Frames */
+.ui-frame {
+    border: 1px solid rgb(54, 167, 182);
+    border-radius: 5px;
+}
+.image-button {
+    cursor: pointer;
+    transition: all .5s;
+    height: 30px;
+    width: 30px;
+}
+.image-button:hover{
+    transform: scale(1.25, 1.25);
+    transition: all .5s;
+}
+.image-button:active{
+    transform: scale(.75, .75);
+    transition: all .25s;
+}
+#menuFrame {
+    margin: 0 5px 10px 5px;
+    padding: 10px;
+}
+#menuFrame table {
+    width: 100%;
+    text-align: center;
+}
+#menuFrame table button {
+    width: 70px;
+    border-radius: 5px;
+    height: 30px;
+}
+#messageWindow {
+    height: 100%;
+    margin: 10px 5px;
+    word-wrap: break-word;
+    overflow: auto;
+    padding: 10px;
+}
+
+
+#characterFrame {
+    height: 50px;
+    margin: 10px 5px;
+}
+
+#statusFrame {
+    border: 1px solid gray;
+    margin: 10px 5px;
+    padding: 5px;
+    text-align: center;
+    font-family: Courier New, Courier, monospace;
+    font-size: .7em;
+}
+#statusFrame table {
+    width: 100%;
+    text-align: center;
+    table-layout: fixed;
+}
+/* Character Frame */
+
+#divStatus {
+    border: 2px solid lightgray;
+    border-radius: 15px;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    left: 5px;
+    height: 75px;
+
+}
+
+.pool-title {
+    position: absolute;
+    left: 0;
+    width: 50%;
+    text-align: center;
+    font-weight: bold;
+
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.pool-amount {
+    display: inline-block;
+    padding: 0 10px;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, .5);
+    font-weight: bolder;
+
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.rising-particle {
+    animation-name: anim-charge-button;
+    animation-duration: 1s;
+}
+
+@keyframes rising-particle {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+        top: -10px;
+    }
+}
+
+/* Input Area */
+#inputFrame {
+    height: auto;
+    margin: 10px 5px;
+}
+
+#inputSelector {
+    background-color: black;
+    border: 1px solid white;
+    color: white;
+    margin: 5px;
+    width: 100px;
+}
+#inputText {
+    width: calc(100% - 130px);
+    margin: 5px;
+}
+
+
+/* Animations */
+.glowing {
+    animation-name: glowing;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+    animation-duration: 1s;
+}
+
+@keyframes glowing {
+    from {
+        opacity: .2;
+    }
+    to {
+        opacity: 1;
+    }
+}
+.fade-in-text {
+    animation-name: fade-in-text;
+    animation-duration: .75s;
+    animation-iteration-count: 1;
+}
+@keyframes fade-in-text {
+    from {
+        opacity: 0;
+        margin-left: 10px;
+    }
+    to {
+        opacity: 1;
+        margin-left: 0;
+    }
+}

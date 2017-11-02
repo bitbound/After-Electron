@@ -1,0 +1,120 @@
+﻿body {
+    background-color: black;
+    text-align: center;
+}
+
+button {
+    background-color: rgb(25,25,25);
+    color: white;
+}
+.toggle-button {
+    width: 60px;
+    height: 30px;
+}
+.toggle-button[selected="true"] {
+    background-color: rgb(100,100,100);
+}
+
+#canvasMain {
+    border: 3px solid white;
+    cursor: crosshair;
+    margin: 20px;
+}
+
+#divOptions {
+    position: fixed;
+    height: 100px;
+    width: 100px;
+    left: 0;
+    top: 0;
+    border-right: 3px solid white;
+    border-bottom: 3px solid white;
+    background-color: rgba(0,0,0, .5);
+    overflow: hidden;
+    transition-duration: 1s;
+    transition-property: all;
+}
+
+#divOptions.closed {
+    cursor: pointer;
+    border-bottom-right-radius: 100%;
+    transition-duration: 1s;
+    transition-property: all;
+}
+
+#divOptions.open {
+    width: 75%;
+    height: 80%;
+    background-color: rgba(25,25,25, .8);
+    border-bottom-right-radius: 50px;
+    transition-duration: 1s;
+    transition-property: all;
+}
+
+#divOptions.closed:hover {
+    background-color: rgba(155,155,155, .5);
+}
+
+#imgPalette {
+    position:absolute;
+    left: 40%;
+    top: 40%;
+    width: 30px;
+    height: 30px;
+    transform: translate(-50%, -50%);
+}
+
+#divOptions.closed #imgPalette {
+    opacity: 1;
+    transition-duration: 1s;
+}
+#divOptions.open #imgPalette {
+    opacity: 0;
+    transition-duration: .5s;
+}
+
+#divInnerOptions {
+    width: calc(100% - 40px);
+    height: calc(100% - 60px);
+    text-align: left;
+    color: white;
+    padding: 20px;
+    overflow: auto;
+}
+
+#divOptions.closed #divInnerOptions {
+    opacity: 0;
+    border-bottom-right-radius: 100%;
+    transition-duration: 1s;
+}
+#divOptions.open #divInnerOptions {
+    opacity: 1;
+    border-bottom-right-radius: 50px;
+    transition-duration: 1s;
+}
+.option-block {
+    display: inline-block;
+    margin-left: 5px;
+    margin-right: 5px;
+    vertical-align: top;
+}
+.preview-circle {
+    display: inline-block;
+    height: 50px;
+    width: 50px;
+    border-radius: 100%;
+    margin-top: 10px;
+}
+
+#imgCloseOptions {
+    position: absolute;
+    right: 25px;
+    bottom: 25px;
+    height: 30px;
+    width: 30px;
+    cursor: pointer
+}
+
+#divOptions.closed  #imgCloseOptions{
+    display:none;
+}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>After</title>
+        <link href="./Styles.css" rel="stylesheet">
+    </head>
+    <body>
+        <div id="divSplash" hidden>
+            <div style="text-align:center;">
+                <img id="imgTitle" src="./Assets/AfterTitle.png" />
+            </div>
+            <div id="divTunnel" style="text-align:center">
+                <img id="imgTunnel" class="glowing" src="./Assets/Tunnel and Shadow.png" style="height:250px; width:auto" />
+            </div>
+            <div style="text-align:center;">
+                <button id="buttonPlay" autofocus>Play</button>
+            </div>
+            <div style="text-align:center;">
+                <button id="buttonOptions">Options</button>
+            </div>
+            <div style="position:absolute; bottom: 10px; right: 10px; color:white; font-size:.8em">
+                Sound by
+                <a href="http://www.freesound.org/people/ceich93/">Operation Contrast</a> at FreeSound.org.
+            </div>
+            <audio id="backgroundAudio" loop autoplay src="./Assets/ceich93_drone-ominousdistortion.mp3"></audio>
+            <style>
+                body {
+                    vertical-align: middle;
+                }
+        
+                button {
+                    margin: 10px;
+                    width: 150px;
+                    height: 50px;
+                }
+        
+                .glowing {
+                    animation-name: glowing;
+                    animation-duration: 3s;
+                    animation-timing-function: ease-in-out;
+                    animation-iteration-count: infinite;
+                    animation-direction: alternate;
+                }
+        
+                @keyframes glowing {
+                    from {
+                        opacity: 1;
+                    }
+                    to {
+                        opacity: .5;
+                    }
+                }
+            </style>
+        </div>
+
+        <div id="divGame" hidden style="height:100%">
+            <div id="menuFrame" class="ui-frame">
+                <table>
+                    <td>
+                        <button>Menu</button>
+                    </td>
+                    <td>
+                        <button>Character</button>
+                    </td>
+                    <td>
+                        <button>Powers</button>
+                    </td>
+                    <td>
+                        <button>Scripts</button>
+                    </td>
+                </table>
+            </div>
+            <div id="messageWindow" class="ui-frame">
+        
+            </div>
+            <div id="inputFrame" class="ui-frame">
+                <select id="inputSelector">
+                    <option>
+                        Global Chat
+                    </option>
+                    <option>
+                        Void Chat
+                    </option>
+                    <option>
+                        Command
+                    </option>
+                    <option>
+                        Code
+                    </option>
+                </select>
+                <input id="inputText" autofocus></input>
+            </div>
+            <div id="characterFrame" class="ui-frame">
+                <div style="height: 1em">
+                    <span class="pool-title" style="left:0">Energy</span>
+                    <span class="pool-title" style="left:50%;">Charge</span>
+                </div>
+                <div>
+                    <div style="position:absolute; left:0; width:50%; text-align:center">
+                        <svg id="svgEnergy" style="height:35px; width:0">
+                            <defs>
+                                <radialGradient id="gradientEnergy" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                    <stop offset="0%" style="stop-color:white;" />
+                                    <stop offset="70%" style="stop-color:cyan;" />
+                                    <stop offset="100%" style="stop-color:transparent;" />
+                                </radialGradient>
+                            </defs>
+                            <ellipse cx="50%" cy="50%" rx="45%" ry="45%" fill="url(#gradientEnergy)"></ellipse>
+                        </svg>
+                        <div style="position:absolute;width:100%; top:10px">
+                            <div class="pool-amount" id="divEnergyAmount">
+                                0
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div id="divCharge" style="position:absolute; left:50%; width:50%; text-align:center">
+                        <svg id="svgCharge" style="height:35px; width:0;">
+                            <defs>
+                                <radialGradient id="gradientCharge" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                    <stop offset="0%" style="stop-color:white;" />
+                                    <stop offset="70%" style="stop-color:magenta;" />
+                                    <stop offset="100%" style="stop-color:transparent;" />
+                                </radialGradient>
+                            </defs>
+                            <ellipse cx="50%" cy="50%" rx="45%" ry="45%" fill="url(#gradientCharge)"></ellipse>
+                        </svg>
+                        <div style="position:absolute;width:100%; top:10px">
+                            <div class="pool-amount" id="divChargeAmount">
+                                0
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <div id="statusFrame">
+                <table>
+                    <td>
+                        Multiplayer: <span id="spanMultiplayerStatus">Disabled</span>
+                    </td>
+                    <td>
+                        TCP Server: <span id="spanTCPServerStatus">Disabled</span>
+                    </td>
+                    <td>
+                        Passive Connections: <span id="spanPassiveConnections">0</span>
+                    </td>
+                    <td>
+                        Active Connections: <span id="spanActiveConnections">0</span>
+                    </td>
+                </table>
+            </div>
+        </div>
+
+        <script>
+            require("./Scripts/Splash");
+        </script>
+    </body>
+</html>
