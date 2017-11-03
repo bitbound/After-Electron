@@ -2,6 +2,8 @@ import * as net from "net";
 import * as fs from "fs";
 import * as IO from "./IO";
 import * as path from "path";
+import * as UI from "./UI";
+import * as $ from "jquery";
 
 export var Void = class Void {
     ID:string;
@@ -9,11 +11,24 @@ export var Void = class Void {
     Description:string;
     Owner: string;
     NPCs: typeof NPC.prototype[];
-    static Load(id:string){
+    Color: string;
+    Display(){
+        var displayMessage = `<br/><br/><div style="text-align: center; color: ` + this.Color +`;">`;
+        for (var i = 0; i < this.Title.length + 6; i++){
+            displayMessage += "#";
+        }
+        displayMessage += "<br/>" + this.Title + "<br/>";
+        for (var i = 0; i < this.Title.length + 6; i++){
+            displayMessage += "#";
+        }
+        displayMessage += "</div><br/><br/>" + this.Description;
+        UI.AddMessageHTML(displayMessage, 2);
+    }
+    static Load(id:string) : typeof Void.prototype {
         if (fs.existsSync(path.join(IO.StorageDataPath, "Voids", id + ".json")) == false) {
             throw Error("Void doesn't exist.");
         }
-        $.extend(true, this, fs.readFileSync(path.join(IO.StorageDataPath, "Voids", id + ".json")).toJSON());
+        return $.extend(true, new this(), JSON.parse(fs.readFileSync(path.join(IO.StorageDataPath, "Voids", id + ".json")).toString()));
     }
     Save(){
         if (fs.existsSync(path.join(IO.StorageDataPath, "Voids")) == false) {
@@ -50,7 +65,8 @@ export var Player = class Player {
     // Energy //
     CurrentEnergy:number;
     EnergyMod:number;
-    get MaxEnergy():number{
+
+    get MaxEnergy():number {
         return this.CoreEnergy + this.EnergyMod;
     }
 

@@ -49,7 +49,7 @@
         $("#divCharacterColorPreview").css("background", "radial-gradient(white 5%, " + temp.SoulColor + "50%, rgba(0,0,0,0) 75%)");
     };
     temp.SubmitColor = function () {
-        After.Storage.Me.Player.Color = temp.SoulColor;
+        After.Storage.Me.Color = temp.SoulColor;
         $.when($("#divCreateCharacter").animate({ opacity: 0 }, 1000)).then(function () {
             delete temp;
             require("./Scripts/CreateCharacter");

@@ -7,34 +7,7 @@ import * as Storage from './Storage';
 import * as UI from "./UI";
 import * as Utilities from "./Utilities";
 
-export var Me = new class Me {
-
-    Player: typeof Models.Player.prototype = new Models.Player();
-
-    Load (slot:string){
-        var loadPath = "";
-        if (slot == "0"){
-            var loadPath = path.join(IO.StorageDataPath, "Me.json");
-        }
-        else
-        {
-            var loadPath = path.join(IO.StorageDataPath, "Character_Saves", slot + ".json");
-        }
-        if (fs.existsSync(loadPath) == false) {
-            throw "Save file not found.";
-        }
-        var content = fs.readFileSync(loadPath).toString();
-        Utilities.CopyProperties(JSON.parse(content), this);
-        UI.RefreshUI();
-    }
-    Save(slot:string) {
-        fs.writeFileSync(path.join(IO.StorageDataPath, "Me.json"), JSON.stringify(this));
-        if (fs.existsSync(path.join(IO.StorageDataPath, "Character_Saves")) == false) {
-            fs.mkdirSync(path.join(IO.StorageDataPath, "Character_Saves"));
-        }
-        fs.writeFileSync(path.join(IO.StorageDataPath, "Character_Saves", slot + ".json"), JSON.stringify(this));
-    }
-};
+export var Me = new Models.Player();
 
 export var ClientSettings = new class ClientSettings {
     TextInputAliases = {
@@ -44,10 +17,12 @@ export var ClientSettings = new class ClientSettings {
         Script: "/s "
     };
     TCPServerPort: number = 48836;
+    MultiplayerEnabled:boolean = true;
+    TCPServerEnabled:boolean = false;
 };
 
 export var KnownTCPServers: typeof Models.KnownTCPServer.prototype[] = [
-    new Models.KnownTCPServer("127.0.0.1", ClientSettings.TCPServerPort)
+    
 ];
 
 export var Temp = new class Temp {
@@ -80,7 +55,7 @@ export function LoadAll() {
             var itemName = value.replace(".json", "");
             var content = fs.readFileSync(path.join(IO.StorageDataPath, value)).toString();
             var storage = JSON.parse(content);
-            Utilities.CopyProperties(JSON.parse(content), Storage[itemName]);
+            $.extend(Storage[itemName], JSON.parse(content));
         }
     });
     UI.RefreshUI();
@@ -96,4 +71,28 @@ export function SaveAll() {
         }
         fs.writeFileSync(path.join(IO.StorageDataPath, item + ".json"), JSON.stringify(Storage[item]));
     }
+}
+
+export function LoadMe(slot:string){
+    var loadPath = "";
+    if (slot == "0"){
+        var loadPath = path.join(IO.StorageDataPath, "Me.json");
+    }
+    else
+    {
+        var loadPath = path.join(IO.StorageDataPath, "Character_Saves", slot + ".json");
+    }
+    if (fs.existsSync(loadPath) == false) {
+        throw "Save file not found.";
+    }
+    var content = fs.readFileSync(loadPath).toString();
+    $.extend(this.Me, JSON.parse(content));
+    UI.RefreshUI();
+}
+export function SaveMe(slot:string) {
+    fs.writeFileSync(path.join(IO.StorageDataPath, "Me.json"), JSON.stringify(this.Me));
+    if (fs.existsSync(path.join(IO.StorageDataPath, "Character_Saves")) == false) {
+        fs.mkdirSync(path.join(IO.StorageDataPath, "Character_Saves"));
+    }
+    fs.writeFileSync(path.join(IO.StorageDataPath, "Character_Saves", slot + ".json"), JSON.stringify(this.Me));
 }

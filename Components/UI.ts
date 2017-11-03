@@ -47,7 +47,7 @@ export function ApplyEventHandlers(){
     });
     $("#menuButton").on("click", (e)=>{
         $("#gridDivider").css({
-            "width": "2px",
+            "width": "3px",
             "margin-right": "5px"
         });
         $("#menuButton").hide();
@@ -121,10 +121,10 @@ export function ProcessInput() {
     }
 };
 export function RefreshUI(){
-    $("#divEnergyAmount").text(Storage.Me.Player.CurrentEnergy);
-    $("#svgEnergy").css("width", String(Storage.Me.Player.CurrentEnergy / Storage.Me.Player.MaxEnergy * 100 || 0) + "%");
-    $("#divChargeAmount").text(Storage.Me.Player.CurrentCharge);
-    $("#svgCharge").css("width", String(Storage.Me.Player.CurrentCharge / Storage.Me.Player.MaxCharge * 100 || 0) + "%");
+    $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
+    $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
+    $("#divChargeAmount").text(Storage.Me.CurrentCharge);
+    $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
 }
 export function SetInputHandler(handlerFunction) {
     window.setTimeout((handlerFunction)=>{

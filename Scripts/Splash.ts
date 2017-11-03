@@ -49,7 +49,7 @@ $(document).ready(function(){
         After.UI.InputBox.focus();
         After.UI.AdjustMessageWindowHeight();
         
-        if (typeof After.Storage.Me.Player.ID == "undefined"){
+        if (typeof After.Storage.Me.ID == "undefined"){
             require("../Scripts/Intro");
         }
         else {

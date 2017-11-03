@@ -44,7 +44,7 @@ window.setTimeout(()=>{
                 After.UI.SetInputHandler(After.UI.InputHandler);
                 return;
             }
-            After.Storage.Me.Player.Name = After.Utilities.EncodeForHTML(input);
+            After.Storage.Me.Name = After.Utilities.EncodeForHTML(input);
             After.UI.MessageWindow.html("");
             $.get("./Widgets/CharacterColor.html", (data)=>{After.UI.AddMessageHTML(data, 1);})
         });
