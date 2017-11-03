@@ -5,10 +5,9 @@ import * as Storage from "./Storage";
 
 // Properties //
 export var MessageWindow:JQuery = $("#messageWindow");
-export var TextInput:JQuery = $("#inputText");
-export var InputSelectElement:JQuery = $("#inputSelector");
+export var InputBox:JQuery = $("#inputText");
+export var InputModeSelector:JQuery = $("#inputSelector");
 export var MainGrid:JQuery = $("#mainGrid");
-
 export var InputHandler:Function;
 
 
@@ -35,8 +34,18 @@ export function AdjustMessageWindowHeight(){
     }
 };
 export function ApplyEventHandlers(){
+    $("#gridDivider").on("pointerdown", (e)=>{
+        var initialWidth = $("#menuFrame").width();
+        var initialX = e.screenX;
+        $(window).on("pointermove", (e)=>{
+            $("#menuFrame").width(initialWidth + initialX - e.screenX)
+        });
+        $(window).on("pointerup", (e)=>{
+            $(window).off("pointermove");
+            $(window).off("pointerup");
+        });
+    });
     $("#menuButton").on("click", (e)=>{
-        // TODO: Close menu.
         $("#gridDivider").css({
             "width": "2px",
             "margin-right": "5px"
@@ -45,32 +54,44 @@ export function ApplyEventHandlers(){
         $("#menuFrame").animate({
             width: "200px"
         })
-    })
-    UI.TextInput.on("keypress", (e) =>{
+    });
+    $("#closeMenuButton").on("click", (e)=>{
+        $("#menuFrame").animate({
+            width: "0px"
+        }, ()=>{
+            $("#gridDivider").css({
+                "width": "0px",
+                "margin-right": "0px"
+            });
+            $("#menuButton").show();
+        })
+    });
+
+    UI.InputBox.on("keypress", (e) =>{
         if (e.key.toLowerCase() == "enter"){
             UI.ProcessInput();
         }
     });
-    UI.TextInput.on("input", (e)=>{
-        if (UI.TextInput.val().toString().toLowerCase() == Storage.ClientSettings.TextInputAliases.Command.toLowerCase()) {
-            (UI.InputSelectElement[0] as HTMLSelectElement).value = "Command";
-            UI.TextInput.val("");
+    UI.InputBox.on("input", (e)=>{
+        if (UI.InputBox.val().toString().toLowerCase() == Storage.ClientSettings.TextInputAliases.Command.toLowerCase()) {
+            (UI.InputModeSelector[0] as HTMLSelectElement).value = "Command";
+            UI.InputBox.val("");
         }
-        else if (UI.TextInput.val().toString().toLowerCase() == Storage.ClientSettings.TextInputAliases.GlobalChat.toLowerCase()) {
-            (UI.InputSelectElement[0] as HTMLSelectElement).value = "Global Chat";
-            UI.TextInput.val("");
+        else if (UI.InputBox.val().toString().toLowerCase() == Storage.ClientSettings.TextInputAliases.GlobalChat.toLowerCase()) {
+            (UI.InputModeSelector[0] as HTMLSelectElement).value = "Global Chat";
+            UI.InputBox.val("");
         }
-        else if (UI.TextInput.val().toString().toLowerCase() == Storage.ClientSettings.TextInputAliases.VoidChat.toLowerCase()) {
-            (UI.InputSelectElement[0] as HTMLSelectElement).value = "Void Chat";
-            UI.TextInput.val("");
+        else if (UI.InputBox.val().toString().toLowerCase() == Storage.ClientSettings.TextInputAliases.VoidChat.toLowerCase()) {
+            (UI.InputModeSelector[0] as HTMLSelectElement).value = "Void Chat";
+            UI.InputBox.val("");
         }
-        else if (UI.TextInput.val().toString().toLowerCase() == Storage.ClientSettings.TextInputAliases.Script.toLowerCase()) {
-            (UI.InputSelectElement[0] as HTMLSelectElement).value = "Script";
-            UI.TextInput.val("");
+        else if (UI.InputBox.val().toString().toLowerCase() == Storage.ClientSettings.TextInputAliases.Script.toLowerCase()) {
+            (UI.InputModeSelector[0] as HTMLSelectElement).value = "Script";
+            UI.InputBox.val("");
         }
     })
 };
-export function FadeInText(text:string, delayInMilliseconds:number){
+export function FadeInText(text:string, delayInMilliseconds:number, callback:Function){
     window.setTimeout((text)=>{
         UI.AddMessageText("", 2);
         for (var i = 0; i < text.length; i++){
@@ -79,12 +100,17 @@ export function FadeInText(text:string, delayInMilliseconds:number){
                 UI.AddMessageHTML("<span class='fade-in-text'>" + letter + "</span>", 0);
             }, i * 30, letter)
         }
+        if (callback){
+            window.setTimeout(function(callback){
+                callback();
+            }, (text.length ) * 30, callback);
+        }
     }, delayInMilliseconds, text);
 }
 
 export function ProcessInput() {
-    var input = UI.TextInput.val() as string;
-    UI.TextInput.val("");
+    var input = UI.InputBox.val() as string;
+    UI.InputBox.val("");
     if (this.InputHandler != null){
         this.InputHandler(input);
         this.InputHandler = null;
@@ -95,10 +121,10 @@ export function ProcessInput() {
     }
 };
 export function RefreshUI(){
-    $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
-    $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
-    $("#divChargeAmount").text(Storage.Me.CurrentCharge);
-    $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
+    $("#divEnergyAmount").text(Storage.Me.Player.CurrentEnergy);
+    $("#svgEnergy").css("width", String(Storage.Me.Player.CurrentEnergy / Storage.Me.Player.MaxEnergy * 100 || 0) + "%");
+    $("#divChargeAmount").text(Storage.Me.Player.CurrentCharge);
+    $("#svgCharge").css("width", String(Storage.Me.Player.CurrentCharge / Storage.Me.Player.MaxCharge * 100 || 0) + "%");
 }
 export function SetInputHandler(handlerFunction) {
     window.setTimeout((handlerFunction)=>{

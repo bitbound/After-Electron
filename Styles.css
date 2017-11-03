@@ -14,6 +14,7 @@ button {
     border: 1px solid lightgray;
     color: white;
     background-color: black;
+    user-select: none;
 }
 
 button:hover {
@@ -22,6 +23,11 @@ button:hover {
 }
 button:active {
     background-color: rgb(50, 50, 50);
+}
+
+/* App-Wide Classes */
+.right-aligned {
+    text-align: center;
 }
 
 /* Main Game Frames */
@@ -91,7 +97,7 @@ button:active {
 }
 
 
-#characterFrame {
+#energyPoolFrame {
     height: 50px;
     margin: 10px 5px;
 }
@@ -109,18 +115,9 @@ button:active {
     text-align: center;
     table-layout: fixed;
 }
-/* Character Frame */
 
-#divStatus {
-    border: 2px solid lightgray;
-    border-radius: 15px;
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    left: 5px;
-    height: 75px;
 
-}
+/* Energy Pool Frame */
 
 .pool-title {
     position: absolute;

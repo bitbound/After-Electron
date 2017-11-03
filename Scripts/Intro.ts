@@ -18,7 +18,7 @@ var waitTime = 500;
 for (var i = 0; i < introText.length; i++){
     var message = introText[i];
     window.setTimeout((message)=>{
-        After.UI.FadeInText(message, 0);
+        After.UI.FadeInText(message, 0, null);
     }, waitTime, message);
     waitTime += 1000 + (message.length * 30);
 }
@@ -27,7 +27,6 @@ for (var i = 0; i < introText.length; i++){
 window.setTimeout(()=>{
     After.UI.AddMessageHTML("<br><br><span class='glowing'>Press Enter to continue...</span>", 2);
     After.UI.InputHandler = function(){
-        Audio.StopLoop();
         After.UI.MessageWindow.html("");
         var askNameMessage = `
             <div style="text-align:center">
@@ -45,7 +44,7 @@ window.setTimeout(()=>{
                 After.UI.SetInputHandler(After.UI.InputHandler);
                 return;
             }
-            After.Storage.Me.Name = After.Utilities.EncodeForHTML(input);
+            After.Storage.Me.Player.Name = After.Utilities.EncodeForHTML(input);
             After.UI.MessageWindow.html("");
             $.get("./Widgets/CharacterColor.html", (data)=>{After.UI.AddMessageHTML(data, 1);})
         });

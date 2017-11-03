@@ -46,10 +46,10 @@ $(document).ready(function(){
         var path = require("path");
         $("#divSplash").remove();
         $("#divGame").show();
-        After.UI.TextInput.focus();
+        After.UI.InputBox.focus();
         After.UI.AdjustMessageWindowHeight();
         
-        if (typeof After.Storage.Me.ID == "undefined"){
+        if (typeof After.Storage.Me.Player.ID == "undefined"){
             require("../Scripts/Intro");
         }
         else {

@@ -8,36 +8,8 @@ import * as UI from "./UI";
 import * as Utilities from "./Utilities";
 
 export var Me = new class Me {
-    constructor(){
-        this.CoreEnergy = 100;
-        this.CoreEnergyPeak = 100;
-        this.CurrentEnergy = 0;
-        this.EnergyMod = 0;
-        this.CurrentCharge = 0;
-        this.ChargeMod = 0;
-    }
-    ID: string;
-    Name: string;
-    Color: string;
-    
-    
-    // Core Energy //
-    CoreEnergy: number;
-    CoreEnergyPeak: number;
 
-    // Energy //
-    CurrentEnergy:number;
-    EnergyMod:number;
-    get MaxEnergy():number{
-        return this.CoreEnergy + this.EnergyMod;
-    }
-
-    // Charge //
-    CurrentCharge:number;
-    ChargeMod:number;
-    get MaxCharge(): number{
-        return this.CoreEnergy + this.ChargeMod;
-    }
+    Player: typeof Models.Player.prototype = new Models.Player();
 
     Load (slot:string){
         var loadPath = "";
