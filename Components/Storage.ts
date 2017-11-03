@@ -8,74 +8,36 @@ import * as UI from "./UI";
 import * as Utilities from "./Utilities";
 
 export var Me = new class Me {
+    constructor(){
+        this.CoreEnergy = 100;
+        this.CoreEnergyPeak = 100;
+        this.CurrentEnergy = 0;
+        this.EnergyMod = 0;
+        this.CurrentCharge = 0;
+        this.ChargeMod = 0;
+    }
     ID: string;
     Name: string;
     Color: string;
     
     
     // Core Energy //
-    private coreEnergy:number;
-    get CoreEnergy():number{
-        return this.coreEnergy;
-    }
-    set CoreEnergy(value:number){
-        this.coreEnergy = value;
-        if (value > this.CoreEnergyPeak){
-            this.CoreEnergyPeak = value;
-        }
-    }
+    CoreEnergy: number;
     CoreEnergyPeak: number;
 
     // Energy //
-    private currentEnergy: number;
-    get CurrentEnergy():number{
-        return this.currentEnergy;
-    }
-    set CurrentEnergy(value:number){
-        this.currentEnergy = value;
-        $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
-        $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
-    }
-
+    CurrentEnergy:number;
+    EnergyMod:number;
     get MaxEnergy():number{
         return this.CoreEnergy + this.EnergyMod;
     }
 
-    private energyMod: number;
-    get EnergyMod():number {
-        return this.energyMod;
-    }
-    set EnergyMod(value:number){
-        this.energyMod = value;
-        $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
-        $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
-    }
-
     // Charge //
-    private currentCharge: number;
-    get CurrentCharge(): number{
-        return this.currentCharge;
-    }
-    set CurrentCharge(value:number){
-        this.currentCharge = value;
-        $("#divChargeAmount").text(Storage.Me.CurrentCharge);
-        $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
-    }
-
+    CurrentCharge:number;
+    ChargeMod:number;
     get MaxCharge(): number{
         return this.CoreEnergy + this.ChargeMod;
     }
-
-    private chargeMod: number;
-    get ChargeMod(): number {
-        return this.chargeMod;
-    }
-    set ChargeMod(value:number){
-        this.chargeMod = value;
-        $("#divChargeAmount").text(Storage.Me.CurrentCharge);
-        $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
-    }
-
 
     Load (slot:string){
         var loadPath = "";
@@ -90,19 +52,25 @@ export var Me = new class Me {
             throw "Save file not found.";
         }
         var content = fs.readFileSync(loadPath).toString();
-        Utilities.CopyProperties(JSON.parse(content), Storage.Me);
+        Utilities.CopyProperties(JSON.parse(content), this);
+        UI.RefreshUI();
     }
     Save(slot:string) {
-        fs.writeFileSync(path.join(IO.StorageDataPath, "Me.json"), JSON.stringify(Storage.Me));
-
+        fs.writeFileSync(path.join(IO.StorageDataPath, "Me.json"), JSON.stringify(this));
         if (fs.existsSync(path.join(IO.StorageDataPath, "Character_Saves")) == false) {
             fs.mkdirSync(path.join(IO.StorageDataPath, "Character_Saves"));
         }
-        fs.writeFileSync(path.join(IO.StorageDataPath, "Character_Saves", slot + ".json"), JSON.stringify(Storage.Me));
+        fs.writeFileSync(path.join(IO.StorageDataPath, "Character_Saves", slot + ".json"), JSON.stringify(this));
     }
 };
 
 export var ClientSettings = new class ClientSettings {
+    TextInputAliases = {
+        Command: "/c ",
+        GlobalChat: "/g ",
+        VoidChat: "/v ",
+        Script: "/s "
+    };
     TCPServerPort: number = 48836;
 };
 
@@ -143,6 +111,7 @@ export function LoadAll() {
             Utilities.CopyProperties(JSON.parse(content), Storage[itemName]);
         }
     });
+    UI.RefreshUI();
 };
 
 export function SaveAll() {

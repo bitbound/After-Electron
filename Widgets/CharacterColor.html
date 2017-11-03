@@ -36,6 +36,7 @@
 </div>
 
 <script>
+    var $ = require("jquery");
     var temp = {};
     temp.EvaluateColor = function () {
         $("#selectColor")[0].selectedIndex = 0;
@@ -52,7 +53,6 @@
         $.when($("#divCreateCharacter").animate({ opacity: 0 }, 1000)).then(function () {
             delete temp;
             After.Storage.Me.ID = After.Utilities.CreateGUID();
-            After.Storage.Me.CoreEnergy = 100;
             After.Storage.Me.CurrentEnergy = 100;
             After.Storage.Me.Save("0");
             After.UI.MessageWindow.html("");

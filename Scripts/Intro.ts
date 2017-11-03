@@ -1,5 +1,8 @@
 import * as After from "../After";
+import * as $ from "jquery";
+import * as Audio from "../Components/Audio";
 
+Audio.PlayLoop("./Assets/ceich93__drone-darkemptiness.mp3", null);
 var introText = [
     "You died.",
     "Slowly, your consciousness becomes aware of itself.",
@@ -24,6 +27,7 @@ for (var i = 0; i < introText.length; i++){
 window.setTimeout(()=>{
     After.UI.AddMessageHTML("<br><br><span class='glowing'>Press Enter to continue...</span>", 2);
     After.UI.InputHandler = function(){
+        Audio.StopLoop();
         After.UI.MessageWindow.html("");
         var askNameMessage = `
             <div style="text-align:center">
@@ -43,7 +47,7 @@ window.setTimeout(()=>{
             }
             After.Storage.Me.Name = After.Utilities.EncodeForHTML(input);
             After.UI.MessageWindow.html("");
-            $.get("../Widgets/CharacterColor.html", (data)=>{After.UI.AddMessageHTML(data, 1);})
+            $.get("./Widgets/CharacterColor.html", (data)=>{After.UI.AddMessageHTML(data, 1);})
         });
     }
 }, waitTime);

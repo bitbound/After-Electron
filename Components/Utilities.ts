@@ -1,54 +1,24 @@
 import * as IO from "./IO";
 import * as fs from "fs";
 import * as path from "path";
+import * as $ from "jquery";
 
-export function CopyProperties(Source: object, Destination: object) {
-    for (var prop in Source) {
-        if (typeof Source[prop] == "object"){
-            if (typeof Destination[prop] == "undefined"){
-                Destination[prop] == {};
+export function Animate(Object: any, Property: string, FromValue: number, ToValue: number, MsTransition: number) {
+    if (typeof Object[Property] != "number") {
+        console.log("Property is not of type number.");
+        return;
+    }
+    var totalChange = ToValue - FromValue;
+    for (var i = 0; i < MsTransition; i = i + 20)
+    {
+        window.setTimeout(function (currentTime) {
+            Object[Property] = FromValue + (currentTime / MsTransition * totalChange);
+            if (currentTime >= MsTransition) {
+                Object[Property] = ToValue;
             }
-            CopyProperties(Source[prop], Destination[prop]);
-        }
-        Destination[prop] = Source[prop];
+        }, i, i)
     }
-};
-export function CreateGUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
-        return v.toString(16);
-    });
-};
-export function EncodeForHTML(input:string) {
-    return $("<div>").text(input).html();
-};
-export function NumberIsBetween(NumberAnalyzed: number, Min: number, Max: number, IncludeMinMax: boolean): boolean {
-    if (IncludeMinMax) {
-        if (NumberAnalyzed == Min || NumberAnalyzed == Max) {
-            return true;
-        }
-    }
-    if (NumberAnalyzed > Min && NumberAnalyzed < Max) {
-        return true;
-    }
-    else {
-        return false;
-    }
-};
-export function GetRandom(Min:number, Max:number, Round:boolean): number {
-    if (Min > Max) {
-        throw "Min must be less than max.";
-    }
-    var ran = Math.random();
-    var diff = Max - Min;
-    var result = ran * diff;
-    if (Round) {
-        return Math.round(result + Min);
-    }
-    else {
-        return result + Min;
-    }
-};
+}
 
 export var ColorNames = ["AliceBlue", "AntiqueWhite", "Aqua", "Aquamarine", "Azure", "Beige", "Bisque", "BlanchedAlmond", "Blue", "BlueViolet", "Brown", "BurlyWood", "CadetBlue", "Chartreuse", "Chocolate", "Coral", "CornflowerBlue", "Cornsilk", "Crimson", "Cyan", "DarkBlue", "DarkCyan", "DarkGoldenrod", "DarkGray", "DarkGreen", "DarkKhaki", "DarkMagenta", "DarkOliveGreen", "DarkOrange", "DarkOrchid", "DarkRed", "DarkSalmon", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkTurquoise", "DarkViolet", "DeepPink", "DeepSkyBlue", "DimGray", "DodgerBlue", "FireBrick", "FloralWhite", "ForestGreen", "Fuchsia", "Gainsboro", "GhostWhite", "Gold", "Goldenrod", "Gray", "Green", "GreenYellow", "Honeydew", "HotPink", "Indigo", "Ivory", "Khaki", "Lavender", "LavenderBlush", "LawnGreen", "LemonChiffon", "LightBlue", "LightCoral", "LightCyan", "LightGoldenrodYellow", "LightGreen", "LightGrey", "LightPink", "LightSalmon", "LightSeaGreen", "LightSkyBlue", "LightSlateGray", "LightSteelBlue", "LightYellow", "Lime", "LimeGreen", "Linen", "Magenta", "Maroon", "MediumAquamarine", "MediumBlue", "MediumOrchid", "MediumPurple", "MediumSeaGreen", "MediumSlateBlue", "MediumSpringGreen", "MediumTurquoise", "MediumVioletRed", "MidnightBlue", "MintCream", "MistyRose", "Moccasin", "NavajoWhite", "Navy", "OldLace", "Olive", "OliveDrab", "Orange", "OrangeRed", "Orchid", "PaleGoldenrod", "PaleGreen", "PaleTurquoise", "PaleVioletRed", "PapayaWhip", "PeachPuff", "Peru", "Pink", "Plum", "PowderBlue", "Purple", "Red", "RosyBrown", "RoyalBlue", "SaddleBrown", "Salmon", "SandyBrown", "SeaGreen", "Seashell", "Sienna", "Silver", "SkyBlue", "SlateBlue", "SlateGray", "Snow", "SpringGreen", "SteelBlue", "Tan", "Teal", "Thistle", "Tomato", "Turquoise", "Violet", "Wheat", "White", "WhiteSmoke", "Yellow", "YellowGreen"];
 export function ColorNameToHex(colour:string):string {
@@ -200,6 +170,40 @@ export function ColorNameToHex(colour:string):string {
 
     return "";
 };
+export function CopyProperties(Source: object, Destination: object) {
+    for (var prop in Source) {
+        if (typeof Source[prop] == "object"){
+            if (typeof Destination[prop] == "undefined"){
+                Destination[prop] == {};
+            }
+            CopyProperties(Source[prop], Destination[prop]);
+        }
+        Destination[prop] = Source[prop];
+    }
+};
+export function CreateGUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+};
+export function EncodeForHTML(input:string) {
+    return $("<div>").text(input).html();
+};
+export function GetRandom(Min:number, Max:number, Round:boolean): number {
+    if (Min > Max) {
+        throw "Min must be less than max.";
+    }
+    var ran = Math.random();
+    var diff = Max - Min;
+    var result = ran * diff;
+    if (Round) {
+        return Math.round(result + Min);
+    }
+    else {
+        return result + Min;
+    }
+};
 export function HexToRGB(col:string):string {
     var r, g, b;
     if (col.charAt(0) == '#') {
@@ -213,27 +217,22 @@ export function HexToRGB(col:string):string {
     b = parseInt(b, 16);
     return 'rgb(' + r + ',' + g + ',' + b + ')';
 };
-
-export function Animate(Object: any, Property: string, FromValue: number, ToValue: number, MsTransition: number) {
-    if (typeof Object[Property] != "number") {
-        console.log("Property is not of type number.");
-        return;
-    }
-    var totalChange = ToValue - FromValue;
-    for (var i = 0; i < MsTransition; i = i + 20)
-    {
-        window.setTimeout(function (currentTime) {
-            Object[Property] = FromValue + (currentTime / MsTransition * totalChange);
-            if (currentTime >= MsTransition) {
-                Object[Property] = ToValue;
-            }
-        }, i, i)
-    }
-}
-
 export function Log(message:string){
     console.log(message);
     var logPath = path.join(IO.UserDataPath, "Log.txt");
 
     fs.writeFileSync(logPath, (new Date()).toLocaleString() + " -   " + message + "\r\n")
 }
+export function NumberIsBetween(NumberAnalyzed: number, Min: number, Max: number, IncludeMinMax: boolean): boolean {
+    if (IncludeMinMax) {
+        if (NumberAnalyzed == Min || NumberAnalyzed == Max) {
+            return true;
+        }
+    }
+    if (NumberAnalyzed > Min && NumberAnalyzed < Max) {
+        return true;
+    }
+    else {
+        return false;
+    }
+};

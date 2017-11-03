@@ -46,13 +46,10 @@ $(document).ready(function(){
         var path = require("path");
         $("#divSplash").remove();
         $("#divGame").show();
-        var heightAdjust = 0;
-        while (document.body.scrollHeight > document.documentElement.clientHeight) {
-            heightAdjust++;
-            After.UI.MessageWindow.height("calc(100% - " + String(heightAdjust) + "px" + ")");
-        }
+        After.UI.TextInput.focus();
+        After.UI.AdjustMessageWindowHeight();
         
-        if ($.isEmptyObject(After.Storage.Me.ID)){
+        if (typeof After.Storage.Me.ID == "undefined"){
             require("../Scripts/Intro");
         }
         else {
