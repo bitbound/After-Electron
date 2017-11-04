@@ -3,18 +3,61 @@ import * as Storage from "./Storage";
 import * as Utilities from "./Utilities";
 import * as Models from "./Models";
 import * as Connectivity from "./Connectivity";
+import * as SocketData from "./SocketData";
 
+
+export var MockSocket = new class MockSocket {
+    write(message:string){
+        var jsonData = JSON.parse(message);
+        eval("SocketData.Receive" + jsonData.Type + "(jsonData)");
+    }
+}
 export var TCP = new class TCP {
     OutSocket1: typeof net.Socket.prototype;
     OutSocket2: typeof net.Socket.prototype;
     Server: typeof net.Server.prototype;
 
+    ConnectToServer(host:string, port: number, active:false){
+        this.OutSocket1 = net.connect(port, host, ()=>{
+            SocketData.SetOutSocket(this.OutSocket1);
+            if (active){
+                SocketData.SendHelloAsActiveClient();
+            }
+            else {
+                SocketData.SendHelloAsPassiveClient();
+            }
+        });
+        this.OutSocket1.on("data", (data)=>{
+            try
+            {
+                var jsonData = JSON.parse(data.toString());
+                // TODO: Did I already get?
+                // TODO: Send to peers.
+                eval("SocketData.Receive" + jsonData.Type + "(jsonData, this)");
+            }
+            catch (ex) {
+                Utilities.Log(JSON.stringify(ex));
+            }
+        });
+    }
     StartServer() {
         var server = net.createServer(function(socket){
             console.log("Connection received.");
-            var client = new Models.ActiveTCPClient();
-            client.Socket = socket;
-            // Handle socket.
+            socket.on("data", (data)=>{
+                try
+                {
+                    var jsonData = JSON.parse(data.toString());
+                    // TODO: Did I already get?
+                    // TODO: Send to peers.
+                    eval("SocketData.Receive" + jsonData.Type + "(jsonData, this)");
+                }
+                catch (ex) {
+                    Utilities.Log(JSON.stringify(ex));
+                }
+            });
+            socket.on("error", (err:Error)=>{
+                Utilities.Log(JSON.stringify(err));
+            })
         });
         server.on("close", function(){
             // If not expected, reopen.
