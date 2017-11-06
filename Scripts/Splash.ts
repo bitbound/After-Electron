@@ -1,6 +1,8 @@
 import * as After from "../After";
 import * as $ from "jquery";
 import * as electron from "electron";
+import * as Game from "./Game";
+import * as Intro from "./Intro";
 
 global["After"] = After;
 After.Storage.LoadAll();
@@ -42,7 +44,7 @@ function raiseParticle() {
 }
 
 $(document).ready(function(){
-    $("#buttonPlay").click(function () {
+    $("#buttonPlay").click(async function () {
         var path = require("path");
         $("#divSplash").remove();
         $("#divGame").show();
@@ -50,10 +52,10 @@ $(document).ready(function(){
         After.UI.AdjustMessageWindowHeight();
         
         if (typeof After.Storage.Me.ID == "undefined"){
-            require("../Scripts/Intro");
+            Intro.Init();
         }
         else {
-            require("../Scripts/Game");
+            await Game.Init();
         }
     });
     $("#buttonOptions").click(function () {

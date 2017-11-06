@@ -10,6 +10,11 @@ import * as Utilities from "./Utilities";
 export var Me = new Models.Player();
 
 export var ClientSettings = new class ClientSettings {
+    Colors = {
+        "GlobalChat": "seagreen",
+        "VoidChat": "lightsteelblue",
+        "Whisper": "magenta"
+    }
     TextInputAliases = {
         Command: "/c ",
         GlobalChat: "/g ",

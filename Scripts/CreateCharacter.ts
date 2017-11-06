@@ -1,5 +1,6 @@
 import * as After from "../After";
 import * as Audio from "../Components/Audio";
+import * as Game from "./Game";
 
 After.Storage.Me.ID = After.Utilities.CreateGUID();
 After.Storage.Me.CurrentEnergy = 100;
@@ -23,6 +24,6 @@ After.UI.RefreshUI();
 After.UI.MessageWindow.html("");
 After.UI.AddMessageText("Welcome to the afterlife, " + After.Storage.Me.Name + ".", 2);
 Audio.StopLoop();
-window.setTimeout(function(){
-    require("./Game");
+window.setTimeout(async function(){
+    await Game.Init();
 },2000);

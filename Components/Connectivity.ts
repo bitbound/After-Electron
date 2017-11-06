@@ -3,42 +3,40 @@ import * as Storage from "./Storage";
 import * as Utilities from "./Utilities";
 import * as Models from "./Models";
 import * as Connectivity from "./Connectivity";
-import * as SocketData from "./SocketData";
+import * as SocketDataHandlers from "./SocketDataHandlers";
 
 
-export var MockSocket = new class MockSocket {
-    write(message:string){
-        var jsonData = JSON.parse(message);
-        eval("SocketData.Receive" + jsonData.Type + "(jsonData)");
-    }
-}
+
 export var TCP = new class TCP {
-    OutSocket1: typeof net.Socket.prototype;
-    OutSocket2: typeof net.Socket.prototype;
+    OutSocket: typeof Models.OutboundConnection.prototype;
     Server: typeof net.Server.prototype;
 
-    ConnectToServer(host:string, port: number, active:false){
-        this.OutSocket1 = net.connect(port, host, ()=>{
-            SocketData.SetOutSocket(this.OutSocket1);
+    async ConnectToServer(host:string, port: number, active:boolean):Promise<boolean>{
+        var socket = await net.connect(port, host, ()=>{
+            var connection = new Models.OutboundConnection();
+            connection.Socket = socket;
+            connection.Server = new Models.KnownTCPServer(host, port);
+            this.OutSocket = connection;
             if (active){
-                SocketData.SendHelloAsActiveClient();
+                SocketDataHandlers.SendHelloAsActiveClient();
             }
             else {
-                SocketData.SendHelloAsPassiveClient();
+                SocketDataHandlers.SendHelloAsPassiveClient();
             }
         });
-        this.OutSocket1.on("data", (data)=>{
+        socket.on("data", (data)=>{
             try
             {
                 var jsonData = JSON.parse(data.toString());
                 // TODO: Did I already get?
                 // TODO: Send to peers.
-                eval("SocketData.Receive" + jsonData.Type + "(jsonData, this)");
+                eval("SocketDataHandlers.Receive" + jsonData.Type + "(jsonData, this)");
             }
             catch (ex) {
                 Utilities.Log(JSON.stringify(ex));
             }
         });
+        return true;
     }
     StartServer() {
         var server = net.createServer(function(socket){
@@ -49,7 +47,7 @@ export var TCP = new class TCP {
                     var jsonData = JSON.parse(data.toString());
                     // TODO: Did I already get?
                     // TODO: Send to peers.
-                    eval("SocketData.Receive" + jsonData.Type + "(jsonData, this)");
+                    eval("SocketDataHandlers.Receive" + jsonData.Type + "(jsonData, this)");
                 }
                 catch (ex) {
                     Utilities.Log(JSON.stringify(ex));
@@ -79,40 +77,40 @@ export var TCP = new class TCP {
     IsDisconnectExpect: boolean;
 }
 
-// TODO: Undecided if P2P will be used.
-class Peer2Peer {
-    RTCConnection: RTCPeerConnection;
-    RTCSendChannel: RTCRtpSender;
-    RTCReceiveChannel: RTCRtpReceiver;
-    InitRTCConnection(){
-        this.RTCConnection = new RTCPeerConnection({
-            //optional: [{RtpDataChannels: true}],
-            iceServers: [
-                {
-                    //urls: Storage.STUNServers
-                }
-            ]
-        });
-        this.RTCConnection.onicecandidate = function (evt) {
-            if (evt.candidate) {
-                Connectivity.TCP.OutSocket1.write(JSON.stringify({
-                    'Type': 'RTCCandidate',
-                    'Candidate': evt.candidate
-                }));
-            }
-        };
-        //this.RTCConnection.ondatachannel = function(event) {
-            //this.RTCReceiveChannel = event.channel;
-            //this.RTCReceiveChannel.onmessage = function(event){
-                //console.log(event.data);
-            //};
-        //};
-        //this.RTCConnection.createDataChannel
-    };
-    CreateOffer() {
-    };
-    FindSTUNServer() {
-    };
-    IsEnabled: boolean;
-
-};
+// Undecided if P2P will be used.
+//class Peer2Peer {
+//    RTCConnection: RTCPeerConnection;
+//    RTCSendChannel: RTCRtpSender;
+//    RTCReceiveChannel: RTCRtpReceiver;
+//    InitRTCConnection(){
+//        this.RTCConnection = new RTCPeerConnection({
+//            optional: [{RtpDataChannels: true}],
+//            iceServers: [
+//                {
+//                    //urls: Storage.STUNServers
+//                }
+//            ]
+//        });
+//        this.RTCConnection.onicecandidate = function (evt) {
+//            if (evt.candidate) {
+//                Connectivity.TCP.PassiveOutSocket.write(JSON.stringify({
+//                    'Type': 'RTCCandidate',
+//                    'Candidate': evt.candidate
+//                }));
+//            }
+//        };
+//        this.RTCConnection.ondatachannel = function(event) {
+//            this.RTCReceiveChannel = event.channel;
+//            this.RTCReceiveChannel.onmessage = function(event){
+//                //console.log(event.data);
+//            };
+//        };
+//        this.RTCConnection.createDataChannel
+//    };
+//    CreateOffer() {
+//    };
+//    FindSTUNServer() {
+//    };
+//    IsEnabled: boolean;
+//
+//};

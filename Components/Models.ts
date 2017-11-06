@@ -80,12 +80,20 @@ export var Player = class Player {
 
 export var OutboundConnection = class OutboundConnection {
     Socket: NodeJS.Socket;
-    Server: typeof KnownTCPServer;
+    Server: typeof KnownTCPServer.prototype;
+    IsConnected():boolean{
+        if (this.Socket == null || this.Socket.writable == false){
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
 }
 
 export var ActiveTCPClient = class ActiveTCPClient {
     Socket: NodeJS.Socket;
-    Player: typeof Player;
+    Player: typeof Player.prototype;
 };
 export var PassiveTCPClient = class PassiveTCPClient {
     Socket: NodeJS.Socket;

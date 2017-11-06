@@ -10,7 +10,7 @@ import * as ui from "./Components/UI";
 import * as models from "./Components/Models";
 import * as storage from "./Components/Storage";
 import * as utilities from "./Components/Utilities";
-import * as socketData from "./Components/SocketData";
+import * as socketDataHandlers from "./Components/SocketDataHandlers";
 
 
 export var NodeJS = {
@@ -24,6 +24,6 @@ export var IO = io;
 export var Connectivity = connectivity
 export var UI = ui;
 export var Models = models;
-export var SocketData = socketData;
+export var SocketDataHandlers = socketDataHandlers;
 export var Storage = storage;
 export var Utilities = utilities;
