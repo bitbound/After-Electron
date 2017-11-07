@@ -6,7 +6,7 @@ import * as InputProcessor from "./InputProcessor";
 import * as Intellisense from "./Intellisense";
 
 // Properties //
-export var MessageWindow:JQuery = $("#messageWindow");
+export var MessageWindow:Electron.WebviewTag = $("#messageWindow")[0] as Electron.WebviewTag;
 export var InputBox:JQuery = $("#inputText");
 export var InputModeSelector:JQuery = $("#inputSelector");
 export var MainGrid:JQuery = $("#mainGrid");
@@ -15,18 +15,18 @@ export var InputHandler:Function;
 
 // Functions //
 export function AddMessageText(message:string, newLines:number){
-    this.MessageWindow.append(Utilities.EncodeForHTML(message));
+    MessageWindow.shadowRoot.innerHTML += Utilities.EncodeForHTML(message);
     for (var i = 0; i < newLines; i++){
-        this.MessageWindow.append("<br>");
+        MessageWindow.shadowRoot.innerHTML += "<br>";
     }
-    this.MessageWindow.scrollTop(this.MessageWindow[0].scrollHeight);
+    MessageWindow.scrollTop = MessageWindow.scrollHeight;
 };
 export function AddMessageHTML(html:string, newLines:number) {
-    this.MessageWindow.append(html);
+    MessageWindow.shadowRoot.innerHTML += html;
     for (var i = 0; i < newLines; i++){
-        this.MessageWindow.append("<br>");
+        MessageWindow.shadowRoot.innerHTML += "<br>";
     }
-    this.MessageWindow.scrollTop(this.MessageWindow[0].scrollHeight);
+    MessageWindow.scrollTop = MessageWindow.scrollHeight;
 };
 export function AdjustMessageWindowHeight(){
     var heightAdjust = 0;
@@ -68,7 +68,6 @@ export function ApplyEventHandlers(){
             $("#menuButton").show();
         })
     });
-
     UI.InputBox.on("keypress", (e) =>{
         if (e.key.toLowerCase() == "enter"){
             UI.ProcessInput();

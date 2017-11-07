@@ -87,15 +87,14 @@ button:active {
     height: 30px;
 }
 #messageWindow {
-    
     grid-column: 1;
     grid-row: 1;
     margin: 0 5px;
     word-wrap: break-word;
     overflow: auto;
     padding: 10px;
+    display: block !important;
 }
-
 
 #energyPoolFrame {
     height: 50px;

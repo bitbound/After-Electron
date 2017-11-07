@@ -1,6 +1,7 @@
 import * as After from "../After";
 
 export var Init = async function (){
+    After.UI.MessageWindow.shadowRoot.innerHTML = "";
     After.Models.Void.Load(After.Storage.Me.InnerVoidID).Display();
     
     if (After.Storage.ClientSettings.TCPServerEnabled) {
