@@ -5,38 +5,45 @@ import * as Models from "./Models";
 import * as Connectivity from "./Connectivity";
 import * as SocketDataHandlers from "./SocketDataHandlers";
 
-
-
 export var TCP = new class TCP {
-    OutSocket: typeof Models.OutboundConnection.prototype;
-    Server: typeof net.Server.prototype;
+    OutSocket: typeof Models.OutboundConnection.prototype = new Models.OutboundConnection();
+    Server: typeof Models.LocalTCPServer.prototype = new Models.LocalTCPServer();
+    IsDisconnectExpect: boolean;
 
-    async ConnectToServer(host:string, port: number, active:boolean):Promise<boolean>{
-        var socket = await net.connect(port, host, ()=>{
-            var connection = new Models.OutboundConnection();
-            connection.Socket = socket;
-            connection.Server = new Models.KnownTCPServer(host, port);
-            this.OutSocket = connection;
-            if (active){
-                SocketDataHandlers.SendHelloAsActiveClient();
-            }
-            else {
-                SocketDataHandlers.SendHelloAsPassiveClient();
-            }
-        });
-        socket.on("data", (data)=>{
-            try
-            {
-                var jsonData = JSON.parse(data.toString());
-                // TODO: Did I already get?
-                // TODO: Send to peers.
-                eval("SocketDataHandlers.Receive" + jsonData.Type + "(jsonData, this)");
-            }
-            catch (ex) {
-                Utilities.Log(JSON.stringify(ex));
-            }
-        });
-        return true;
+    async ConnectToServer(host:string, port: number, active:boolean):Promise<boolean> {
+            var promise = new Promise<boolean>(function(resolve, reject){
+                try {
+                    var socket = net.connect(port, host, ()=>{
+                        var connection = new Models.OutboundConnection();
+                        connection.Socket = socket;
+                        connection.Server = new Models.KnownTCPServer(host, port);
+                        Connectivity.TCP.OutSocket = connection;
+                        if (active){
+                            SocketDataHandlers.SendHelloAsActiveClient();
+                        }
+                        else {
+                            SocketDataHandlers.SendHelloAsPassiveClient();
+                        }
+                        resolve(true);
+                    });
+                    socket.on("data", (data)=>{
+                        try
+                        {
+                            var jsonData = JSON.parse(data.toString());
+                            // TODO: Did I already get?
+                            // TODO: Send to peers.
+                            eval("SocketDataHandlers.Receive" + jsonData.Type + "(jsonData, this)");
+                        }
+                        catch (ex) {
+                            Utilities.Log(JSON.stringify(ex));
+                        }
+                    });
+                }
+                catch (ex){
+                    return resolve(false);
+                }
+            })
+        return promise;
     }
     StartServer() {
         var server = net.createServer(function(socket){
@@ -73,8 +80,6 @@ export var TCP = new class TCP {
             }
             });
     };
-    IsServerEnabled: boolean;
-    IsDisconnectExpect: boolean;
 }
 
 // Undecided if P2P will be used.

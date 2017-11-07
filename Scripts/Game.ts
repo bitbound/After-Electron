@@ -4,7 +4,6 @@ export var Init = async function (){
     After.Models.Void.Load(After.Storage.Me.InnerVoidID).Display();
     
     if (After.Storage.ClientSettings.TCPServerEnabled) {
-        After.Storage.KnownTCPServers.push(new After.Models.KnownTCPServer("127.0.0.1", After.Storage.ClientSettings.TCPServerPort));
         After.Connectivity.TCP.StartServer();
         // TODO: Start server.
     }
@@ -15,6 +14,9 @@ export var Init = async function (){
             {
                 break;
             }
+        }
+        if (After.Connectivity.TCP.OutSocket.IsConnected()){
+            After.SocketDataHandlers.SendHelloAsPassiveClient();
         }
     }
 }

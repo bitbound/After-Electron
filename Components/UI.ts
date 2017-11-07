@@ -2,6 +2,8 @@ import * as $ from "jquery";
 import * as Utilities from "./Utilities";
 import * as UI from "./UI";
 import * as Storage from "./Storage";
+import * as InputProcessor from "./InputProcessor";
+import * as Intellisense from "./Intellisense";
 
 // Properties //
 export var MessageWindow:JQuery = $("#messageWindow");
@@ -71,7 +73,11 @@ export function ApplyEventHandlers(){
         if (e.key.toLowerCase() == "enter"){
             UI.ProcessInput();
         }
+        else {
+            Intellisense.Evaluate();
+        }
     });
+    
     UI.InputBox.on("input", (e)=>{
         if (UI.InputBox.val().toString().toLowerCase() == Storage.ClientSettings.TextInputAliases.Command.toLowerCase()) {
             (UI.InputModeSelector[0] as HTMLSelectElement).value = "Command";
@@ -119,12 +125,17 @@ export function ProcessInput() {
     if (input.trim().length == 0){
         return;
     }
+    InputProcessor.ProcessInput(input);
 };
 export function RefreshUI(){
     $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
     $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
     $("#divChargeAmount").text(Storage.Me.CurrentCharge);
     $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
+    $("#spanMultiplayerStatus").text(String(Storage.ClientSettings.MultiplayerEnabled).replace("true", "Enabled").replace("false", "Disabled"));
+    $("#spanTCPServerStatus").text(String(Storage.ClientSettings.TCPServerEnabled).replace("true", "Enabled").replace("false", "Disabled"));
+    $("#spanPassiveConnections").text(Storage.Temp.PassiveTCPClientConnections.length.toString());
+    $("#spanActiveConnections").text(Storage.Temp.ActiveTCPClientConnections.length.toString());
 }
 export function SetInputHandler(handlerFunction) {
     window.setTimeout((handlerFunction)=>{

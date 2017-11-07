@@ -4,30 +4,40 @@ import * as Utilities from "./Utilities";
 import * as Models from "./Models";
 import * as UI from "./UI";
 
-export function Send(jsonData:any, canUsePassiveConnection:boolean){
+export function SendToPassiveServer(jsonData:any){
     if (Connectivity.TCP.OutSocket.IsConnected()){
-        // TODO: Add target server to jsonData: Connectivity.TCP.OutSocket.Server.IP/Port.
         Connectivity.TCP.OutSocket.Socket.write(JSON.stringify(jsonData));
     }
     else {
         eval("Receive" + jsonData.Type + "(jsonData)");
     }
 }
+export function SendToActiveServer(jsonData:any){
+    if (Connectivity.TCP.Server.ID == Connectivity.TCP.OutSocket.ActiveServerID || Connectivity.TCP.OutSocket.IsConnected() == false){
+        eval("Receive" + jsonData.Type + "(jsonData)");
+    }
+    else {
+        Connectivity.TCP.OutSocket.Socket.write(JSON.stringify(jsonData));
+    }
+}
 
 export function SendHelloAsActiveClient(){
-    Send({
+    SendToActiveServer({
         "Type": "HelloAsActiveClient",
         "ID": Utilities.CreateGUID()
-    }, false);
+    });
 }
-export function ReceiveHelloAsActiveClient(jsonData:any){
-
+export function ReceiveHelloAsActiveClient(jsonData:any, socket: NodeJS.Socket){
+    var client = new Models.ActiveTCPClient();
+    client.ID = jsonData.ID;
+    client.Socket = socket;
+    Storage.Temp.ActiveTCPClientConnections.push(client);
 }
 export function SendHelloAsPassiveClient(){
-    Send({
+    SendToActiveServer({
         "Type": "HelloAsPassiveClient",
         "ID": Utilities.CreateGUID()
-    }, true);
+    });
 }
 export function ReceiveHelloAsPassiveClient(jsonData:any, socket:NodeJS.Socket){
     var client = new Models.PassiveTCPClient();
@@ -36,20 +46,20 @@ export function ReceiveHelloAsPassiveClient(jsonData:any, socket:NodeJS.Socket){
     Storage.Temp.PassiveTCPClientConnections.push(client);
 }
 export function SendChat(message:string, channel: string){
-    Send({
+    SendToPassiveServer({
         "Type": "Chat",
         "ID": Utilities.CreateGUID(),
         "From": Storage.Me.Name,
         "Channel": channel,
         "Message": message
-    }, true);
+    });
 }
 
 export function ReceiveChat(jsonData:any, socket:NodeJS.Socket){
     switch (jsonData.Channel) {
         case "GlobalChat":
             UI.AddMessageHTML(`<span style='color:` +
-                Storage.ClientSettings.Colors.GlobalChat + `'>(Global Chat) ` +
+                Storage.ClientSettings.Colors.GlobalChat + `'>(Global) ` +
                 Utilities.EncodeForHTML(jsonData.From) + `: </span>` +
                 Utilities.EncodeForHTML(jsonData.Message), 1);
             break;

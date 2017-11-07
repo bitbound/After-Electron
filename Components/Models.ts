@@ -81,6 +81,7 @@ export var Player = class Player {
 export var OutboundConnection = class OutboundConnection {
     Socket: NodeJS.Socket;
     Server: typeof KnownTCPServer.prototype;
+    ActiveServerID: string;
     IsConnected():boolean{
         if (this.Socket == null || this.Socket.writable == false){
             return false;
@@ -90,9 +91,21 @@ export var OutboundConnection = class OutboundConnection {
         }
     }
 }
-
+export var LocalTCPServer = class LocalTCPServer {
+    Server: net.Server;
+    ID: string;
+    IsListening():boolean{
+        if (this.Server != null && this.Server.listening){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+}
 export var ActiveTCPClient = class ActiveTCPClient {
     Socket: NodeJS.Socket;
+    ID: string;
     Player: typeof Player.prototype;
 };
 export var PassiveTCPClient = class PassiveTCPClient {
