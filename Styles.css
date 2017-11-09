@@ -145,18 +145,23 @@ button:active {
 }
 
 .rising-particle {
-    animation-name: anim-charge-button;
+    height: 2px;
+    width: 2px;                                      
+    border-radius: 100%;
+    position: absolute;
+    background-color: white;
+    animation-name: rising-particle;
     animation-duration: 1s;
+    animation-fill-mode: forwards;
 }
 
 @keyframes rising-particle {
     from {
         opacity: 1;
     }
-
     to {
         opacity: 0;
-        top: -10px;
+        top: -15px;
     }
 }
 

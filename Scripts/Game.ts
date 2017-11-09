@@ -14,9 +14,12 @@ export var Init = async function (){
                 break;
             }
         }
-        if (After.Connectivity.TCP.OutSocket.IsConnected()){
-            After.SocketDataHandlers.SendHelloAsPassiveClient();
-        }
+    }
+    if (After.Connectivity.TCP.OutSocket.IsConnected()){
+        After.SocketDataHandlers.SendHelloAsPassiveClient();
+    }
+    else {
+        After.Connectivity.TCP.OutSocket.ActiveServerID = After.Connectivity.TCP.Server.ID;
     }
 }
 

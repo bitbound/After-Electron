@@ -30,8 +30,9 @@ export var TCP = new class TCP {
                         try
                         {
                             var jsonData = JSON.parse(data.toString());
-                            // TODO: Did I already get?
-                            // TODO: Send to peers.
+                            if (Storage.Temp.HaveYouGotten(jsonData.ID)){
+                                return;
+                            }
                             eval("SocketDataHandlers.Receive" + jsonData.Type + "(jsonData, this)");
                         }
                         catch (ex) {
@@ -62,23 +63,33 @@ export var TCP = new class TCP {
             });
             socket.on("error", (err:Error)=>{
                 Utilities.Log(JSON.stringify(err));
+                setTimeout(() => {
+                    server.close();
+                    server.listen(Storage.ClientSettings.TCPServerPort);
+                }, 1000);
             })
         });
         server.on("close", function(){
-            // If not expected, reopen.
+            if (!Connectivity.TCP.Server.IsShutdownExpected){
+                setTimeout(() => {
+                    server.close();
+                    server.listen(Storage.ClientSettings.TCPServerPort);
+                }, 1000);
+            }
         })
-        server.listen(Storage.ClientSettings.TCPServerPort, function(){
-            Utilities.Log("TCP server started.");
-        });
         server.on('error', (e: NodeJS.ErrnoException) => {
             if (e.code === 'EADDRINUSE') {
                 Utilities.Log('TCP Server: Address in use.  Retrying...');
                 setTimeout(() => {
-                server.close();
-                server.listen(Storage.ClientSettings.TCPServerPort);
+                    server.close();
+                    server.listen(Storage.ClientSettings.TCPServerPort);
                 }, 1000);
             }
-            });
+        });
+        server.listen(Storage.ClientSettings.TCPServerPort, function(){
+            Utilities.Log("TCP server started.");
+        });
+        this.Server.TCPServer = server;
     };
 }
 

@@ -4,13 +4,15 @@ import * as UI from "./UI";
 import * as Storage from "./Storage";
 import * as InputProcessor from "./InputProcessor";
 import * as Intellisense from "./Intellisense";
+import * as Models from "./Models";
 
 // Properties //
-export var MessageWindow:JQuery = $("#messageWindow");
 export var InputBox:JQuery = $("#inputText");
+export var NextInputHandler:Function;
 export var InputModeSelector:JQuery = $("#inputSelector");
 export var MainGrid:JQuery = $("#mainGrid");
-export var InputHandler:Function;
+export var MessageWindow:JQuery = $("#messageWindow");
+export var ChargingAnimationInt:number;
 
 
 // Functions //
@@ -77,6 +79,7 @@ export function ApplyEventHandlers(){
         }
     });
     
+    // Check aliases.
     UI.InputBox.on("input", (e)=>{
         if (UI.InputBox.val().toString().toLowerCase() == Storage.ClientSettings.TextInputAliases.Command.toLowerCase()) {
             (UI.InputModeSelector[0] as HTMLSelectElement).value = "Command";
@@ -94,8 +97,44 @@ export function ApplyEventHandlers(){
             (UI.InputModeSelector[0] as HTMLSelectElement).value = "Script";
             UI.InputBox.val("");
         }
+    });
+    $("#startChargeButton").on("click", ()=>{
+        Storage.Me.ReadyState = Models.ReadyStates.Charging;
+        $("#startChargeButton").hide();
+        $("#chargePoolFrame").show();
+        ChargingAnimationStart();
     })
 };
+export function ChargingAnimationStart(){
+    ChargingAnimationInt = window.setInterval(()=>{
+        if (Storage.Me.ReadyState != Models.ReadyStates.Charging) {
+            if (Storage.Me.CurrentCharge == 0) {
+                $('#startChargeButton').show();
+                $('#chargePoolFrame').hide();
+                window.clearInterval(ChargingAnimationInt);
+            }
+        }
+        var divRect = $("#chargePoolFrame")[0].getBoundingClientRect();
+        var riseHeight = $("#divCharge").height();
+        var startLeft = Utilities.GetRandom($("#divCharge").width() * .15, $("#divCharge").width() * .85, true);
+        var startTop = $("#divCharge").height() * .5;
+        var part = document.createElement("div");
+        part.classList.add("rising-particle");
+        $(part).css({
+            left: startLeft,
+            top: startTop,
+        });
+        $("#divCharge").append(part);
+        window.setTimeout(function(thisParticle) {
+            $(thisParticle).remove();
+        }, 1000, part);
+        return;
+    }, 75);
+
+}
+export function ChargingAnimationStop(){
+    
+    }
 export function FadeInText(text:string, delayInMilliseconds:number, callback:Function){
     window.setTimeout((text)=>{
         UI.AddMessageText("", 2);
@@ -116,9 +155,9 @@ export function FadeInText(text:string, delayInMilliseconds:number, callback:Fun
 export function ProcessInput() {
     var input = UI.InputBox.val() as string;
     UI.InputBox.val("");
-    if (this.InputHandler != null){
-        this.InputHandler(input);
-        this.InputHandler = null;
+    if (this.NextInputHandler != null){
+        this.NextInputHandler(input);
+        this.NextInputHandler = null;
         return;
     }
     if (input.trim().length == 0){
@@ -136,8 +175,8 @@ export function RefreshUI(){
     $("#spanPassiveConnections").text(Storage.Temp.PassiveTCPClientConnections.length.toString());
     $("#spanActiveConnections").text(Storage.Temp.ActiveTCPClientConnections.length.toString());
 }
-export function SetInputHandler(handlerFunction) {
+export function SetNextInputHandler(handlerFunction) {
     window.setTimeout((handlerFunction)=>{
-        this.InputHandler = handlerFunction;
+        this.NextInputHandler = handlerFunction;
     }, 50, handlerFunction);
 };

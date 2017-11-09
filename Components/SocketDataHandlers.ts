@@ -4,7 +4,36 @@ import * as Utilities from "./Utilities";
 import * as Models from "./Models";
 import * as UI from "./UI";
 
+// Final Data Out Functions //
+export function Broadcast(jsonData:any){
+    if (jsonData.Type == undefined || jsonData.ID == undefined){
+        Utilities.Log("Type or ID missing from Broadcast data: " + JSON.stringify(jsonData));
+        return;
+    }
+    if (Connectivity.TCP.OutSocket.IsConnected()){
+        Connectivity.TCP.OutSocket.Socket.write(JSON.stringify(jsonData));
+    }
+    Storage.Temp.ActiveTCPClientConnections.forEach(function(item){
+        try {
+            if (item.Socket.writable){
+                item.Socket.write(JSON.stringify(jsonData));
+            }
+        } catch (ex) {}
+    });
+    Storage.Temp.PassiveTCPClientConnections.forEach(function(item){
+        try {
+            if (item.Socket.writable){
+                item.Socket.write(JSON.stringify(jsonData));
+            }
+        } catch (ex) {}
+    })
+}
+
 export function SendToPassiveServer(jsonData:any){
+    if (jsonData.Type == undefined || jsonData.ID == undefined){
+        Utilities.Log("Type or ID missing from SendToPassiveServer data: " + JSON.stringify(jsonData));
+        return;
+    }
     if (Connectivity.TCP.OutSocket.IsConnected()){
         Connectivity.TCP.OutSocket.Socket.write(JSON.stringify(jsonData));
     }
@@ -13,6 +42,10 @@ export function SendToPassiveServer(jsonData:any){
     }
 }
 export function SendToActiveServer(jsonData:any){
+    if (jsonData.Type == undefined || jsonData.ID == undefined){
+        Utilities.Log("Type or ID missing from SendToActiveServer data: " + JSON.stringify(jsonData));
+        return;
+    }
     if (Connectivity.TCP.Server.ID == Connectivity.TCP.OutSocket.ActiveServerID || Connectivity.TCP.OutSocket.IsConnected() == false){
         eval("Receive" + jsonData.Type + "(jsonData)");
     }
@@ -20,22 +53,28 @@ export function SendToActiveServer(jsonData:any){
         Connectivity.TCP.OutSocket.Socket.write(JSON.stringify(jsonData));
     }
 }
-export function Broadcast(jsonData:any){
-    if (Connectivity.TCP.OutSocket.IsConnected()){
-        Connectivity.TCP.OutSocket.Socket.write(JSON.stringify(jsonData));
-    }
+export function SendToActiveClients(jsonData:any){
     Storage.Temp.ActiveTCPClientConnections.forEach(function(item){
-        if (item.Socket.writable){
-            item.Socket.write(JSON.stringify(jsonData));
-        }
+        try {
+            if (item.Socket.writable){
+                item.Socket.write(JSON.stringify(jsonData));
+            }
+        } catch (ex) {}
     });
+}
+export function SendToPassiveClients(jsonData:any){
     Storage.Temp.PassiveTCPClientConnections.forEach(function(item){
-        if (item.Socket.writable){
-            item.Socket.write(JSON.stringify(jsonData));
-        }
-    })
+        try {
+            if (item.Socket.writable){
+                item.Socket.write(JSON.stringify(jsonData));
+            }
+        } catch (ex) {}
+    });
 }
 
+
+
+// Socket Data In/Out Functions //
 export function SendHelloAsActiveClient(){
     SendToActiveServer({
         "Type": "HelloAsActiveClient",
@@ -71,9 +110,6 @@ export function SendChat(message:string, channel: string){
 }
 
 export function ReceiveChat(jsonData:any, socket:NodeJS.Socket){
-    if (Storage.Temp.HaveYouGotten(jsonData.ID)){
-        return;
-    }
     switch (jsonData.Channel) {
         case "GlobalChat":
             UI.AddMessageHTML(`<span style='color:` +

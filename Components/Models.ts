@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as IO from "./IO";
 import * as path from "path";
 import * as UI from "./UI";
+import * as Utilities from "./Utilities";
 import * as $ from "jquery";
 
 export var Void = class Void {
@@ -57,7 +58,8 @@ export var Player = class Player {
     Name: string;
     Color: string;
     InnerVoidID: string;
-    
+    ReadyState: ReadyStates;
+  
     // Core Energy //
     CoreEnergy: number;
     CoreEnergyPeak: number;
@@ -77,7 +79,10 @@ export var Player = class Player {
         return this.CoreEnergy + this.ChargeMod;
     }
 };
-
+export enum ReadyStates {
+    OK,
+    Charging
+}
 export var OutboundConnection = class OutboundConnection {
     Socket: NodeJS.Socket;
     Server: typeof KnownTCPServer.prototype;
@@ -92,10 +97,11 @@ export var OutboundConnection = class OutboundConnection {
     }
 }
 export var LocalTCPServer = class LocalTCPServer {
-    Server: net.Server;
-    ID: string;
+    TCPServer: net.Server;
+    IsShutdownExpected: boolean = false;
+    ID: string = Utilities.CreateGUID();
     IsListening():boolean{
-        if (this.Server != null && this.Server.listening){
+        if (this.TCPServer != null && this.TCPServer.listening){
             return true;
         }
         else {
