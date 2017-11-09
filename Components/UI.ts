@@ -6,7 +6,7 @@ import * as InputProcessor from "./InputProcessor";
 import * as Intellisense from "./Intellisense";
 
 // Properties //
-export var MessageWindow:Electron.WebviewTag = $("#messageWindow")[0] as Electron.WebviewTag;
+export var MessageWindow:JQuery = $("#messageWindow");
 export var InputBox:JQuery = $("#inputText");
 export var InputModeSelector:JQuery = $("#inputSelector");
 export var MainGrid:JQuery = $("#mainGrid");
@@ -15,18 +15,18 @@ export var InputHandler:Function;
 
 // Functions //
 export function AddMessageText(message:string, newLines:number){
-    MessageWindow.shadowRoot.innerHTML += Utilities.EncodeForHTML(message);
+    MessageWindow.append(Utilities.EncodeForHTML(message));
     for (var i = 0; i < newLines; i++){
-        MessageWindow.shadowRoot.innerHTML += "<br>";
+        MessageWindow.append("<br>");
     }
-    MessageWindow.scrollTop = MessageWindow.scrollHeight;
+    MessageWindow[0].scrollTop = MessageWindow[0].scrollHeight;
 };
 export function AddMessageHTML(html:string, newLines:number) {
-    MessageWindow.shadowRoot.innerHTML += html;
+    MessageWindow.append(html);
     for (var i = 0; i < newLines; i++){
-        MessageWindow.shadowRoot.innerHTML += "<br>";
+        MessageWindow.append("<br>");
     }
-    MessageWindow.scrollTop = MessageWindow.scrollHeight;
+    MessageWindow[0].scrollTop = MessageWindow[0].scrollHeight;
 };
 export function AdjustMessageWindowHeight(){
     var heightAdjust = 0;

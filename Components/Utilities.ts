@@ -211,7 +211,7 @@ export function Log(message:string){
     console.log(message);
     var logPath = path.join(IO.UserDataPath, "Log.txt");
 
-    fs.writeFileSync(logPath, (new Date()).toLocaleString() + " -   " + message + "\r\n")
+    fs.appendFileSync(logPath, (new Date()).toLocaleString() + " -   " + message + "\r\n")
 }
 export function NumberIsBetween(NumberAnalyzed: number, Min: number, Max: number, IncludeMinMax: boolean): boolean {
     if (IncludeMinMax) {

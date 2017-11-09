@@ -35,10 +35,21 @@ export var Temp = new class Temp {
         this.ActiveTCPClientConnections = new Array();
         this.PassiveTCPClientConnections = new Array();
         this.PlayersInMyVoid = new Array();
+        this.ReceivedMessages = new Array<string>();
     }
     ActiveTCPClientConnections: typeof Models.ActiveTCPClient.prototype[];
     PassiveTCPClientConnections: typeof Models.PassiveTCPClient.prototype[];
     PlayersInMyVoid: typeof Models.Player.prototype[];
+    ReceivedMessages: string[];
+    HaveYouGotten(id:string){
+        if (this.ReceivedMessages.find(item=>item == id)){
+            return true;
+        }
+        else {
+            this.ReceivedMessages.push(id);
+            return false;
+        }
+    }
 };
 
 export var STUNServers = [

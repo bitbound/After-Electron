@@ -20,6 +20,21 @@ export function SendToActiveServer(jsonData:any){
         Connectivity.TCP.OutSocket.Socket.write(JSON.stringify(jsonData));
     }
 }
+export function Broadcast(jsonData:any){
+    if (Connectivity.TCP.OutSocket.IsConnected()){
+        Connectivity.TCP.OutSocket.Socket.write(JSON.stringify(jsonData));
+    }
+    Storage.Temp.ActiveTCPClientConnections.forEach(function(item){
+        if (item.Socket.writable){
+            item.Socket.write(JSON.stringify(jsonData));
+        }
+    });
+    Storage.Temp.PassiveTCPClientConnections.forEach(function(item){
+        if (item.Socket.writable){
+            item.Socket.write(JSON.stringify(jsonData));
+        }
+    })
+}
 
 export function SendHelloAsActiveClient(){
     SendToActiveServer({
@@ -56,12 +71,16 @@ export function SendChat(message:string, channel: string){
 }
 
 export function ReceiveChat(jsonData:any, socket:NodeJS.Socket){
+    if (Storage.Temp.HaveYouGotten(jsonData.ID)){
+        return;
+    }
     switch (jsonData.Channel) {
         case "GlobalChat":
             UI.AddMessageHTML(`<span style='color:` +
                 Storage.ClientSettings.Colors.GlobalChat + `'>(Global) ` +
                 Utilities.EncodeForHTML(jsonData.From) + `: </span>` +
                 Utilities.EncodeForHTML(jsonData.Message), 1);
+            Broadcast(jsonData);
             break;
     
         default:
