@@ -1,29 +1,18 @@
-import * as $ from "jquery"
-import * as path from "path";
-import * as fs from "fs";
-import * as net from "net";
-import * as electron from "electron";
 import * as audio from "./Components/Audio";
-import * as io from "./Components/IO";
+import * as fileSystem from "./Components/FileSystem";
 import * as connectivity from "./Components/Connectivity";
 import * as ui from "./Components/UI";
 import * as models from "./Components/Models";
 import * as storage from "./Components/Storage";
 import * as utilities from "./Components/Utilities";
-import * as socketDataHandlers from "./Components/SocketDataHandlers";
+import * as socketDataIO from "./Components/SocketDataIO";
 
 
-export var NodeJS = {
-    path: path,
-    fs: fs,
-    net: net
-};
 export var Audio = audio;
-export var Electron = electron;
-export var IO = io;
+export var FileSystem = fileSystem;
 export var Connectivity = connectivity
 export var UI = ui;
 export var Models = models;
-export var SocketDataHandlers = socketDataHandlers;
+export var SocketDataIO = socketDataIO;
 export var Storage = storage;
 export var Utilities = utilities;

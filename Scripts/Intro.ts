@@ -37,7 +37,7 @@ export var Init = function(){
                 </div>
             `;
             After.UI.AddMessageHTML(askNameMessage, 2);
-            After.UI.NextInputHandler(function(input) {
+            After.UI.SetNextInputHandler(function(input) {
                 if (input.trim().length == 0 || input.search("[^a-zA-Z0-9_ ]") > -1)
                 {
                     After.UI.AddMessageText("Your name can only contain letters, numbers, spaces, and underscores.", 2);

@@ -2,7 +2,7 @@
 import * as fs from "fs";
 import * as electron from "electron";
 import * as path from "path";
-import * as IO from "./IO";
+import * as FileSystem from "./FileSystem";
 
 export var AppRootPath = electron.remote.app.getAppPath();
 
@@ -18,7 +18,7 @@ export var Directory = new class Directory {
                 var currentPath = path + "\\" + item;
                 if (fs.lstatSync(currentPath).isDirectory()) {
                     directoryArray.push(currentPath);
-                    IO.Directory.GetDirectoriesRecursively(currentPath, directoryArray);
+                    FileSystem.Directory.GetDirectoriesRecursively(currentPath, directoryArray);
                 }
             });
         }
@@ -33,7 +33,7 @@ export var File = new class File {
             fs.readdirSync(path).forEach(function (item, index) {
                 var currentPath = path + "\\" + item;
                 if (fs.lstatSync(currentPath).isDirectory()) {
-                    IO.File.GetFilesRecursively(currentPath, fileArray);
+                    FileSystem.File.GetFilesRecursively(currentPath, fileArray);
                 }
                 else if (fs.lstatSync(currentPath).isFile()) {
                     fileArray.push(currentPath);

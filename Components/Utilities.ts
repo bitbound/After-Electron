@@ -1,4 +1,4 @@
-import * as IO from "./IO";
+import * as FileSystem from "./FileSystem";
 import * as fs from "fs";
 import * as path from "path";
 import * as $ from "jquery";
@@ -209,7 +209,7 @@ export function HexToRGB(col:string):string {
 };
 export function Log(message:string){
     console.log(message);
-    var logPath = path.join(IO.UserDataPath, "Log.txt");
+    var logPath = path.join(FileSystem.UserDataPath, "Log.txt");
 
     fs.appendFileSync(logPath, (new Date()).toLocaleString() + " -   " + message + "\r\n")
 }

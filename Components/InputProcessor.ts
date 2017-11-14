@@ -1,5 +1,5 @@
 import * as UI from "./UI";
-import * as SocketDataHandlers from "./SocketDataHandlers";
+import * as SocketDataIO from "./SocketDataIO";
 
 export function ProcessInput(input:string){
     switch (UI.InputModeSelector.val()) {
@@ -7,10 +7,10 @@ export function ProcessInput(input:string){
             eval(input);
             break;
         case "Global Chat":
-            SocketDataHandlers.SendChat(input, "GlobalChat");
+            SocketDataIO.SendChat(input, "GlobalChat");
             break;
         case "Void Chat":
-            SocketDataHandlers.SendChat(input, "VoidChat");
+            SocketDataIO.SendChat(input, "VoidChat");
             break;
         case "Command":
             break;

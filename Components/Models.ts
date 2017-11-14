@@ -1,12 +1,21 @@
 import * as net from "net";
 import * as fs from "fs";
-import * as IO from "./IO";
+import * as FileSystem from "./FileSystem";
 import * as path from "path";
 import * as UI from "./UI";
+import * as Models from "./Models";
+import * as Connectivity from "./Connectivity";
+import * as Storage from "./Storage";
+import * as SocketDataIO from "./SocketDataIO";
 import * as Utilities from "./Utilities";
 import * as $ from "jquery";
 
-export var Void = class Void {
+export enum ConnectionTypes{
+    ActiveClient,
+    PassiveClient,
+    ServerToServer
+}
+export class Void {
     ID:string;
     Title:string;
     Description:string;
@@ -26,26 +35,26 @@ export var Void = class Void {
         UI.AddMessageHTML(displayMessage, 2);
     }
     static Load(id:string) : typeof Void.prototype {
-        if (fs.existsSync(path.join(IO.StorageDataPath, "Voids", id + ".json")) == false) {
+        if (fs.existsSync(path.join(FileSystem.StorageDataPath, "Voids", id + ".json")) == false) {
             throw Error("Void doesn't exist.");
         }
-        return $.extend(true, new this(), JSON.parse(fs.readFileSync(path.join(IO.StorageDataPath, "Voids", id + ".json")).toString()));
+        return $.extend(true, new this(), JSON.parse(fs.readFileSync(path.join(FileSystem.StorageDataPath, "Voids", id + ".json")).toString()));
     }
     Save(){
-        if (fs.existsSync(path.join(IO.StorageDataPath, "Voids")) == false) {
-            fs.mkdirSync(path.join(IO.StorageDataPath, "Voids"));
+        if (fs.existsSync(path.join(FileSystem.StorageDataPath, "Voids")) == false) {
+            fs.mkdirSync(path.join(FileSystem.StorageDataPath, "Voids"));
         }
-        fs.writeFileSync(path.join(IO.StorageDataPath, "Voids", this.ID + ".json"), JSON.stringify(this));
+        fs.writeFileSync(path.join(FileSystem.StorageDataPath, "Voids", this.ID + ".json"), JSON.stringify(this));
     }
 
 };
 
-export var NPC = class NPC {
+export class NPC {
     ID:string;
     Name:string;
 };
 
-export var Player = class Player {
+export class Player {
     constructor(){
         this.CoreEnergy = 100;
         this.CoreEnergyPeak = 100;
@@ -83,10 +92,12 @@ export enum ReadyStates {
     OK,
     Charging
 }
-export var OutboundConnection = class OutboundConnection {
+export class OutboundConnection {
+    ActiveServerID: string;
+    ConnectionType: ConnectionTypes;
+    IsDisconnectExpected: boolean = false;
     Socket: NodeJS.Socket;
     Server: typeof KnownTCPServer.prototype;
-    ActiveServerID: string;
     IsConnected():boolean{
         if (this.Socket == null || this.Socket.writable == false){
             return false;
@@ -96,7 +107,7 @@ export var OutboundConnection = class OutboundConnection {
         }
     }
 }
-export var LocalTCPServer = class LocalTCPServer {
+export class LocalTCPServer {
     TCPServer: net.Server;
     IsShutdownExpected: boolean = false;
     ID: string = Utilities.CreateGUID();
@@ -109,16 +120,16 @@ export var LocalTCPServer = class LocalTCPServer {
         }
     }
 }
-export var ActiveTCPClient = class ActiveTCPClient {
+export class ActiveTCPClient {
     Socket: NodeJS.Socket;
     ID: string;
     Player: typeof Player.prototype;
 };
-export var PassiveTCPClient = class PassiveTCPClient {
+export class PassiveTCPClient {
     Socket: NodeJS.Socket;
     ID: string;
 };
-export var KnownTCPServer = class KnownTCPServer {
+export class KnownTCPServer {
     constructor(ip:string, port:number){
         this.IP = ip;
         this.Port = port;
