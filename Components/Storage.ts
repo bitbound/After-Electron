@@ -13,7 +13,8 @@ export var ClientSettings = new class ClientSettings {
     Colors = {
         "GlobalChat": "seagreen",
         "VoidChat": "lightsteelblue",
-        "Whisper": "magenta"
+        "Whisper": "magenta",
+        "System": "lightgray"
     }
     TextInputAliases = {
         Command: "/c ",

@@ -6,11 +6,13 @@ import * as models from "./Components/Models";
 import * as storage from "./Components/Storage";
 import * as utilities from "./Components/Utilities";
 import * as socketDataIO from "./Components/SocketDataIO";
+import * as inputProcessor from "./Components/InputProcessor";
 
 
 export var Audio = audio;
-export var FileSystem = fileSystem;
 export var Connectivity = connectivity
+export var FileSystem = fileSystem;
+export var InputProcessor = inputProcessor;
 export var UI = ui;
 export var Models = models;
 export var SocketDataIO = socketDataIO;

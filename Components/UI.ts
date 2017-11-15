@@ -8,7 +8,6 @@ import * as Models from "./Models";
 
 // Properties //
 export var InputBox:JQuery = $("#inputText");
-export var NextInputHandler:Function;
 export var InputModeSelector:JQuery = $("#inputSelector");
 export var MainGrid:JQuery = $("#mainGrid");
 export var MessageWindow:JQuery = $("#messageWindow");
@@ -30,6 +29,13 @@ export function AddMessageHTML(html:string, newLines:number) {
     }
     MessageWindow[0].scrollTop = MessageWindow[0].scrollHeight;
 };
+export function AddSystemMessage(message:string, newLines:number){
+    MessageWindow.append(`<div style="color:${Storage.ClientSettings.Colors.System}">[System]: ${message}</div>`);
+    for (var i = 0; i < newLines; i++){
+        MessageWindow.append("<br>");
+    }
+    MessageWindow[0].scrollTop = MessageWindow[0].scrollHeight;
+}
 export function AdjustMessageWindowHeight(){
     var heightAdjust = 0;
     while (document.body.scrollHeight > document.documentElement.clientHeight) {
@@ -70,9 +76,19 @@ export function ApplyEventHandlers(){
             $("#menuButton").show();
         })
     });
+    UI.InputBox.on("keydown", (e) => {
+        if (e.key.toLowerCase() == "arrowup"){
+            e.preventDefault();
+            InputProcessor.GetPreviousInput();
+        }
+        else if (e.key.toLowerCase() == "arrowdown"){
+            e.preventDefault();
+            InputProcessor.GetNextInput();
+        }
+    })
     UI.InputBox.on("keypress", (e) =>{
         if (e.key.toLowerCase() == "enter"){
-            UI.ProcessInput();
+            InputProcessor.ProcessInput();
         }
         else {
             Intellisense.Evaluate();
@@ -152,19 +168,7 @@ export function FadeInText(text:string, delayInMilliseconds:number, callback:Fun
     }, delayInMilliseconds, text);
 }
 
-export function ProcessInput() {
-    var input = UI.InputBox.val() as string;
-    UI.InputBox.val("");
-    if (this.NextInputHandler != null){
-        this.NextInputHandler(input);
-        this.NextInputHandler = null;
-        return;
-    }
-    if (input.trim().length == 0){
-        return;
-    }
-    InputProcessor.ProcessInput(input);
-};
+
 export function RefreshUI(){
     $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
     $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
@@ -175,8 +179,3 @@ export function RefreshUI(){
     $("#spanPassiveConnections").text(Storage.Temp.PassiveTCPClientConnections.length.toString());
     $("#spanActiveConnections").text(Storage.Temp.ActiveTCPClientConnections.length.toString());
 }
-export function SetNextInputHandler(handlerFunction) {
-    window.setTimeout((handlerFunction)=>{
-        this.NextInputHandler = handlerFunction;
-    }, 50, handlerFunction);
-};

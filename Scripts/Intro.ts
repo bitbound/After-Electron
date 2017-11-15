@@ -27,7 +27,7 @@ export var Init = function(){
     
     window.setTimeout(()=>{
         After.UI.AddMessageHTML("<br><br><span class='glowing'>Press Enter to continue...</span>", 2);
-        After.UI.NextInputHandler = function(){
+        After.InputProcessor.NextInputHandler = function(){
             After.UI.MessageWindow.html("");
             var askNameMessage = `
                 <div style="text-align:center">
@@ -37,12 +37,12 @@ export var Init = function(){
                 </div>
             `;
             After.UI.AddMessageHTML(askNameMessage, 2);
-            After.UI.SetNextInputHandler(function(input) {
+            After.InputProcessor.SetNextInputHandler(function(input) {
                 if (input.trim().length == 0 || input.search("[^a-zA-Z0-9_ ]") > -1)
                 {
                     After.UI.AddMessageText("Your name can only contain letters, numbers, spaces, and underscores.", 2);
                     After.UI.AddMessageHTML(askNameMessage, 2);
-                    After.UI.NextInputHandler(After.UI.NextInputHandler);
+                    After.InputProcessor.SetNextInputHandler(After.InputProcessor.NextInputHandler);
                     return;
                 }
                 After.Storage.Me.Name = After.Utilities.EncodeForHTML(input);
