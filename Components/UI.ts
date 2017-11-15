@@ -7,11 +7,12 @@ import * as Intellisense from "./Intellisense";
 import * as Models from "./Models";
 
 // Properties //
+export var ChargingAnimationInt:number;
 export var InputBox:JQuery = $("#inputText");
 export var InputModeSelector:JQuery = $("#inputSelector");
+export var IntellisenseFrame:JQuery = $("#intellisenseFrame");
 export var MainGrid:JQuery = $("#mainGrid");
 export var MessageWindow:JQuery = $("#messageWindow");
-export var ChargingAnimationInt:number;
 
 
 // Functions //
@@ -85,13 +86,14 @@ export function ApplyEventHandlers(){
             e.preventDefault();
             InputProcessor.GetNextInput();
         }
+        else if (e.key.toLowerCase() == "tab" && InputModeSelector.val() == "Script"){
+            e.preventDefault();
+            Intellisense.AutoComplete();
+        }
     })
     UI.InputBox.on("keypress", (e) =>{
         if (e.key.toLowerCase() == "enter"){
             InputProcessor.ProcessInput();
-        }
-        else {
-            Intellisense.Evaluate();
         }
     });
     
@@ -112,6 +114,9 @@ export function ApplyEventHandlers(){
         else if (UI.InputBox.val().toString().toLowerCase() == Storage.ClientSettings.TextInputAliases.Script.toLowerCase()) {
             (UI.InputModeSelector[0] as HTMLSelectElement).value = "Script";
             UI.InputBox.val("");
+        }
+        if (InputModeSelector.val() == "Script") {
+            Intellisense.Evaluate();
         }
     });
     $("#startChargeButton").on("click", ()=>{

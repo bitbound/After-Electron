@@ -182,7 +182,16 @@ button:active {
     width: calc(100% - 130px);
     margin: 5px;
 }
-
+#intellisenseFrame {
+    display: none;
+    position: fixed;
+    bottom: 150px;
+    left: 135px;
+    background-color: rgba(125,125,125, .75);
+    padding: 5px;
+    min-height: 20px;
+    min-width: 50px;
+}
 
 /* Animations */
 .glowing {

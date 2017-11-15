@@ -5,87 +5,58 @@ import * as Models from "./Models";
 import * as UI from "./UI";
 
 // Final Data Out //
-
-// Data Out Target Functions //
-export function Broadcast(jsonData: any) {
+export function Send(jsonData:any, socket: NodeJS.Socket){
     if (jsonData.Type == undefined || jsonData.ID == undefined) {
         Utilities.Log("Type or ID missing from Broadcast data: " + JSON.stringify(jsonData));
         return;
     }
+    try {
+        if (socket.writable) {
+            socket.write(JSON.stringify(jsonData));
+        }
+    } catch (ex) { }
+}
+// Data Out Target Functions //
+export function Broadcast(jsonData: any) {
+    
     if (Connectivity.OutboundConnection.IsConnected()) {
         Connectivity.OutboundConnection.Socket.write(JSON.stringify(jsonData));
     }
     Storage.Temp.ActiveTCPClientConnections.forEach(function (item) {
-        try {
-            if (item.Socket.writable) {
-                item.Socket.write(JSON.stringify(jsonData));
-            }
-        } catch (ex) { }
+        Send(jsonData, item.Socket);
     });
     Storage.Temp.PassiveTCPClientConnections.forEach(function (item) {
-        try {
-            if (item.Socket.writable) {
-                item.Socket.write(JSON.stringify(jsonData));
-            }
-        } catch (ex) { }
+        Send(jsonData, item.Socket);
     })
 }
 
 export function SendToPassiveServer(jsonData: any) {
-    if (jsonData.Type == undefined || jsonData.ID == undefined) {
-        Utilities.Log("Type or ID missing from SendToPassiveServer data: " + JSON.stringify(jsonData));
-        return;
-    }
     if (Connectivity.OutboundConnection.IsConnected()) {
-        Connectivity.OutboundConnection.Socket.write(JSON.stringify(jsonData));
+        Send(jsonData, Connectivity.OutboundConnection.Socket);
     }
     else {
         eval("Receive" + jsonData.Type + "(jsonData)");
     }
 }
 export function SendToActiveServer(jsonData: any) {
-    if (jsonData.Type == undefined || jsonData.ID == undefined) {
-        Utilities.Log("Type or ID missing from SendToActiveServer data: " + JSON.stringify(jsonData));
-        return;
-    }
     if (Connectivity.Server.ID == Connectivity.OutboundConnection.ActiveServerID || Connectivity.OutboundConnection.IsConnected() == false) {
         eval("Receive" + jsonData.Type + "(jsonData)");
     }
     else {
-        Connectivity.OutboundConnection.Socket.write(JSON.stringify(jsonData));
+        Send(jsonData, Connectivity.OutboundConnection.Socket);
     }
 }
 export function SendToActiveClients(jsonData: any) {
-    if (jsonData.Type == undefined || jsonData.ID == undefined) {
-        Utilities.Log("Type or ID missing from SendToActiveClients data: " + JSON.stringify(jsonData));
-        return;
-    }
     Storage.Temp.ActiveTCPClientConnections.forEach(function (item) {
-        try {
-            if (item.Socket.writable) {
-                item.Socket.write(JSON.stringify(jsonData));
-            }
-        } catch (ex) { }
+        Send(jsonData, item.Socket);
     });
 }
 export function SendToPassiveClients(jsonData: any) {
-    if (jsonData.Type == undefined || jsonData.ID == undefined) {
-        Utilities.Log("Type or ID missing from SendToPassiveClients data: " + JSON.stringify(jsonData));
-        return;
-    }
     Storage.Temp.PassiveTCPClientConnections.forEach(function (item) {
-        try {
-            if (item.Socket.writable) {
-                item.Socket.write(JSON.stringify(jsonData));
-            }
-        } catch (ex) { }
+        Send(jsonData, item.Socket);
     });
 }
 export function SendToSpecificClient(jsonData: any, playerID:string) {
-    if (jsonData.Type == undefined || jsonData.ID == undefined) {
-        Utilities.Log("Type or ID missing from SendToSpecificClient data: " + JSON.stringify(jsonData));
-        return;
-    }
     var client = Storage.Temp.ActiveTCPClientConnections.find((value)=>{
         return value.ID == playerID;
     })
@@ -93,16 +64,11 @@ export function SendToSpecificClient(jsonData: any, playerID:string) {
         throw "PlayerID not found.";
     }
     else {
-        try {
-            if (client.Socket.writable){
-                client.Socket.write(JSON.stringify(jsonData));
-            }
-        }
-        catch (ex){}
+        Send(jsonData, client.Socket);
     }
 }
 
-
+// Check if specific message has been received.
 export function HaveYouGotten(id:string){
     if (Storage.Temp.ReceivedMessages.find(item=>item == id)){
         return true;

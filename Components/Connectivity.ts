@@ -29,6 +29,9 @@ export async function ConnectToServer(host:string, port: number, connectionType:
                     }
                     resolve(true);
                 });
+                socket.on("error", (err:Error)=>{
+                    resolve(false);
+                });
                 socket.on("data", (data)=>{
                     try
                     {
@@ -68,7 +71,7 @@ export function StartServer() {
             Utilities.Log(JSON.stringify(err));
             setTimeout(() => {
                 server.close();
-                server.listen(Storage.ClientSettings.TCPServerPort);
+                server.listen(Storage.ServerSettings.TCPServerPort);
             }, 1000);
         })
     });
@@ -76,7 +79,7 @@ export function StartServer() {
         if (!Connectivity.Server.IsShutdownExpected){
             setTimeout(() => {
                 server.close();
-                server.listen(Storage.ClientSettings.TCPServerPort);
+                server.listen(Storage.ServerSettings.TCPServerPort);
             }, 1000);
         }
     })
@@ -85,11 +88,11 @@ export function StartServer() {
             Utilities.Log('TCP Server: Address in use.  Retrying...');
             setTimeout(() => {
                 server.close();
-                server.listen(Storage.ClientSettings.TCPServerPort);
+                server.listen(Storage.ServerSettings.TCPServerPort);
             }, 1000);
         }
     });
-    server.listen(Storage.ClientSettings.TCPServerPort, function(){
+    server.listen(Storage.ServerSettings.TCPServerPort, function(){
         Utilities.Log("TCP server started.");
     });
     this.Server.TCPServer = server;

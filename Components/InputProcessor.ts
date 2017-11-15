@@ -1,5 +1,7 @@
 import * as UI from "./UI";
 import * as SocketDataIO from "./SocketDataIO";
+import * as Storage from "./Storage";
+import * as Utilities from "./Utilities";
 
 
 export var NextInputHandler:Function;
@@ -43,9 +45,10 @@ export function ProcessInput(){
     switch (inputMode) {
         case "Script":
             try {
+                UI.IntellisenseFrame.hide();
                 var result = eval(input);
-                var output = result instanceof Object ? JSON.stringify(result) : result;
-                UI.AddSystemMessage(output, 1);
+                var output = result instanceof Object ? JSON.stringify(result, null, "&emsp;") : result;
+                UI.AddSystemMessage(Utilities.ReplaceAllInString(output, "\n", "<br/>"), 1);
             }
             catch (ex){
                 UI.AddSystemMessage(ex, 1);

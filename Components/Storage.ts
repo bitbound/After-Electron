@@ -22,15 +22,14 @@ export var ClientSettings = new class ClientSettings {
         VoidChat: "/v ",
         Script: "/s "
     };
-    TCPServerPort: number = 48836;
     MultiplayerEnabled:boolean = false;
     TCPServerEnabled:boolean = false;
 };
 export var ServerSettings = new class ServerSettings {
-    
+    TCPServerPort: number = 48836;
 }
 export var KnownTCPServers: typeof Models.KnownTCPServer.prototype[] = [
-    
+    new Models.KnownTCPServer("after.myddns.rocks", 48836)
 ];
 
 export var Temp = new class Temp {

@@ -8,6 +8,8 @@ var innerVoid = new After.Models.Void();
 innerVoid.ID = After.Utilities.CreateGUID();
 innerVoid.Owner = After.Storage.Me.ID;
 innerVoid.Color = After.Storage.Me.Color;
+innerVoid.IsDestructible = false;
+innerVoid.IsInnerVoid = true;
 innerVoid.Title = After.Storage.Me.Name + "'s Inner Void";
 innerVoid.Description = `Where are you?  The question lazily formulates in your mind.  Once it solidifies into a
                         true desire to know, the space around you suddenly changes.  The change is subtle but definitive,

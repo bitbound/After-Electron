@@ -10,48 +10,63 @@ import * as SocketDataIO from "./SocketDataIO";
 import * as Utilities from "./Utilities";
 import * as $ from "jquery";
 
+
+export class ActiveTCPClient {
+    Socket: NodeJS.Socket;
+    ID: string;
+    Player: typeof Player.prototype;
+};
 export enum ConnectionTypes{
     ActiveClient,
     PassiveClient,
     ServerToServer
 }
-export class Void {
-    ID:string;
-    Title:string;
-    Description:string;
-    Owner: string;
-    NPCs: typeof NPC.prototype[];
-    Color: string;
-    Display(){
-        var displayMessage = `<br/><br/><div style="text-align: center; color: ` + this.Color +`;">`;
-        for (var i = 0; i < this.Title.length + 6; i++){
-            displayMessage += "#";
-        }
-        displayMessage += "<br/>" + this.Title + "<br/>";
-        for (var i = 0; i < this.Title.length + 6; i++){
-            displayMessage += "#";
-        }
-        displayMessage += "</div><br/><br/>" + this.Description;
-        UI.AddMessageHTML(displayMessage, 2);
+export class KnownTCPServer {
+    constructor(ip:string, port:number){
+        this.IP = ip;
+        this.Port = port;
     }
-    static Load(id:string) : typeof Void.prototype {
-        if (fs.existsSync(path.join(FileSystem.StorageDataPath, "Voids", id + ".json")) == false) {
-            throw Error("Void doesn't exist.");
+    IP:string;
+    Port:number;
+    BadConnectionAttempts:number = 0;
+}
+export class LocalTCPServer {
+    TCPServer: net.Server;
+    IsShutdownExpected: boolean = false;
+    ID: string = Utilities.CreateGUID();
+    IsListening():boolean{
+        if (this.TCPServer != null && this.TCPServer.listening){
+            return true;
         }
-        return $.extend(true, new this(), JSON.parse(fs.readFileSync(path.join(FileSystem.StorageDataPath, "Voids", id + ".json")).toString()));
-    }
-    Save(){
-        if (fs.existsSync(path.join(FileSystem.StorageDataPath, "Voids")) == false) {
-            fs.mkdirSync(path.join(FileSystem.StorageDataPath, "Voids"));
+        else {
+            return false;
         }
-        fs.writeFileSync(path.join(FileSystem.StorageDataPath, "Voids", this.ID + ".json"), JSON.stringify(this));
     }
-
-};
-
+}
 export class NPC {
     ID:string;
     Name:string;
+    IsAgressive: boolean;
+};
+export class OutboundConnection {
+    ActiveServerID: string;
+    ConnectionType: ConnectionTypes;
+    IsDisconnectExpected: boolean = false;
+    Socket: NodeJS.Socket;
+    Server: typeof KnownTCPServer.prototype;
+    IsConnected():boolean{
+        if (this.Socket == null || this.Socket.writable == false){
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+}
+
+export class PassiveTCPClient {
+    Socket: NodeJS.Socket;
+    ID: string;
 };
 
 export class Player {
@@ -92,49 +107,37 @@ export enum ReadyStates {
     OK,
     Charging
 }
-export class OutboundConnection {
-    ActiveServerID: string;
-    ConnectionType: ConnectionTypes;
-    IsDisconnectExpected: boolean = false;
-    Socket: NodeJS.Socket;
-    Server: typeof KnownTCPServer.prototype;
-    IsConnected():boolean{
-        if (this.Socket == null || this.Socket.writable == false){
-            return false;
+export class Void {
+    Color: string;
+    Description:string;
+    ID:string;
+    IsDestructible: boolean;
+    IsInnerVoid: boolean;
+    NPCs: typeof NPC.prototype[];
+    Owner: string;
+    Title:string;
+    Display(){
+        var displayMessage = `<br/><br/><div style="text-align: center; color: ` + this.Color +`;">`;
+        for (var i = 0; i < this.Title.length + 6; i++){
+            displayMessage += "#";
         }
-        else {
-            return true;
+        displayMessage += "<br/>" + this.Title + "<br/>";
+        for (var i = 0; i < this.Title.length + 6; i++){
+            displayMessage += "#";
         }
+        displayMessage += "</div><br/><br/>" + this.Description;
+        UI.AddMessageHTML(displayMessage, 2);
     }
-}
-export class LocalTCPServer {
-    TCPServer: net.Server;
-    IsShutdownExpected: boolean = false;
-    ID: string = Utilities.CreateGUID();
-    IsListening():boolean{
-        if (this.TCPServer != null && this.TCPServer.listening){
-            return true;
+    static Load(id:string) : typeof Void.prototype {
+        if (fs.existsSync(path.join(FileSystem.StorageDataPath, "Voids", id + ".json")) == false) {
+            throw Error("Void doesn't exist.");
         }
-        else {
-            return false;
-        }
+        return $.extend(true, new this(), JSON.parse(fs.readFileSync(path.join(FileSystem.StorageDataPath, "Voids", id + ".json")).toString()));
     }
-}
-export class ActiveTCPClient {
-    Socket: NodeJS.Socket;
-    ID: string;
-    Player: typeof Player.prototype;
+    Save(){
+        if (fs.existsSync(path.join(FileSystem.StorageDataPath, "Voids")) == false) {
+            fs.mkdirSync(path.join(FileSystem.StorageDataPath, "Voids"));
+        }
+        fs.writeFileSync(path.join(FileSystem.StorageDataPath, "Voids", this.ID + ".json"), JSON.stringify(this));
+    }
 };
-export class PassiveTCPClient {
-    Socket: NodeJS.Socket;
-    ID: string;
-};
-export class KnownTCPServer {
-    constructor(ip:string, port:number){
-        this.IP = ip;
-        this.Port = port;
-    }
-    IP:string;
-    Port:number;
-    BadConnectionAttempts:number;
-}

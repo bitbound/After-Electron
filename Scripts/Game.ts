@@ -10,16 +10,28 @@ export var Init = async function (){
         var connectAsPassiveClient = async function(){
             After.UI.AddSystemMessage("Attempting to find a server.", 1);
             for (var i = 0; i < After.Storage.KnownTCPServers.length; i++){
-                var server = After.Storage.KnownTCPServers[i];
-                if (await After.Connectivity.ConnectToServer(server.IP, server.Port, After.Models.ConnectionTypes.PassiveClient))
-                {
-                    break;
+                try {
+                    var server = After.Storage.KnownTCPServers[i];
+                    if (await After.Connectivity.ConnectToServer(server.IP, server.Port, After.Models.ConnectionTypes.PassiveClient))
+                    {
+                        break;
+                    }
+                    else {
+                        After.Storage.KnownTCPServers[i].BadConnectionAttempts++;
+                    }
                 }
+                catch (ex) {
+                    After.Storage.KnownTCPServers[i].BadConnectionAttempts++;
+                }
+                
             }
             if (After.Connectivity.OutboundConnection.IsConnected() == false){
                 After.UI.AddSystemMessage("Unable to find a server.  Another attempt will be made in 30 seconds.", 1);
                 window.setTimeout(async ()=>{
-                    await connectAsPassiveClient();
+                    if (After.Storage.ClientSettings.MultiplayerEnabled)
+                    {
+                        await connectAsPassiveClient();
+                    }
                 }, 30000);
             }
         }

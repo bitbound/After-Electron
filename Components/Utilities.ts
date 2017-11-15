@@ -3,21 +3,28 @@ import * as fs from "fs";
 import * as path from "path";
 import * as $ from "jquery";
 
-export function Animate(Object: any, Property: string, FromValue: number, ToValue: number, MsTransition: number) {
-    if (typeof Object[Property] != "number") {
-        console.log("Property is not of type number.");
-        return;
+export function ArePropertiesEqual(object1, object2) {
+    if (Object.keys(object1).length !== Object.keys(object2).length) {
+        return false;
     }
-    var totalChange = ToValue - FromValue;
-    for (var i = 0; i < MsTransition; i = i + 20)
-    {
-        window.setTimeout(function (currentTime) {
-            Object[Property] = FromValue + (currentTime / MsTransition * totalChange);
-            if (currentTime >= MsTransition) {
-                Object[Property] = ToValue;
+
+    var match = true;
+    var compareFunction = function (compareObj1, compareObj2) {
+        for (var key in compareObj1) {
+            if (compareObj1[key] instanceof Object) {
+                compareFunction(compareObj1[key], compareObj2[key]);
             }
-        }, i, i)
+            else {
+                if (compareObj1[key] !== compareObj2[key]) {
+                    match = false;
+                    break;
+                }
+            }
+        }
     }
+    compareFunction(object1, object2);
+
+    return match;
 }
 
 export var ColorNames = ["AliceBlue", "AntiqueWhite", "Aqua", "Aquamarine", "Azure", "Beige", "Bisque", "BlanchedAlmond", "Blue", "BlueViolet", "Brown", "BurlyWood", "CadetBlue", "Chartreuse", "Chocolate", "Coral", "CornflowerBlue", "Cornsilk", "Crimson", "Cyan", "DarkBlue", "DarkCyan", "DarkGoldenrod", "DarkGray", "DarkGreen", "DarkKhaki", "DarkMagenta", "DarkOliveGreen", "DarkOrange", "DarkOrchid", "DarkRed", "DarkSalmon", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkTurquoise", "DarkViolet", "DeepPink", "DeepSkyBlue", "DimGray", "DodgerBlue", "FireBrick", "FloralWhite", "ForestGreen", "Fuchsia", "Gainsboro", "GhostWhite", "Gold", "Goldenrod", "Gray", "Green", "GreenYellow", "Honeydew", "HotPink", "Indigo", "Ivory", "Khaki", "Lavender", "LavenderBlush", "LawnGreen", "LemonChiffon", "LightBlue", "LightCoral", "LightCyan", "LightGoldenrodYellow", "LightGreen", "LightGrey", "LightPink", "LightSalmon", "LightSeaGreen", "LightSkyBlue", "LightSlateGray", "LightSteelBlue", "LightYellow", "Lime", "LimeGreen", "Linen", "Magenta", "Maroon", "MediumAquamarine", "MediumBlue", "MediumOrchid", "MediumPurple", "MediumSeaGreen", "MediumSlateBlue", "MediumSpringGreen", "MediumTurquoise", "MediumVioletRed", "MidnightBlue", "MintCream", "MistyRose", "Moccasin", "NavajoWhite", "Navy", "OldLace", "Olive", "OliveDrab", "Orange", "OrangeRed", "Orchid", "PaleGoldenrod", "PaleGreen", "PaleTurquoise", "PaleVioletRed", "PapayaWhip", "PeachPuff", "Peru", "Pink", "Plum", "PowderBlue", "Purple", "Red", "RosyBrown", "RoyalBlue", "SaddleBrown", "Salmon", "SandyBrown", "SeaGreen", "Seashell", "Sienna", "Silver", "SkyBlue", "SlateBlue", "SlateGray", "Snow", "SpringGreen", "SteelBlue", "Tan", "Teal", "Thistle", "Tomato", "Turquoise", "Violet", "Wheat", "White", "WhiteSmoke", "Yellow", "YellowGreen"];
@@ -207,6 +214,15 @@ export function HexToRGB(col:string):string {
     b = parseInt(b, 16);
     return 'rgb(' + r + ',' + g + ',' + b + ')';
 };
+export function InsertOrAdd(array:Array<any>, item:any){
+    var existingIndex = array.findIndex((value)=>{
+        return ArePropertiesEqual(value, item);
+    });
+    if (existingIndex > -1){
+        array.splice(existingIndex);
+    }
+    array.push(item);
+}
 export function Log(message:string){
     console.log(message);
     var logPath = path.join(FileSystem.UserDataPath, "Log.txt");
@@ -226,3 +242,11 @@ export function NumberIsBetween(NumberAnalyzed: number, Min: number, Max: number
         return false;
     }
 };
+export function ReplaceAllInString(inputString:string, toReplace:string, replaceWith:string):string{
+    try {
+        return inputString.split(toReplace).join(replaceWith);
+    }
+    catch (ex){
+        return inputString;
+    }
+}
