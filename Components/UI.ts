@@ -119,14 +119,9 @@ export function ApplyEventHandlers(){
             Intellisense.Evaluate();
         }
     });
-    $("#startChargeButton").on("click", ()=>{
-        Storage.Me.ReadyState = Models.ReadyStates.Charging;
-        $("#startChargeButton").hide();
-        $("#chargePoolFrame").show();
-        ChargingAnimationStart();
-    })
 };
 export function ChargingAnimationStart(){
+    Storage.Me.ReadyState = Models.ReadyStates.Charging;
     ChargingAnimationInt = window.setInterval(()=>{
         if (Storage.Me.ReadyState != Models.ReadyStates.Charging) {
             if (Storage.Me.CurrentCharge == 0) {

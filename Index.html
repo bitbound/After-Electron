@@ -112,22 +112,19 @@
                     </div>
                 </div>
                 <div id="divCharge" style="position:absolute; left:50%; width:50%; text-align:center">
-                    <button id="startChargeButton" style="margin-top: 5px; height:25px">Start Charge</button>
-                    <div id="chargePoolFrame" hidden>
-                        <svg id="svgCharge" style="height:33px; width:0;">
-                            <defs>
-                                <radialGradient id="gradientCharge" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                                    <stop offset="0%" style="stop-color:white;" />
-                                    <stop offset="70%" style="stop-color:magenta;" />
-                                    <stop offset="100%" style="stop-color:transparent;" />
-                                </radialGradient>
-                            </defs>
-                            <ellipse cx="50%" cy="50%" rx="45%" ry="45%" fill="url(#gradientCharge)"></ellipse>
-                        </svg>
-                        <div style="position:absolute;width:100%; top:8px">
-                            <div class="pool-amount" id="divChargeAmount">
-                                0
-                            </div>
+                    <svg id="svgCharge" style="height:33px; width:0;">
+                        <defs>
+                            <radialGradient id="gradientCharge" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                <stop offset="0%" style="stop-color:white;" />
+                                <stop offset="70%" style="stop-color:magenta;" />
+                                <stop offset="100%" style="stop-color:transparent;" />
+                            </radialGradient>
+                        </defs>
+                        <ellipse cx="50%" cy="50%" rx="45%" ry="45%" fill="url(#gradientCharge)"></ellipse>
+                    </svg>
+                    <div style="position:absolute;width:100%; top:8px">
+                        <div class="pool-amount" id="divChargeAmount">
+                            0
                         </div>
                     </div>
                 </div>
@@ -156,7 +153,7 @@
         </div>
 
         <div id="intellisenseFrame">
-            
+
         </div>
     </div>
 

@@ -5,8 +5,14 @@ export function AutoComplete(){
         var completeWith = split[split.length - 1];
         var text = UI.InputBox.val() as string;
         var lastPeriod = text.lastIndexOf(".");
-        var namespaceAndObject = text.slice(0, lastPeriod);
-        UI.InputBox.val(namespaceAndObject + "." + completeWith);
+        if (lastPeriod == -1){
+            namespaceAndObject = "";
+            UI.InputBox.val(completeWith);
+        }
+        else {
+            var namespaceAndObject = text.slice(0, lastPeriod);
+            UI.InputBox.val(namespaceAndObject + "." + completeWith);
+        }
         UI.IntellisenseFrame.hide();
     }
    
