@@ -1,5 +1,6 @@
 {
   "name": "after",
+  "displayName": "After",
   "version": "0.1.0",
   "description": "A hackable, peer-to-peer, MUD-like multiplayer RPG.",
   "main": "main.js",
@@ -20,7 +21,7 @@
     "@types/jquery": "^3.2.15",
     "@types/node": "^8.0.47",
     "electron": "^1.7.9",
-    "electron-builder": "^19.37.2",
+    "electron-builder": "^19.45.7",
     "typescript": "^2.5.3"
   },
   "dependencies": {

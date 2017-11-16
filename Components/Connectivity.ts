@@ -4,29 +4,45 @@ import * as Utilities from "./Utilities";
 import * as Models from "./Models";
 import * as Connectivity from "./Connectivity";
 import * as SocketDataIO from "./SocketDataIO";
+import * as UI from "./UI";
 
-export var OutboundConnection: typeof Models.OutboundConnection.prototype = new Models.OutboundConnection();
-export var Server: typeof Models.LocalTCPServer.prototype = new Models.LocalTCPServer();
+export var OutboundConnection = new class OutboundConnection {
+    TargetServerID: string;
+    ConnectionType: Models.ConnectionTypes;
+    IsDisconnectExpected: boolean = false;
+    Socket: NodeJS.Socket;
+    Server: Models.KnownServer;
+    IsConnected():boolean{
+        if (this.Socket == null || this.Socket.writable == false){
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+}
+export var LocalServer = new class LocalServer {
+    Server: net.Server;
+    IsShutdownExpected: boolean = false;
+    ID: string = Utilities.CreateGUID();
+    IsListening():boolean{
+        if (this.Server != null && this.Server.listening){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+}
 
-export async function ConnectToServer(host:string, port: number, connectionType:Models.ConnectionTypes):Promise<boolean> {
+export async function ConnectToServer(server:Models.KnownServer, connectionType:Models.ConnectionTypes):Promise<boolean> {
         var promise = new Promise<boolean>(function(resolve, reject){
             try {
-                var socket = net.connect(port, host, ()=>{
-                    var connection = new Models.OutboundConnection();
-                    connection.ConnectionType = connectionType;
-                    connection.Socket = socket;
-                    connection.Server = new Models.KnownTCPServer(host, port);
-                    if (connectionType == Models.ConnectionTypes.ActiveClient){
-                        OutboundConnection = connection;
-                        SocketDataIO.SendHelloAsActiveClient();
-                    }
-                    else if (connectionType == Models.ConnectionTypes.PassiveClient) {
-                        OutboundConnection = connection;
-                        SocketDataIO.SendHelloAsPassiveClient();
-                    }
-                    else if (connectionType == Models.ConnectionTypes.ServerToServer){
-                        // TODO
-                    }
+                var socket = net.connect(server.Port, server.Host, ()=>{
+                    server.BadConnectionAttempts = 0;
+                    Utilities.UpdateOrPrepend(Storage.KnownServers, server);
+                    OutboundConnection.ConnectionType = connectionType;
+                    OutboundConnection.Server = server;
                     resolve(true);
                 });
                 socket.on("error", (err:Error)=>{
@@ -39,12 +55,14 @@ export async function ConnectToServer(host:string, port: number, connectionType:
                         if (SocketDataIO.HaveYouGotten(jsonData.ID)){
                             return;
                         }
+                        SocketDataIO.Broadcast(jsonData);
                         eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, this)");
                     }
                     catch (ex) {
                         Utilities.Log(JSON.stringify(ex));
                     }
                 });
+                OutboundConnection.Socket = socket;
             }
             catch (ex){
                 return resolve(false);
@@ -59,9 +77,13 @@ export function StartServer() {
             try
             {
                 var jsonData = JSON.parse(data.toString());
-                // TODO: Did I already get?
-                // TODO: Send to peers.
-                eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, this)");
+                if (SocketDataIO.HaveYouGotten(jsonData.ID)){
+                    return;
+                }
+                SocketDataIO.Broadcast(jsonData);
+                if (Storage.ClientSettings.IsMultiplayerEnabled) {
+                    eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, socket)");
+                }
             }
             catch (ex) {
                 Utilities.Log(JSON.stringify(ex));
@@ -69,17 +91,26 @@ export function StartServer() {
         });
         socket.on("error", (err:Error)=>{
             Utilities.Log(JSON.stringify(err));
-            setTimeout(() => {
-                server.close();
-                server.listen(Storage.ServerSettings.TCPServerPort);
-            }, 1000);
+            var index = Storage.Temp.InboundConnections.findIndex(x=>x.Socket == socket);
+            Storage.Temp.InboundConnections.splice(index, 1);
+            UI.RefreshUI();
         })
+        socket.on("close", ()=>{
+            var index = Storage.Temp.InboundConnections.findIndex(x=>x.Socket == socket);
+            Storage.Temp.InboundConnections.splice(index, 1);
+            UI.RefreshUI();
+        })
+        var client = new Models.TCPClient();
+        client.ID = Utilities.CreateGUID();
+        client.Socket = socket;
+        Storage.Temp.InboundConnections.push(client);
+        UI.RefreshUI();
     });
     server.on("close", function(){
-        if (!Connectivity.Server.IsShutdownExpected){
+        if (!Connectivity.LocalServer.IsShutdownExpected){
             setTimeout(() => {
                 server.close();
-                server.listen(Storage.ServerSettings.TCPServerPort);
+                server.listen(Storage.ServerSettings.ListeningPort);
             }, 1000);
         }
     })
@@ -88,12 +119,12 @@ export function StartServer() {
             Utilities.Log('TCP Server: Address in use.  Retrying...');
             setTimeout(() => {
                 server.close();
-                server.listen(Storage.ServerSettings.TCPServerPort);
+                server.listen(Storage.ServerSettings.ListeningPort);
             }, 1000);
         }
     });
-    server.listen(Storage.ServerSettings.TCPServerPort, function(){
+    server.listen(Storage.ServerSettings.ListeningPort, function(){
         Utilities.Log("TCP server started.");
     });
-    this.Server.TCPServer = server;
+    Connectivity.LocalServer.Server = server;
 };

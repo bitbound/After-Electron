@@ -7,6 +7,9 @@ import * as Intro from "./Intro";
 export function Init(){
     window["After"] = After;
     window["$"] = $;
+    electron.remote.getCurrentWindow().on("close", (event)=>{
+        After.Storage.SaveAll();
+    })
     After.Storage.LoadAll();
     
     function raiseParticle() {

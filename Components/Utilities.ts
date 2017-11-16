@@ -214,7 +214,7 @@ export function HexToRGB(col:string):string {
     b = parseInt(b, 16);
     return 'rgb(' + r + ',' + g + ',' + b + ')';
 };
-export function InsertOrAdd(array:Array<any>, item:any){
+export function UpdateOrAppend(array:Array<any>, item:any){
     var existingIndex = array.findIndex((value)=>{
         return ArePropertiesEqual(value, item);
     });
@@ -222,6 +222,15 @@ export function InsertOrAdd(array:Array<any>, item:any){
         array.splice(existingIndex);
     }
     array.push(item);
+}
+export function UpdateOrPrepend(array:Array<any>, item:any){
+    var existingIndex = array.findIndex((value)=>{
+        return ArePropertiesEqual(value, item);
+    });
+    if (existingIndex > -1){
+        array.splice(existingIndex);
+    }
+    array.unshift(item);
 }
 export function Log(message:string){
     console.log(message);

@@ -1,5 +1,4 @@
-﻿
-export var Context: AudioContext = new AudioContext();
+﻿export var Context: AudioContext = new AudioContext();
 export var PlaySource: AudioBufferSourceNode;
 export var LoopSource: AudioBufferSourceNode;
 

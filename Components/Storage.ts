@@ -22,25 +22,23 @@ export var ClientSettings = new class ClientSettings {
         VoidChat: "/v ",
         Script: "/s "
     };
-    MultiplayerEnabled:boolean = false;
-    TCPServerEnabled:boolean = false;
+    IsMultiplayerEnabled:boolean = false;
 };
 export var ServerSettings = new class ServerSettings {
-    TCPServerPort: number = 48836;
+    IsEnabled:boolean = false;
+    ListeningPort: number = 48836;
 }
-export var KnownTCPServers: typeof Models.KnownTCPServer.prototype[] = [
-    new Models.KnownTCPServer("after.myddns.rocks", 48836)
+export var KnownServers: typeof Models.KnownServer.prototype[] = [
+    new Models.KnownServer("after.myddns.rocks", 48836)
 ];
 
 export var Temp = new class Temp {
     constructor(){
-        this.ActiveTCPClientConnections = new Array();
-        this.PassiveTCPClientConnections = new Array();
-        this.PlayersInMyVoid = new Array();
+        this.InboundConnections = new Array();
         this.ReceivedMessages = new Array<string>();
     }
-    ActiveTCPClientConnections: typeof Models.ActiveTCPClient.prototype[];
-    PassiveTCPClientConnections: typeof Models.PassiveTCPClient.prototype[];
+    ActiveTCPClientConnections: typeof Models.ConnectedClient.prototype[];
+    InboundConnections: typeof Models.TCPClient.prototype[];
     PlayersInMyVoid: typeof Models.Player.prototype[];
     ReceivedMessages: string[];
 };

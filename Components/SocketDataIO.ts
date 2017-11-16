@@ -20,42 +20,22 @@ export function Send(jsonData:any, socket: NodeJS.Socket){
 export function Broadcast(jsonData: any) {
     
     if (Connectivity.OutboundConnection.IsConnected()) {
-        Connectivity.OutboundConnection.Socket.write(JSON.stringify(jsonData));
+        Send(jsonData, Connectivity.OutboundConnection.Socket);
     }
-    Storage.Temp.ActiveTCPClientConnections.forEach(function (item) {
-        Send(jsonData, item.Socket);
-    });
-    Storage.Temp.PassiveTCPClientConnections.forEach(function (item) {
+    Storage.Temp.InboundConnections.forEach(function (item) {
         Send(jsonData, item.Socket);
     })
 }
 
-export function SendToPassiveServer(jsonData: any) {
-    if (Connectivity.OutboundConnection.IsConnected()) {
-        Send(jsonData, Connectivity.OutboundConnection.Socket);
-    }
-    else {
-        eval("Receive" + jsonData.Type + "(jsonData)");
-    }
-}
-export function SendToActiveServer(jsonData: any) {
-    if (Connectivity.Server.ID == Connectivity.OutboundConnection.ActiveServerID || Connectivity.OutboundConnection.IsConnected() == false) {
+export function SendToTargetServer(jsonData: any) {
+    if (Connectivity.LocalServer.ID == Connectivity.OutboundConnection.TargetServerID || Connectivity.OutboundConnection.IsConnected() == false) {
         eval("Receive" + jsonData.Type + "(jsonData)");
     }
     else {
         Send(jsonData, Connectivity.OutboundConnection.Socket);
     }
 }
-export function SendToActiveClients(jsonData: any) {
-    Storage.Temp.ActiveTCPClientConnections.forEach(function (item) {
-        Send(jsonData, item.Socket);
-    });
-}
-export function SendToPassiveClients(jsonData: any) {
-    Storage.Temp.PassiveTCPClientConnections.forEach(function (item) {
-        Send(jsonData, item.Socket);
-    });
-}
+
 export function SendToSpecificClient(jsonData: any, playerID:string) {
     var client = Storage.Temp.ActiveTCPClientConnections.find((value)=>{
         return value.ID == playerID;
@@ -80,32 +60,14 @@ export function HaveYouGotten(id:string){
 }
 
 // Socket Data In/Out Functions //
-export function SendHelloAsActiveClient() {
-    SendToActiveServer({
-        "Type": "HelloAsActiveClient",
-        "ID": Utilities.CreateGUID()
-    });
+export function SendHelloFromServerToClient() {
+ 
 }
-export function ReceiveHelloAsActiveClient(jsonData: any, socket: NodeJS.Socket) {
-    var client = new Models.ActiveTCPClient();
-    client.ID = jsonData.ID;
-    client.Socket = socket;
-    Storage.Temp.ActiveTCPClientConnections.push(client);
-}
-export function SendHelloAsPassiveClient() {
-    SendToActiveServer({
-        "Type": "HelloAsPassiveClient",
-        "ID": Utilities.CreateGUID()
-    });
-}
-export function ReceiveHelloAsPassiveClient(jsonData: any, socket: NodeJS.Socket) {
-    var client = new Models.PassiveTCPClient();
-    client.ID = Utilities.CreateGUID();
-    client.Socket = socket;
-    Storage.Temp.PassiveTCPClientConnections.push(client);
+export function ReceiveHelloFromServerToClient(jsonData: any, socket: NodeJS.Socket) {
+    
 }
 export function SendChat(message: string, channel: string) {
-    SendToPassiveServer({
+    Broadcast({
         "Type": "Chat",
         "ID": Utilities.CreateGUID(),
         "From": Storage.Me.Name,
@@ -121,7 +83,6 @@ export function ReceiveChat(jsonData: any, socket: NodeJS.Socket) {
                 Storage.ClientSettings.Colors.GlobalChat + `'>(Global) ` +
                 Utilities.EncodeForHTML(jsonData.From) + `: </span>` +
                 Utilities.EncodeForHTML(jsonData.Message), 1);
-            Broadcast(jsonData);
             break;
 
         default:

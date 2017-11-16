@@ -3,45 +3,43 @@ import * as After from "../After";
 export var Init = async function (){
     After.Models.Void.Load(After.Storage.Me.InnerVoidID).Display();
     
-    if (After.Storage.ClientSettings.TCPServerEnabled) {
+    if (After.Storage.ServerSettings.IsEnabled) {
         After.Connectivity.StartServer();
     }
-    if (After.Storage.ClientSettings.MultiplayerEnabled) {
-        var connectAsPassiveClient = async function(){
+    if (After.Storage.ClientSettings.IsMultiplayerEnabled) {
+        var connectAsClient = async function(){
             After.UI.AddSystemMessage("Attempting to find a server.", 1);
-            for (var i = 0; i < After.Storage.KnownTCPServers.length; i++){
+            for (var i = 0; i < After.Storage.KnownServers.length; i++){
                 try {
-                    var server = After.Storage.KnownTCPServers[i];
-                    if (await After.Connectivity.ConnectToServer(server.IP, server.Port, After.Models.ConnectionTypes.PassiveClient))
+                    var server = After.Storage.KnownServers[i];
+                    if (await After.Connectivity.ConnectToServer(server, After.Models.ConnectionTypes.ClientToServer))
                     {
+                        After.UI.AddSystemMessage("Connected to server.", 1);
                         break;
                     }
                     else {
-                        After.Storage.KnownTCPServers[i].BadConnectionAttempts++;
+                        After.Storage.KnownServers[i].BadConnectionAttempts++;
                     }
                 }
                 catch (ex) {
-                    After.Storage.KnownTCPServers[i].BadConnectionAttempts++;
+                    After.Storage.KnownServers[i].BadConnectionAttempts++;
                 }
                 
             }
             if (After.Connectivity.OutboundConnection.IsConnected() == false){
                 After.UI.AddSystemMessage("Unable to find a server.  Another attempt will be made in 30 seconds.", 1);
                 window.setTimeout(async ()=>{
-                    if (After.Storage.ClientSettings.MultiplayerEnabled)
+                    if (After.Storage.ClientSettings.IsMultiplayerEnabled)
                     {
-                        await connectAsPassiveClient();
+                        await connectAsClient();
                     }
                 }, 30000);
             }
         }
-        await connectAsPassiveClient();
+        await connectAsClient();
     }
-    if (After.Connectivity.OutboundConnection.IsConnected()){
-        After.SocketDataIO.SendHelloAsPassiveClient();
-    }
-    else {
-        After.Connectivity.OutboundConnection.ActiveServerID = After.Connectivity.Server.ID;
+    if (!After.Connectivity.OutboundConnection.IsConnected()){
+        After.Connectivity.OutboundConnection.TargetServerID = After.Connectivity.LocalServer.ID;
     }
 }
 

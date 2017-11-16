@@ -5,6 +5,7 @@ import * as Storage from "./Storage";
 import * as InputProcessor from "./InputProcessor";
 import * as Intellisense from "./Intellisense";
 import * as Models from "./Models";
+import * as electron from "electron";
 
 // Properties //
 export var ChargingAnimationInt:number;
@@ -174,8 +175,10 @@ export function RefreshUI(){
     $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
     $("#divChargeAmount").text(Storage.Me.CurrentCharge);
     $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
-    $("#spanMultiplayerStatus").text(String(Storage.ClientSettings.MultiplayerEnabled).replace("true", "Enabled").replace("false", "Disabled"));
-    $("#spanTCPServerStatus").text(String(Storage.ClientSettings.TCPServerEnabled).replace("true", "Enabled").replace("false", "Disabled"));
-    $("#spanPassiveConnections").text(Storage.Temp.PassiveTCPClientConnections.length.toString());
-    $("#spanActiveConnections").text(Storage.Temp.ActiveTCPClientConnections.length.toString());
+    $("#spanMultiplayerStatus").text(String(Storage.ClientSettings.IsMultiplayerEnabled).replace("true", "Enabled").replace("false", "Disabled"));
+    $("#spanServerStatus").text(String(Storage.ServerSettings.IsEnabled).replace("true", "Enabled").replace("false", "Disabled"));
+    $("#spanInboundConnections").text(Storage.Temp.InboundConnections.length.toString());
+}
+export function ShowDevTools(){
+    electron.remote.getCurrentWindow().webContents.openDevTools();
 }

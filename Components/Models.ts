@@ -11,60 +11,32 @@ import * as Utilities from "./Utilities";
 import * as $ from "jquery";
 
 
-export class ActiveTCPClient {
+export class ConnectedClient {
     Socket: NodeJS.Socket;
     ID: string;
     Player: typeof Player.prototype;
 };
 export enum ConnectionTypes{
-    ActiveClient,
-    PassiveClient,
+    ClientToServer,
     ServerToServer
 }
-export class KnownTCPServer {
+export class KnownServer {
     constructor(ip:string, port:number){
-        this.IP = ip;
+        this.Host = ip;
         this.Port = port;
     }
-    IP:string;
+    Host:string;
     Port:number;
     BadConnectionAttempts:number = 0;
 }
-export class LocalTCPServer {
-    TCPServer: net.Server;
-    IsShutdownExpected: boolean = false;
-    ID: string = Utilities.CreateGUID();
-    IsListening():boolean{
-        if (this.TCPServer != null && this.TCPServer.listening){
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-}
+
 export class NPC {
     ID:string;
     Name:string;
     IsAgressive: boolean;
 };
-export class OutboundConnection {
-    ActiveServerID: string;
-    ConnectionType: ConnectionTypes;
-    IsDisconnectExpected: boolean = false;
-    Socket: NodeJS.Socket;
-    Server: typeof KnownTCPServer.prototype;
-    IsConnected():boolean{
-        if (this.Socket == null || this.Socket.writable == false){
-            return false;
-        }
-        else {
-            return true;
-        }
-    }
-}
 
-export class PassiveTCPClient {
+export class TCPClient {
     Socket: NodeJS.Socket;
     ID: string;
 };
