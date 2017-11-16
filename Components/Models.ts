@@ -14,7 +14,7 @@ import * as $ from "jquery";
 export class ConnectedClient {
     Socket: NodeJS.Socket;
     ID: string;
-    Player: typeof Player.prototype;
+    Player: Player;
 };
 export enum ConnectionTypes{
     ClientToServer,
@@ -38,7 +38,8 @@ export class NPC {
 
 export class TCPClient {
     Socket: NodeJS.Socket;
-    ID: string;
+    ID: string = Utilities.CreateGUID();
+    Player: Models.Player;
 };
 
 export class Player {
@@ -50,9 +51,10 @@ export class Player {
         this.CurrentCharge = 0;
         this.ChargeMod = 0;
     }
+    Color: string;
+    CurrentLocationID:string;
     ID: string;
     Name: string;
-    Color: string;
     InnerVoidID: string;
     ReadyState: ReadyStates;
   
@@ -82,10 +84,10 @@ export enum ReadyStates {
 export class Void {
     Color: string;
     Description:string;
-    ID:string;
+    ID:string = Utilities.CreateGUID();
     IsDestructible: boolean;
     IsInnerVoid: boolean;
-    NPCs: typeof NPC.prototype[];
+    NPCs: NPC[];
     Owner: string;
     Title:string;
     Display(){
@@ -100,7 +102,7 @@ export class Void {
         displayMessage += "</div><br/><br/>" + this.Description;
         UI.AddMessageHTML(displayMessage, 2);
     }
-    static Load(id:string) : typeof Void.prototype {
+    static Load(id:string) : Void {
         if (fs.existsSync(path.join(FileSystem.StorageDataPath, "Voids", id + ".json")) == false) {
             throw Error("Void doesn't exist.");
         }

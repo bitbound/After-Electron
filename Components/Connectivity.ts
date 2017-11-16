@@ -43,6 +43,12 @@ export async function ConnectToServer(server:Models.KnownServer, connectionType:
                     Utilities.UpdateOrPrepend(Storage.KnownServers, server);
                     OutboundConnection.ConnectionType = connectionType;
                     OutboundConnection.Server = server;
+                    if (connectionType == Models.ConnectionTypes.ClientToServer){
+                        SocketDataIO.SendHelloFromClientToServer();
+                    }
+                    else if (connectionType == Models.ConnectionTypes.ServerToServer){
+                        SocketDataIO.SendHelloFromServerToServer();
+                    }
                     resolve(true);
                 });
                 socket.on("error", (err:Error)=>{
@@ -52,6 +58,9 @@ export async function ConnectToServer(server:Models.KnownServer, connectionType:
                     try
                     {
                         var jsonData = JSON.parse(data.toString());
+                        if (Storage.ClientSettings.IsDebugMode){
+                            UI.AddSystemMessage("Received from server: " + JSON.stringify(jsonData), 1);
+                        }
                         if (SocketDataIO.HaveYouGotten(jsonData.ID)){
                             return;
                         }
@@ -72,11 +81,13 @@ export async function ConnectToServer(server:Models.KnownServer, connectionType:
 }
 export function StartServer() {
     var server = net.createServer(function(socket){
-        console.log("Connection received.");
         socket.on("data", (data)=>{
             try
             {
                 var jsonData = JSON.parse(data.toString());
+                if (Storage.ClientSettings.IsDebugMode){
+                    UI.AddSystemMessage("Received from client: " + JSON.stringify(jsonData), 1);
+                }
                 if (SocketDataIO.HaveYouGotten(jsonData.ID)){
                     return;
                 }
@@ -101,10 +112,11 @@ export function StartServer() {
             UI.RefreshUI();
         })
         var client = new Models.TCPClient();
-        client.ID = Utilities.CreateGUID();
         client.Socket = socket;
         Storage.Temp.InboundConnections.push(client);
         UI.RefreshUI();
+        Utilities.Log(`Connection received from ${socket.remoteAddress}.`);
+        SocketDataIO.SendHelloFromServerToClient();
     });
     server.on("close", function(){
         if (!Connectivity.LocalServer.IsShutdownExpected){
@@ -122,6 +134,7 @@ export function StartServer() {
                 server.listen(Storage.ServerSettings.ListeningPort);
             }, 1000);
         }
+        Utilities.Log(JSON.stringify(e));
     });
     server.listen(Storage.ServerSettings.ListeningPort, function(){
         Utilities.Log("TCP server started.");

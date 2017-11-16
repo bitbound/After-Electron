@@ -6,6 +6,9 @@ import * as UI from "./UI";
 
 // Final Data Out //
 export function Send(jsonData:any, socket: NodeJS.Socket){
+    if (Storage.ClientSettings.IsDebugMode){
+        UI.AddSystemMessage("Sending: " + JSON.stringify(jsonData), 1);
+    }
     if (jsonData.Type == undefined || jsonData.ID == undefined) {
         Utilities.Log("Type or ID missing from Broadcast data: " + JSON.stringify(jsonData));
         return;
@@ -25,6 +28,11 @@ export function Broadcast(jsonData: any) {
     Storage.Temp.InboundConnections.forEach(function (item) {
         Send(jsonData, item.Socket);
     })
+    if (Connectivity.OutboundConnection.IsConnected() == false && 
+        Storage.Temp.InboundConnections.length == 0)
+        {
+            eval("Receive" + jsonData.Type + "(jsonData, null)");
+        }
 }
 
 export function SendToTargetServer(jsonData: any) {
@@ -36,16 +44,8 @@ export function SendToTargetServer(jsonData: any) {
     }
 }
 
-export function SendToSpecificClient(jsonData: any, playerID:string) {
-    var client = Storage.Temp.ActiveTCPClientConnections.find((value)=>{
-        return value.ID == playerID;
-    })
-    if (client == undefined){
-        throw "PlayerID not found.";
-    }
-    else {
-        Send(jsonData, client.Socket);
-    }
+export function SendToSpecificClient(jsonData: any, client:Models.TCPClient) {
+    Send(jsonData, client.Socket);
 }
 
 // Check if specific message has been received.
@@ -60,10 +60,35 @@ export function HaveYouGotten(id:string){
 }
 
 // Socket Data In/Out Functions //
+export function SendHelloFromClientToServer() {
+    Broadcast({
+        "Type": "HelloFromClientToServer",
+        "KnownServers": Storage.KnownServers,
+        "ID": Utilities.CreateGUID()
+    })
+}
+export function ReceiveHelloFromClientToServer(jsonData: any, socket: NodeJS.Socket) {
+    for (var i = 0; i < jsonData.KnownServers.length; i++){
+        Utilities.UpdateOrAppend(Storage.KnownServers, jsonData.KnownServers[i]);
+    }
+    SendHelloFromServerToClient();
+}
 export function SendHelloFromServerToClient() {
- 
+    Broadcast({
+        "Type": "HelloFromServerToClient",
+        "KnownServers": Storage.KnownServers,
+        "ID": Utilities.CreateGUID()
+    })
 }
 export function ReceiveHelloFromServerToClient(jsonData: any, socket: NodeJS.Socket) {
+    for (var i = 0; i < jsonData.KnownServers.length; i++){
+        Utilities.UpdateOrAppend(Storage.KnownServers, jsonData.KnownServers[i]);
+    }
+}
+export function SendHelloFromServerToServer() {
+    
+}
+export function ReceiveHelloFromServerToServer(jsonData: any, socket: NodeJS.Socket) {
     
 }
 export function SendChat(message: string, channel: string) {

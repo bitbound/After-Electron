@@ -5,7 +5,6 @@ import * as Game from "./Game";
 After.Storage.Me.ID = After.Utilities.CreateGUID();
 After.Storage.Me.CurrentEnergy = 100;
 var innerVoid = new After.Models.Void();
-innerVoid.ID = After.Utilities.CreateGUID();
 innerVoid.Owner = After.Storage.Me.ID;
 innerVoid.Color = After.Storage.Me.Color;
 innerVoid.IsDestructible = false;
@@ -20,7 +19,7 @@ innerVoid.Description = `Where are you?  The question lazily formulates in your 
 innerVoid.Save();
 
 After.Storage.Me.InnerVoidID = innerVoid.ID;
-
+After.Storage.Me.CurrentLocationID = innerVoid.ID;
 After.Storage.SaveMe("0");
 After.UI.RefreshUI();
 After.UI.MessageWindow.html("");

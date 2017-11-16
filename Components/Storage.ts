@@ -16,19 +16,22 @@ export var ClientSettings = new class ClientSettings {
         "Whisper": "magenta",
         "System": "lightgray"
     }
+    IsMultiplayerEnabled:boolean = false;
+    IsDebugMode: boolean = false;
+    IsNetworkBarVisible: boolean = true;
     TextInputAliases = {
         Command: "/c ",
         GlobalChat: "/g ",
         VoidChat: "/v ",
         Script: "/s "
     };
-    IsMultiplayerEnabled:boolean = false;
 };
 export var ServerSettings = new class ServerSettings {
     IsEnabled:boolean = false;
+    IsPublic: boolean = true;
     ListeningPort: number = 48836;
 }
-export var KnownServers: typeof Models.KnownServer.prototype[] = [
+export var KnownServers: Models.KnownServer[] = [
     new Models.KnownServer("after.myddns.rocks", 48836)
 ];
 
@@ -37,9 +40,7 @@ export var Temp = new class Temp {
         this.InboundConnections = new Array();
         this.ReceivedMessages = new Array<string>();
     }
-    ActiveTCPClientConnections: typeof Models.ConnectedClient.prototype[];
-    InboundConnections: typeof Models.TCPClient.prototype[];
-    PlayersInMyVoid: typeof Models.Player.prototype[];
+    InboundConnections: Models.TCPClient[];
     ReceivedMessages: string[];
 };
 
