@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var electron = require("electron");
+import * as electron from "electron";
 // Module to control application life.
 var app = electron.app;
 // Module to create native browser window.

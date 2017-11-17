@@ -9,9 +9,11 @@ export function Init(){
     window["$"] = $;
     electron.remote.getCurrentWindow().on("close", (event)=>{
         After.Storage.SaveAll();
-    })
+    });
     After.Storage.LoadAll();
-    
+    window.setInterval(()=>{
+        After.Storage.SaveAll();
+    }, After.Storage.ClientSettings.AutoSaveIntervalSeconds * 1000);
     function raiseParticle() {
         try {
             var rectTunnel = document.getElementById("imgTunnel").getBoundingClientRect();
@@ -73,6 +75,4 @@ export function Init(){
         $("#divSplash").fadeIn(600);
         raiseParticle();
     })
-    
-    
 }

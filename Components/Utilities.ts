@@ -1,4 +1,6 @@
 import * as FileSystem from "./FileSystem";
+import * as UI from "./UI";
+import * as Storage from "./Storage";
 import * as fs from "fs";
 import * as path from "path";
 import * as $ from "jquery";
@@ -214,21 +216,31 @@ export function HexToRGB(col:string):string {
     b = parseInt(b, 16);
     return 'rgb(' + r + ',' + g + ',' + b + ')';
 };
-export function UpdateOrAppend(array:Array<any>, item:any){
+export function UpdateAndAppend(array:Array<any>, item:any, matchKeys:string[]){
     var existingIndex = array.findIndex((value)=>{
-        return ArePropertiesEqual(value, item);
+        for (var i = 0; i < matchKeys.length; i++) {
+            if (item[i] != value[i]){
+                return false;
+            }
+        }
+        return true;
     });
     if (existingIndex > -1){
-        array.splice(existingIndex);
+        array.splice(existingIndex, 1);
     }
     array.push(item);
 }
-export function UpdateOrPrepend(array:Array<any>, item:any){
+export function UpdateAndPrepend(array:Array<any>, item:any, matchKeys:string[]){
     var existingIndex = array.findIndex((value)=>{
-        return ArePropertiesEqual(value, item);
+        for (var i = 0; i < matchKeys.length; i++) {
+            if (item[i] != value[i]){
+                return false;
+            }
+        }
+        return true;
     });
     if (existingIndex > -1){
-        array.splice(existingIndex);
+        array.splice(existingIndex, 1);
     }
     array.unshift(item);
 }
@@ -257,5 +269,10 @@ export function ReplaceAllInString(inputString:string, toReplace:string, replace
     }
     catch (ex){
         return inputString;
+    }
+}
+export function WriteDebug(message:string, newLines: number){
+    if (Storage.ClientSettings.IsDebugMode){
+        UI.AddSystemMessage(message, newLines);
     }
 }

@@ -1,15 +1,17 @@
 import * as $ from 'jquery';
 import * as fs from 'fs';
 import * as FileSystem from './FileSystem';
-import * as Models from './Models';
 import * as path from 'path';
 import * as Storage from './Storage';
 import * as UI from "./UI";
 import * as Utilities from "./Utilities";
+import { KnownServer } from './Models/KnownServer';
+import { Player } from './Models/Player';
 
-export var Me = new Models.Player();
+export var Me = new Player();
 
 export var ClientSettings = new class ClientSettings {
+    AutoSaveIntervalSeconds: number = 300;
     Colors = {
         "GlobalChat": "seagreen",
         "VoidChat": "lightsteelblue",
@@ -30,17 +32,16 @@ export var ServerSettings = new class ServerSettings {
     IsEnabled:boolean = false;
     IsPublic: boolean = true;
     ListeningPort: number = 48836;
+    ServerID: string = Utilities.CreateGUID();
 }
-export var KnownServers: Models.KnownServer[] = [
-    new Models.KnownServer("after.myddns.rocks", 48836)
+export var KnownServers: KnownServer[] = [
+    new KnownServer("after.myddns.rocks", 48836)
 ];
 
 export var Temp = new class Temp {
     constructor(){
-        this.InboundConnections = new Array();
         this.ReceivedMessages = new Array<string>();
     }
-    InboundConnections: Models.TCPClient[];
     ReceivedMessages: string[];
 };
 

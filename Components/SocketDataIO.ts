@@ -1,14 +1,12 @@
 import * as Connectivity from "./Connectivity";
 import * as Storage from "./Storage";
 import * as Utilities from "./Utilities";
-import * as Models from "./Models";
 import * as UI from "./UI";
+import { ConnectedClient } from "./Models/ConnectedClient";
 
 // Final Data Out //
 export function Send(jsonData:any, socket: NodeJS.Socket){
-    if (Storage.ClientSettings.IsDebugMode){
-        UI.AddSystemMessage("Sending: " + JSON.stringify(jsonData), 1);
-    }
+    Utilities.WriteDebug("Sending: " + JSON.stringify(jsonData), 1);
     if (jsonData.Type == undefined || jsonData.ID == undefined) {
         Utilities.Log("Type or ID missing from Broadcast data: " + JSON.stringify(jsonData));
         return;
@@ -25,11 +23,11 @@ export function Broadcast(jsonData: any) {
     if (Connectivity.OutboundConnection.IsConnected()) {
         Send(jsonData, Connectivity.OutboundConnection.Socket);
     }
-    Storage.Temp.InboundConnections.forEach(function (item) {
+    Connectivity.InboundConnections.forEach(function (item) {
         Send(jsonData, item.Socket);
     })
     if (Connectivity.OutboundConnection.IsConnected() == false && 
-        Storage.Temp.InboundConnections.length == 0)
+        Connectivity.InboundConnections.length == 0)
         {
             eval("Receive" + jsonData.Type + "(jsonData, null)");
         }
@@ -44,7 +42,7 @@ export function SendToTargetServer(jsonData: any) {
     }
 }
 
-export function SendToSpecificClient(jsonData: any, client:Models.TCPClient) {
+export function SendToSpecificClient(jsonData: any, client:ConnectedClient) {
     Send(jsonData, client.Socket);
 }
 
@@ -69,24 +67,39 @@ export function SendHelloFromClientToServer() {
 }
 export function ReceiveHelloFromClientToServer(jsonData: any, socket: NodeJS.Socket) {
     for (var i = 0; i < jsonData.KnownServers.length; i++){
-        Utilities.UpdateOrAppend(Storage.KnownServers, jsonData.KnownServers[i]);
+        Utilities.UpdateAndAppend(Storage.KnownServers, jsonData.KnownServers[i],  ["IP", "Port"]);
     }
-    SendHelloFromServerToClient();
 }
 export function SendHelloFromServerToClient() {
     Broadcast({
         "Type": "HelloFromServerToClient",
         "KnownServers": Storage.KnownServers,
-        "ID": Utilities.CreateGUID()
+        "ID": Utilities.CreateGUID(),
+        "ServerID": Connectivity.LocalServer.ID
     })
 }
 export function ReceiveHelloFromServerToClient(jsonData: any, socket: NodeJS.Socket) {
+    if (jsonData.ServerID == Connectivity.LocalServer.ID){
+        var index = Storage.KnownServers.findIndex(x=>
+            x.Host == Connectivity.OutboundConnection.Server.Host &&
+            x.Port == Connectivity.OutboundConnection.Server.Port
+        );
+        var server = Storage.KnownServers.splice(index, 1);
+        Storage.KnownServers.push(server[0]);
+        socket.end();
+        Connectivity.FindServer();
+        return;
+    }
     for (var i = 0; i < jsonData.KnownServers.length; i++){
-        Utilities.UpdateOrAppend(Storage.KnownServers, jsonData.KnownServers[i]);
+        Utilities.UpdateAndAppend(Storage.KnownServers, jsonData.KnownServers[i], ["IP", "Port"]);
     }
 }
 export function SendHelloFromServerToServer() {
-    
+    Broadcast({
+        "Type": "HelloFromServerToClient",
+        "KnownServers": Storage.KnownServers,
+        "ID": Utilities.CreateGUID()
+    })
 }
 export function ReceiveHelloFromServerToServer(jsonData: any, socket: NodeJS.Socket) {
     

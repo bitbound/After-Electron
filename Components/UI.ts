@@ -4,8 +4,9 @@ import * as UI from "./UI";
 import * as Storage from "./Storage";
 import * as InputProcessor from "./InputProcessor";
 import * as Intellisense from "./Intellisense";
-import * as Models from "./Models";
+import * as Connectivity from "./Connectivity";
 import * as electron from "electron";
+import { ReadyStates } from "./Models/ReadyStates";
 
 // Properties //
 export var ChargingAnimationInt:number;
@@ -50,6 +51,7 @@ export function ApplyEventHandlers(){
         var initialWidth = $("#menuFrame").width();
         var initialX = e.screenX;
         $(window).on("pointermove", (e)=>{
+            e.preventDefault();
             $("#menuFrame").width(initialWidth + initialX - e.screenX)
         });
         $(window).on("pointerup", (e)=>{
@@ -122,9 +124,9 @@ export function ApplyEventHandlers(){
     });
 };
 export function ChargingAnimationStart(){
-    Storage.Me.ReadyState = Models.ReadyStates.Charging;
+    Storage.Me.ReadyState = ReadyStates.Charging;
     ChargingAnimationInt = window.setInterval(()=>{
-        if (Storage.Me.ReadyState != Models.ReadyStates.Charging) {
+        if (Storage.Me.ReadyState != ReadyStates.Charging) {
             if (Storage.Me.CurrentCharge == 0) {
                 $('#startChargeButton').show();
                 $('#chargePoolFrame').hide();
@@ -151,7 +153,7 @@ export function ChargingAnimationStart(){
 }
 export function ChargingAnimationStop(){
     
-    }
+}
 export function FadeInText(text:string, delayInMilliseconds:number, callback:Function){
     window.setTimeout((text)=>{
         UI.AddMessageText("", 2);
@@ -177,7 +179,7 @@ export function RefreshUI(){
     $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
     $("#spanMultiplayerStatus").text(String(Storage.ClientSettings.IsMultiplayerEnabled).replace("true", "Enabled").replace("false", "Disabled"));
     $("#spanServerStatus").text(String(Storage.ServerSettings.IsEnabled).replace("true", "Enabled").replace("false", "Disabled"));
-    $("#spanInboundConnections").text(Storage.Temp.InboundConnections.length.toString());
+    $("#spanInboundConnections").text(Connectivity.InboundConnections.length.toString());
 }
 export function ShowDevTools(){
     electron.remote.getCurrentWindow().webContents.openDevTools();
