@@ -179,7 +179,8 @@ export function RefreshUI(){
     $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
     $("#spanMultiplayerStatus").text(String(Storage.ClientSettings.IsMultiplayerEnabled).replace("true", "Enabled").replace("false", "Disabled"));
     $("#spanServerStatus").text(String(Storage.ServerSettings.IsEnabled).replace("true", "Enabled").replace("false", "Disabled"));
-    $("#spanInboundConnections").text(Connectivity.InboundConnections.length.toString());
+    $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
+    $("#spanServerConnections").text(Connectivity.ServerToServerConnections.length.toString());
 }
 export function ShowDevTools(){
     electron.remote.getCurrentWindow().webContents.openDevTools();

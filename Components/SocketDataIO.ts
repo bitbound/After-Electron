@@ -2,10 +2,11 @@ import * as Connectivity from "./Connectivity";
 import * as Storage from "./Storage";
 import * as Utilities from "./Utilities";
 import * as UI from "./UI";
+import * as net from "net";
 import { ConnectedClient } from "./Models/ConnectedClient";
 
 // Final Data Out //
-export function Send(jsonData:any, socket: NodeJS.Socket){
+export function Send(jsonData:any, socket: net.Socket){
     Utilities.WriteDebug("Sending: " + JSON.stringify(jsonData), 1);
     if (jsonData.Type == undefined || jsonData.ID == undefined) {
         Utilities.Log("Type or ID missing from Broadcast data: " + JSON.stringify(jsonData));
@@ -23,11 +24,11 @@ export function Broadcast(jsonData: any) {
     if (Connectivity.OutboundConnection.IsConnected()) {
         Send(jsonData, Connectivity.OutboundConnection.Socket);
     }
-    Connectivity.InboundConnections.forEach(function (item) {
+    Connectivity.ClientConnections.forEach(function (item) {
         Send(jsonData, item.Socket);
     })
     if (Connectivity.OutboundConnection.IsConnected() == false && 
-        Connectivity.InboundConnections.length == 0)
+        Connectivity.ClientConnections.length == 0)
         {
             eval("Receive" + jsonData.Type + "(jsonData, null)");
         }
@@ -65,7 +66,13 @@ export function SendHelloFromClientToServer() {
         "ID": Utilities.CreateGUID()
     })
 }
-export function ReceiveHelloFromClientToServer(jsonData: any, socket: NodeJS.Socket) {
+export function ReceiveHelloFromClientToServer(jsonData: any, socket: net.Socket) {
+    var client = new ConnectedClient();
+    client.Socket = socket;
+    Connectivity.ClientConnections.push(client);
+    UI.RefreshUI();
+    Utilities.Log(`Connection received from ${socket.remoteAddress}.`);
+    SendHelloFromServerToClient();
     for (var i = 0; i < jsonData.KnownServers.length; i++){
         Utilities.UpdateAndAppend(Storage.KnownServers, jsonData.KnownServers[i],  ["IP", "Port"]);
     }
@@ -78,7 +85,7 @@ export function SendHelloFromServerToClient() {
         "ServerID": Connectivity.LocalServer.ID
     })
 }
-export function ReceiveHelloFromServerToClient(jsonData: any, socket: NodeJS.Socket) {
+export function ReceiveHelloFromServerToClient(jsonData: any, socket: net.Socket) {
     if (jsonData.ServerID == Connectivity.LocalServer.ID){
         var index = Storage.KnownServers.findIndex(x=>
             x.Host == Connectivity.OutboundConnection.Server.Host &&
@@ -101,8 +108,13 @@ export function SendHelloFromServerToServer() {
         "ID": Utilities.CreateGUID()
     })
 }
-export function ReceiveHelloFromServerToServer(jsonData: any, socket: NodeJS.Socket) {
-    
+export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket) {
+    Connectivity.ServerToServerConnections.push(socket);
+    UI.RefreshUI();
+    Utilities.Log(`Server connection received from ${socket.remoteAddress}.`);
+    for (var i = 0; i < jsonData.KnownServers.length; i++){
+        Utilities.UpdateAndAppend(Storage.KnownServers, jsonData.KnownServers[i], ["IP", "Port"]);
+    }
 }
 export function SendChat(message: string, channel: string) {
     Broadcast({
@@ -114,7 +126,7 @@ export function SendChat(message: string, channel: string) {
     });
 }
 
-export function ReceiveChat(jsonData: any, socket: NodeJS.Socket) {
+export function ReceiveChat(jsonData: any, socket: net.Socket) {
     switch (jsonData.Channel) {
         case "GlobalChat":
             UI.AddMessageHTML(`<span style='color:` +
