@@ -51,7 +51,7 @@ export function Init(){
     }
     
     $(document).ready(function(){
-        $("#buttonPlay").click(async function () {
+        $("#buttonPlay").click(function () {
             var path = require("path");
             $("#divSplash").remove();
             $("#divGame").show();
@@ -62,7 +62,7 @@ export function Init(){
                 Intro.Init();
             }
             else {
-                await Game.Init();
+                Game.Init();
             }
         });
         $("#buttonOptions").click(function () {

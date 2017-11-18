@@ -35,7 +35,8 @@ export var ServerSettings = new class ServerSettings {
     ServerID: string = Utilities.CreateGUID();
 }
 export var KnownServers: KnownServer[] = [
-    new KnownServer("after.myddns.rocks", 48836)
+    new KnownServer("after.myddns.rocks", 48836),
+    new KnownServer("localhost", 48836)
 ];
 
 export var Temp = new class Temp {

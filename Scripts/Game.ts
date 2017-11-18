@@ -6,10 +6,10 @@ export var Init = async function (){
     After.Models.Void.Load(After.Storage.Me.InnerVoidID).Display();
     
     if (After.Storage.ServerSettings.IsEnabled) {
-        After.Connectivity.StartServer();
+        await After.Connectivity.StartServer();
     }
     if (After.Storage.ClientSettings.IsMultiplayerEnabled) {
-        await After.Connectivity.FindServer();
+        await After.Connectivity.FindClientToServerConnection();
     }
     After.Connectivity.OutboundConnection.TargetServerID = After.Connectivity.LocalServer.ID;
 }

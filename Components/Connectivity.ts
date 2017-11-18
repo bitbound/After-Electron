@@ -41,41 +41,41 @@ export var LocalServer = new class LocalServer {
 export var ServerToServerConnections: Array<net.Socket> = new Array<net.Socket>();
 
 
-export async function FindClientToServerConnection():Promise<void>{
-    var promise = new Promise<void>(async function(resolve, reject){
-        UI.AddSystemMessage("Attempting to find a server.", 1);
-        for (var i = 0; i < Storage.KnownServers.length; i++){
-            try {
-                var server = Storage.KnownServers[i];
-                if (server.ID == LocalServer.ID) {
-                    continue;
-                }
-                if (await Connectivity.ConnectToServer(server, ConnectionTypes.ClientToServer))
-                {
-                    UI.AddSystemMessage("Connected to server.", 1);
-                    break;
-                }
-                else {
-                    Storage.KnownServers[i].BadConnectionAttempts++;
-                }
+export async function FindClientToServerConnection(){
+    UI.AddSystemMessage("Attempting to connect client to a server.", 1);
+    for (var i = 0; i < Storage.KnownServers.length; i++){
+        try {
+            var server = Storage.KnownServers[i];
+            if (server.ID == LocalServer.ID) {
+                continue;
             }
-            catch (ex) {
+            var socket = await Connectivity.ConnectToServer(server, ConnectionTypes.ClientToServer);
+            if (socket)
+            {
+                UI.AddSystemMessage("Connected to server.", 1);
+                break;
+            }
+            else {
                 Storage.KnownServers[i].BadConnectionAttempts++;
             }
         }
-        if (OutboundConnection.IsConnected() == false){
-            UI.AddSystemMessage("Unable to find a server.  Try connecting manually later.", 1);
+        catch (ex) {
+            Storage.KnownServers[i].BadConnectionAttempts++;
         }
-        resolve();
-    });
+    }
+    if (OutboundConnection.IsConnected() == false){
+        UI.AddSystemMessage("Unable to find a server.  Try connecting manually later.", 1);
+    }
 }
 export async function FindServerToServerConnection(){
+    UI.AddSystemMessage("Attempting to connect server to a server.", 1);
     var connected = false;
     for (var i = 0; i < Storage.KnownServers.length; i++){
         try {
-            if (await ConnectToServer(Storage.KnownServers[i], ConnectionTypes.ServerToServer)){
+            var socket = await ConnectToServer(Storage.KnownServers[i], ConnectionTypes.ServerToServer);
+            if (socket){
                 connected = true;
-                SocketDataIO.SendHelloFromServerToServer();
+                SocketDataIO.SendHelloFromServerToServer(Storage.KnownServers[i], socket);
                 break;
             }
         }
@@ -88,48 +88,60 @@ export async function FindServerToServerConnection(){
         Utilities.WriteDebug("Unable to create server-to-server connection.", 1);
     }
 }
-export async function ConnectToServer(server:KnownServer, connectionType:ConnectionTypes):Promise<boolean> {
-        var promise = new Promise<boolean>(function(resolve, reject){
+export async function ConnectToServer(server:KnownServer, connectionType:ConnectionTypes):Promise<net.Socket> {
+        var promise = new Promise<net.Socket>(function(resolve, reject){
             try {
                 OutboundConnection.IsDisconnectExpected = true;
                 var socket = net.connect(server.Port, server.Host, ()=>{
                     OutboundConnection.IsDisconnectExpected = false;
                     server.BadConnectionAttempts = 0;
-                    Utilities.UpdateAndPrepend(Storage.KnownServers, server, ["IP", "Port"]);
+                    Utilities.UpdateAndPrepend(Storage.KnownServers, server, ["Host", "Port"]);
                     if (connectionType == ConnectionTypes.ClientToServer){
                         OutboundConnection.ConnectionType = connectionType;
                         OutboundConnection.Server = server;
-                        SocketDataIO.SendHelloFromClientToServer();
+                        OutboundConnection.Socket = socket;
+                        SocketDataIO.SendHelloFromClientToServer(socket);
                     }
                     else if (connectionType == ConnectionTypes.ServerToServer){
-                        SocketDataIO.SendHelloFromServerToServer();
+                        SocketDataIO.SendHelloFromServerToServer(server, socket);
                     }
-                    resolve(true);
+                    resolve(socket);
                 });
-                if (connectionType == ConnectionTypes.ClientToServer){
-                    OutboundConnection.Socket = socket;
-                }
-                else if (connectionType == ConnectionTypes.ServerToServer){
-                    ServerToServerConnections.push(socket);
-                }
-                socket.on("error", async (err:Error)=>{
+                socket.on("error", (err:Error)=>{
                     Utilities.Log("Socket error: " + JSON.stringify(err));
                     Utilities.WriteDebug("Socket error.", 1);
                     if (connectionType == ConnectionTypes.ClientToServer){
                         if (!OutboundConnection.IsDisconnectExpected) {
-                            await Connectivity.FindClientToServerConnection();
+                            resolve(null);
+                            UI.AddSystemMessage("Client disconnected from server unexpectedly.", 1);
                         }
                     }
-                    resolve(false);
+                    else if (connectionType == ConnectionTypes.ServerToServer){
+                        var index = ServerToServerConnections.findIndex(x=>x==socket);
+                        if (index > -1){
+                            ServerToServerConnections.splice(index, 1);
+                            UI.RefreshUI();
+                        }
+                    }
+                    resolve(null);
                 });
-                socket.on("close", async(had_error)=>{
+                socket.on("close", (had_error)=>{
                     Utilities.Log("Socket closed.");
                     Utilities.WriteDebug("Socket closed.", 1);
                     if (connectionType == ConnectionTypes.ClientToServer){
                         if (!OutboundConnection.IsDisconnectExpected) {
-                            await Connectivity.FindClientToServerConnection();
+                            resolve(null);
+                            UI.AddSystemMessage("Client disconnected from server unexpectedly.", 1);
                         }
                     }
+                    else if (connectionType == ConnectionTypes.ServerToServer){
+                        var index = ServerToServerConnections.findIndex(x=>x==socket);
+                        if (index > -1){
+                            ServerToServerConnections.splice(index, 1);
+                            UI.RefreshUI();
+                        }
+                    }
+                    resolve(null);
                 })
                 socket.on("data", (data)=>{
                     try
@@ -140,16 +152,18 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
                             return;
                         }
                         Utilities.WriteDebug("Received from server: " + JSON.stringify(jsonData), 1);
-                        SocketDataIO.Broadcast(jsonData);
-                        eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, this)");
+                        if (jsonData.TargetServerID != LocalServer.ID && jsonData.DoBroadcast != false){
+                            SocketDataIO.Broadcast(jsonData);
+                        }
+                        eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, socket)");
                     }
                     catch (ex) {
-                        Utilities.Log(JSON.stringify(ex));
+                        Utilities.Log(ex.stack);
                     }
                 });
             }
             catch (ex){
-                return resolve(false);
+                resolve(null);
             }
         })
     return promise;
@@ -157,6 +171,10 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
 
 export async function StartServer() {
     var server = net.createServer(function(socket){
+        if (socket.remoteAddress.search("127.0.0.1") > -1) {
+            SocketDataIO.SendHelloToSelf(socket);
+            return;
+        }
         socket.on("data", (data)=>{
             try
             {
@@ -166,17 +184,19 @@ export async function StartServer() {
                     return;
                 }
                 Utilities.WriteDebug("Received from client: " + JSON.stringify(jsonData), 1);
-                SocketDataIO.Broadcast(jsonData);
+                if (jsonData.TargetServerID != LocalServer.ID && jsonData.DoBroast != false){
+                    SocketDataIO.Broadcast(jsonData);
+                }
                 if (Storage.ClientSettings.IsMultiplayerEnabled) {
                     eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, socket)");
                 }
             }
             catch (ex) {
-                Utilities.Log(JSON.stringify(ex));
+                Utilities.Log(ex.stack);
             }
         });
         socket.on("error", (err:Error)=>{
-            Utilities.Log(JSON.stringify(err));
+            Utilities.Log(err.stack);
             var index = Connectivity.ClientConnections.findIndex(x=>x.Socket == socket);
             if (index > -1){
                 Connectivity.ClientConnections.splice(index, 1);
@@ -215,7 +235,7 @@ export async function StartServer() {
                 server.listen(Storage.ServerSettings.ListeningPort);
             }, 1000);
         }
-        Utilities.Log(JSON.stringify(e));
+        Utilities.Log(e.stack);
     });
     server.listen(Storage.ServerSettings.ListeningPort, function(){
         Utilities.Log("TCP server started.");

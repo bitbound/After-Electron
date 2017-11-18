@@ -33,9 +33,18 @@ export function Evaluate(){
         var namespaceAndObject = text.slice(0, lastPeriod);
         var currentObject = eval(namespaceAndObject);
         if (currentObject instanceof Object){
-            var matches = Object.keys(currentObject).filter(value=>{
-                return value.toLowerCase().search(member.toLowerCase()) > -1;
-            })
+            var matches;
+            // After 3 characters of the member, match more specifically (startsWith).
+            if (member.length <= 3) {
+                matches = Object.keys(currentObject).filter(value=>{
+                    return value.toLowerCase().search(member.toLowerCase()) > -1;
+                })
+            }
+            else {
+                matches = Object.keys(currentObject).filter(value=>{
+                    return value.toLowerCase().startsWith(member.toLowerCase());
+                })
+            }
             if (matches.length > 0){
                 UI.IntellisenseFrame.html(matches.join("<br>"));
             }

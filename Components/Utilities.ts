@@ -219,7 +219,7 @@ export function HexToRGB(col:string):string {
 export function UpdateAndAppend(array:Array<any>, item:any, matchKeys:string[]){
     var existingIndex = array.findIndex((value)=>{
         for (var i = 0; i < matchKeys.length; i++) {
-            if (item[i] != value[i]){
+            if (item[matchKeys[i]] != value[matchKeys[i]]){
                 return false;
             }
         }
@@ -233,7 +233,7 @@ export function UpdateAndAppend(array:Array<any>, item:any, matchKeys:string[]){
 export function UpdateAndPrepend(array:Array<any>, item:any, matchKeys:string[]){
     var existingIndex = array.findIndex((value)=>{
         for (var i = 0; i < matchKeys.length; i++) {
-            if (item[i] != value[i]){
+            if (item[matchKeys[i]] != value[matchKeys[i]]){
                 return false;
             }
         }
@@ -247,7 +247,6 @@ export function UpdateAndPrepend(array:Array<any>, item:any, matchKeys:string[])
 export function Log(message:string){
     console.log(message);
     var logPath = path.join(FileSystem.UserDataPath, "Log.txt");
-
     fs.appendFileSync(logPath, (new Date()).toLocaleString() + " -   " + message + "\r\n")
 }
 export function NumberIsBetween(NumberAnalyzed: number, Min: number, Max: number, IncludeMinMax: boolean): boolean {
