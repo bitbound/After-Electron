@@ -43,11 +43,6 @@ export function Broadcast(jsonData: any) {
     Connectivity.ServerToServerConnections.forEach(function (item) {
         Send(jsonData, item);
     })
-    if (Connectivity.OutboundConnection.IsConnected() == false && 
-        Connectivity.ClientConnections.length == 0)
-        {
-            eval("Receive" + jsonData.Type + "(jsonData, null)");
-        }
 }
 
 export function SendToSpecificSocket(jsonData: any, socket: net.Socket) {
@@ -60,7 +55,6 @@ export function SendHelloFromClientToServer(socket: net.Socket) {
     SendToSpecificSocket({
         "Type": "HelloFromClientToServer",
         "ID": Utilities.CreateGUID(),
-        "KnownServers": Storage.KnownServers,
         "ServerID": Connectivity.LocalServer.ID,
         "DoBroadcast": false
     }, socket)
@@ -81,7 +75,6 @@ export function SendHelloFromServerToClient(socket:net.Socket) {
     SendToSpecificSocket({
         "Type": "HelloFromServerToClient",
         "ID": Utilities.CreateGUID(),
-        "KnownServers": Storage.KnownServers,
         "ServerID": Connectivity.LocalServer.ID,
         "DoBroadcast": false
     }, socket)
@@ -97,7 +90,7 @@ export function ReceiveHelloFromServerToClient(jsonData: any, socket: net.Socket
             Storage.KnownServers.push(server[0]);
         }
         socket.end();
-        UI.AddSystemMessage("Client has connected to self and was disconnected.  Please try restarting or connecting to another server manually.", 1);
+        UI.AddSystemMessage("Client has connected to self and was disconnected.  Your server list has been reorganized.  Try connecting again.", 1);
         return;
     }
     Storage.KnownServers[index].ID = jsonData.ServerID;
@@ -107,7 +100,6 @@ export function SendHelloFromServerToServer(toServer:KnownServer, socket:net.Soc
     SendToSpecificSocket({
         "Type": "HelloFromServerToServer",
         "ID": Utilities.CreateGUID(),
-        "KnownServers": Storage.KnownServers,
         "ServerID": Connectivity.LocalServer.ID,
         "KnownServer": toServer,
         "DoBroadcast": false
@@ -125,7 +117,7 @@ export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket
             Storage.KnownServers.push(server[0]);
         }
         socket.end();
-        UI.AddSystemMessage("Client has connected to self and was disconnected.  Please try restarting or connecting to another server manually.", 1);
+        UI.AddSystemMessage("Server has connected to self and was disconnected.  Your server list has been reorganized.  Try connecting again.", 1);
         return;
     }
     Connectivity.ServerToServerConnections.push(socket);
@@ -134,18 +126,21 @@ export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket
     SendKnownServers(socket);
 }
 export function ReceiveHelloToSelf(jsonData:any, socket: net.Socket){
-    UI.AddSystemMessage("Client attempted to connect to self.  Please restart the game or reconnect manually.", 1);
+    Connectivity.OutboundConnection.Server.ID = jsonData.ServerID;
+    Utilities.UpdateAndAppend(Storage.KnownServers, Connectivity.OutboundConnection.Server, ["Host", "Port"]);
+    UI.AddSystemMessage("Client attempted to connect to self.  Your server list has been reorganized.  Try connecting again.", 1);
     socket.end();
 }
 export function SendHelloToSelf(socket:net.Socket){
     SendToSpecificSocket({
         "Type": "HelloToSelf",
-        "ID": Utilities.CreateGUID()
+        "ID": Utilities.CreateGUID(),
+        "ServerID": Connectivity.LocalServer.ID
     }, socket)
 }
 export function SendKnownServers(socket: net.Socket) {
     SendToSpecificSocket({
-        "Type": "HelloFromServerToServer",
+        "Type": "KnownServers",
         "ID": Utilities.CreateGUID(),
         "KnownServers": Storage.KnownServers
     }, socket)

@@ -47,6 +47,7 @@ export async function FindClientToServerConnection(){
         try {
             var server = Storage.KnownServers[i];
             if (server.ID == LocalServer.ID) {
+                Utilities.UpdateAndAppend(Storage.KnownServers, server, ["Host", "Port"]);
                 continue;
             }
             var socket = await Connectivity.ConnectToServer(server, ConnectionTypes.ClientToServer);
@@ -57,10 +58,13 @@ export async function FindClientToServerConnection(){
             }
             else {
                 Storage.KnownServers[i].BadConnectionAttempts++;
+                Utilities.UpdateAndAppend(Storage.KnownServers, server, ["Host", "Port"]);
             }
         }
         catch (ex) {
             Storage.KnownServers[i].BadConnectionAttempts++;
+            Utilities.UpdateAndAppend(Storage.KnownServers, Storage.KnownServers[i], ["Host", "Port"]);
+            continue;
         }
     }
     if (OutboundConnection.IsConnected() == false){
@@ -72,14 +76,23 @@ export async function FindServerToServerConnection(){
     var connected = false;
     for (var i = 0; i < Storage.KnownServers.length; i++){
         try {
+            if (Storage.KnownServers[i].ID == Connectivity.LocalServer.ID){
+                continue;
+            }
             var socket = await ConnectToServer(Storage.KnownServers[i], ConnectionTypes.ServerToServer);
             if (socket){
                 connected = true;
                 SocketDataIO.SendHelloFromServerToServer(Storage.KnownServers[i], socket);
                 break;
             }
+            else {
+                Storage.KnownServers[i].BadConnectionAttempts++;
+                Utilities.UpdateAndAppend(Storage.KnownServers, Storage.KnownServers[i], ["Host", "Port"]);
+            }
         }
         catch (ex) {
+            Storage.KnownServers[i].BadConnectionAttempts++;
+            Utilities.UpdateAndAppend(Storage.KnownServers, Storage.KnownServers[i], ["Host", "Port"]);
             continue;
         }
     }
