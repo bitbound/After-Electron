@@ -59,91 +59,55 @@ export function SendHelloFromClientToServer(socket: net.Socket) {
     SendToSpecificSocket({
         "Type": "HelloFromClientToServer",
         "ID": Utilities.CreateGUID(),
-        "ServerID": Connectivity.LocalServer.ID,
-        "DoBroadcast": false
+        "ServerID": Storage.ServerSettings.ServerID,
+        "ShouldBroadcast": false
     }, socket)
 }
 export function ReceiveHelloFromClientToServer(jsonData: any, socket: net.Socket) {
-    if (jsonData.ServerID == Connectivity.LocalServer.ID) {
-        return;
-    }
-    SendHelloFromServerToClient(socket);
     var client = new ConnectedClient();
     client.Socket = socket;
     Connectivity.ClientConnections.push(client);
     UI.RefreshUI();
-    Utilities.Log(`Connection received from ${socket.remoteAddress}.`);
+    Utilities.WriteDebug(`Connection received from ${socket.remoteAddress}.`, 1);
+    SendHelloFromServerToClient(socket);
     SendKnownServers(socket);
 }
 export function SendHelloFromServerToClient(socket: net.Socket) {
     SendToSpecificSocket({
         "Type": "HelloFromServerToClient",
         "ID": Utilities.CreateGUID(),
-        "ServerID": Connectivity.LocalServer.ID,
-        "DoBroadcast": false
+        "ServerID": Storage.ServerSettings.ServerID,
+        "ShouldBroadcast": false
     }, socket)
 }
 export function ReceiveHelloFromServerToClient(jsonData: any, socket: net.Socket) {
-    var index = Storage.KnownServers.findIndex(x =>
-        x.Host == Connectivity.OutboundConnection.Server.Host &&
-        x.Port == Connectivity.OutboundConnection.Server.Port
-    );
-    if (jsonData.ServerID == Connectivity.LocalServer.ID) {
-        if (index > -1) {
-            var server = Storage.KnownServers.splice(index, 1);
-            Storage.KnownServers.push(server[0]);
-        }
-        socket.end();
-        UI.AddSystemMessage("Client has connected to self and was disconnected.  Your server list has been reorganized.  Try connecting again.", 1);
-        return;
-    }
-    Storage.KnownServers[index].ID = jsonData.ServerID;
+    Connectivity.OutboundConnection.Server.ID = jsonData.ServerID;
     SendKnownServers(socket);
 }
 export function SendHelloFromServerToServer(toServer: KnownServer, socket: net.Socket) {
     SendToSpecificSocket({
         "Type": "HelloFromServerToServer",
         "ID": Utilities.CreateGUID(),
-        "ServerID": Connectivity.LocalServer.ID,
+        "ServerID": Storage.ServerSettings.ServerID,
         "KnownServer": toServer,
-        "DoBroadcast": false
+        "ShouldBroadcast": false
     }, socket)
 }
 export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket) {
-    if (jsonData.ServerID == Connectivity.LocalServer.ID) {
-        var index = Storage.KnownServers.findIndex(x =>
-            x.Host == jsonData.KnownServer.Host &&
-            x.Port == jsonData.KnownServer.Post
-        );
-        if (index > -1) {
-            var server = Storage.KnownServers.splice(index, 1);
-            server[0].ID = jsonData.ServerID;
-            Storage.KnownServers.push(server[0]);
-        }
+    if (jsonData.ServerID == Storage.ServerSettings.ServerID){
+        var server = Storage.KnownServers.find(x=>x.Host == jsonData.KnownServer.Host && x.Port == jsonData.KnownServer.Port);
+        server.ID == jsonData.ServerID;
+        Utilities.UpdateAndAppend(Storage.KnownServers, server, ["Host", "Port"]);
+        UI.AddSystemMessage("Server attempted to connect to self.  Your known servers have been reorganized.  Please reconnect.", 1);
         socket.end();
-        UI.AddSystemMessage("Server has connected to self and was disconnected.  Your server list has been reorganized.  Try connecting again.", 1);
         return;
     }
     Connectivity.ServerToServerConnections.push(socket);
     UI.RefreshUI();
-    Utilities.Log(`Server connection received from ${socket.remoteAddress}.`);
+    Utilities.WriteDebug(`Server connection received from ${socket.remoteAddress}.`, 1);
     SendKnownServers(socket);
 }
-export function ReceiveHelloToSelf(jsonData: any, socket: net.Socket) {
-    if (Connectivity.OutboundConnection.Server) {
-        Connectivity.OutboundConnection.Server.ID = jsonData.ServerID;
-        Utilities.UpdateAndAppend(Storage.KnownServers, Connectivity.OutboundConnection.Server, ["Host", "Port"]);
-    }
-    UI.AddSystemMessage("Client attempted to connect to self.  Your server list has been reorganized.  Try connecting again.", 1);
-    socket.end();
-}
-export function SendHelloToSelf(socket: net.Socket) {
-    SendToSpecificSocket({
-        "Type": "HelloToSelf",
-        "ID": Utilities.CreateGUID(),
-        "ServerID": Connectivity.LocalServer.ID
-    }, socket)
-}
+
 export function SendKnownServers(socket: net.Socket) {
     SendToSpecificSocket({
         "Type": "KnownServers",
@@ -167,15 +131,17 @@ export function SendChat(message: string, channel: string) {
 }
 
 export function ReceiveChat(jsonData: any, socket: net.Socket) {
-    switch (jsonData.Channel) {
-        case "GlobalChat":
-            UI.AddMessageHTML(`<span style='color:` +
-                Storage.ClientSettings.Colors.GlobalChat + `'>(Global) ` +
-                Utilities.EncodeForHTML(jsonData.From) + `: </span>` +
-                Utilities.EncodeForHTML(jsonData.Message), 1);
-            break;
-
-        default:
-            break;
+    if (Storage.ClientSettings.IsMultiplayerEnabled){
+        switch (jsonData.Channel) {
+            case "GlobalChat":
+                UI.AddMessageHTML(`<span style='color:` +
+                    Storage.ClientSettings.Colors.GlobalChat + `'>(Global) ` +
+                    Utilities.EncodeForHTML(jsonData.From) + `: </span>` +
+                    Utilities.EncodeForHTML(jsonData.Message), 1);
+                break;
+    
+            default:
+                break;
+        }
     }
 }

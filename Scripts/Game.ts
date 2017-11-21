@@ -11,6 +11,6 @@ export var Init = async function (){
     if (After.Storage.ClientSettings.IsMultiplayerEnabled) {
         await After.Connectivity.FindClientToServerConnection();
     }
-    After.Connectivity.OutboundConnection.TargetServerID = After.Connectivity.LocalServer.ID;
+    After.Connectivity.OutboundConnection.TargetServerID = After.Storage.ServerSettings.ServerID;
 }
 
