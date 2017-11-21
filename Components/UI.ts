@@ -6,7 +6,7 @@ import * as InputProcessor from "./InputProcessor";
 import * as Intellisense from "./Intellisense";
 import * as Connectivity from "./Connectivity";
 import * as electron from "electron";
-import { ReadyStates } from "./Models/ReadyStates";
+import { ReadyStates } from "../Models/ReadyStates";
 
 // Properties //
 export var ChargingAnimationInt:number;

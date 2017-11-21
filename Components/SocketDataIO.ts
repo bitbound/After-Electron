@@ -3,12 +3,11 @@ import * as Storage from "./Storage";
 import * as Utilities from "./Utilities";
 import * as UI from "./UI";
 import * as net from "net";
-import { ConnectedClient } from "./Models/ConnectedClient";
-import { KnownServer } from "./Models/index";
+import { ConnectedClient, KnownServer } from "../Models/index";
 
 // Check if specific message has been received.
-export function HaveYouGotten(id:string){
-    if (Storage.Temp.ReceivedMessages.find(item=>item == id)){
+export function HaveYouGotten(id: string) {
+    if (Storage.Temp.ReceivedMessages.find(item => item == id)) {
         return true;
     }
     else {
@@ -19,7 +18,7 @@ export function HaveYouGotten(id:string){
 
 
 // Final Data Out //
-export function Send(jsonData:any, socket: net.Socket){
+export function Send(jsonData: any, socket: net.Socket) {
     Utilities.WriteDebug("Sending to " + socket.remoteAddress + ": " + JSON.stringify(jsonData), 1);
     if (jsonData.Type == undefined || jsonData.ID == undefined) {
         Utilities.Log("Type or ID missing from Broadcast data: " + JSON.stringify(jsonData));
@@ -33,7 +32,7 @@ export function Send(jsonData:any, socket: net.Socket){
 }
 // Data Out Target Functions //
 export function Broadcast(jsonData: any) {
-    
+
     if (Connectivity.OutboundConnection.IsConnected()) {
         Send(jsonData, Connectivity.OutboundConnection.Socket);
     }
@@ -43,6 +42,11 @@ export function Broadcast(jsonData: any) {
     Connectivity.ServerToServerConnections.forEach(function (item) {
         Send(jsonData, item);
     })
+    if (Connectivity.OutboundConnection.IsConnected() == false &&
+        Connectivity.ClientConnections.length == 0 &&
+        Connectivity.ServerToServerConnections.length == 0) {
+            eval("Receive" + jsonData.Type + "(jsonData, new require('net').Socket())");
+    }
 }
 
 export function SendToSpecificSocket(jsonData: any, socket: net.Socket) {
@@ -60,7 +64,7 @@ export function SendHelloFromClientToServer(socket: net.Socket) {
     }, socket)
 }
 export function ReceiveHelloFromClientToServer(jsonData: any, socket: net.Socket) {
-    if (jsonData.ServerID == Connectivity.LocalServer.ID){
+    if (jsonData.ServerID == Connectivity.LocalServer.ID) {
         return;
     }
     SendHelloFromServerToClient(socket);
@@ -71,7 +75,7 @@ export function ReceiveHelloFromClientToServer(jsonData: any, socket: net.Socket
     Utilities.Log(`Connection received from ${socket.remoteAddress}.`);
     SendKnownServers(socket);
 }
-export function SendHelloFromServerToClient(socket:net.Socket) {
+export function SendHelloFromServerToClient(socket: net.Socket) {
     SendToSpecificSocket({
         "Type": "HelloFromServerToClient",
         "ID": Utilities.CreateGUID(),
@@ -80,12 +84,12 @@ export function SendHelloFromServerToClient(socket:net.Socket) {
     }, socket)
 }
 export function ReceiveHelloFromServerToClient(jsonData: any, socket: net.Socket) {
-    var index = Storage.KnownServers.findIndex(x=>
+    var index = Storage.KnownServers.findIndex(x =>
         x.Host == Connectivity.OutboundConnection.Server.Host &&
         x.Port == Connectivity.OutboundConnection.Server.Port
     );
-    if (jsonData.ServerID == Connectivity.LocalServer.ID){
-        if (index > -1){
+    if (jsonData.ServerID == Connectivity.LocalServer.ID) {
+        if (index > -1) {
             var server = Storage.KnownServers.splice(index, 1);
             Storage.KnownServers.push(server[0]);
         }
@@ -96,7 +100,7 @@ export function ReceiveHelloFromServerToClient(jsonData: any, socket: net.Socket
     Storage.KnownServers[index].ID = jsonData.ServerID;
     SendKnownServers(socket);
 }
-export function SendHelloFromServerToServer(toServer:KnownServer, socket:net.Socket) {
+export function SendHelloFromServerToServer(toServer: KnownServer, socket: net.Socket) {
     SendToSpecificSocket({
         "Type": "HelloFromServerToServer",
         "ID": Utilities.CreateGUID(),
@@ -106,12 +110,12 @@ export function SendHelloFromServerToServer(toServer:KnownServer, socket:net.Soc
     }, socket)
 }
 export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket) {
-    if (jsonData.ServerID == Connectivity.LocalServer.ID){
-        var index = Storage.KnownServers.findIndex(x=>
+    if (jsonData.ServerID == Connectivity.LocalServer.ID) {
+        var index = Storage.KnownServers.findIndex(x =>
             x.Host == jsonData.KnownServer.Host &&
             x.Port == jsonData.KnownServer.Post
         );
-        if (index > -1){
+        if (index > -1) {
             var server = Storage.KnownServers.splice(index, 1);
             server[0].ID = jsonData.ServerID;
             Storage.KnownServers.push(server[0]);
@@ -125,13 +129,15 @@ export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket
     Utilities.Log(`Server connection received from ${socket.remoteAddress}.`);
     SendKnownServers(socket);
 }
-export function ReceiveHelloToSelf(jsonData:any, socket: net.Socket){
-    Connectivity.OutboundConnection.Server.ID = jsonData.ServerID;
-    Utilities.UpdateAndAppend(Storage.KnownServers, Connectivity.OutboundConnection.Server, ["Host", "Port"]);
+export function ReceiveHelloToSelf(jsonData: any, socket: net.Socket) {
+    if (Connectivity.OutboundConnection.Server) {
+        Connectivity.OutboundConnection.Server.ID = jsonData.ServerID;
+        Utilities.UpdateAndAppend(Storage.KnownServers, Connectivity.OutboundConnection.Server, ["Host", "Port"]);
+    }
     UI.AddSystemMessage("Client attempted to connect to self.  Your server list has been reorganized.  Try connecting again.", 1);
     socket.end();
 }
-export function SendHelloToSelf(socket:net.Socket){
+export function SendHelloToSelf(socket: net.Socket) {
     SendToSpecificSocket({
         "Type": "HelloToSelf",
         "ID": Utilities.CreateGUID(),
@@ -142,11 +148,11 @@ export function SendKnownServers(socket: net.Socket) {
     SendToSpecificSocket({
         "Type": "KnownServers",
         "ID": Utilities.CreateGUID(),
-        "KnownServers": Storage.KnownServers
+        "KnownServers": Storage.KnownServers.filter(server=>server.IsLocalNetwork != true)
     }, socket)
 }
 export function ReceiveKnownServers(jsonData: any, socket: net.Socket) {
-    for (var i = 0; i < jsonData.KnownServers.length; i++){
+    for (var i = 0; i < jsonData.KnownServers.length; i++) {
         Utilities.UpdateAndAppend(Storage.KnownServers, jsonData.KnownServers[i], ["Host", "Port"]);
     }
 }

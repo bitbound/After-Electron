@@ -1,6 +1,6 @@
-import * as Utilites from "../Utilities";
-import * as FileSystem from "../FileSystem";
-import * as UI from "../UI";
+import * as Utilites from "../Components/Utilities";
+import * as FileSystem from "../Components/FileSystem";
+import * as UI from "../Components/UI";
 import * as fs from "fs";
 import * as path from "path";
 import { NPC } from "./NPC";

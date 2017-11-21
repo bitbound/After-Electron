@@ -4,6 +4,7 @@ import * as Storage from "./Storage";
 import * as fs from "fs";
 import * as path from "path";
 import * as $ from "jquery";
+import * as os from "os";
 
 export function ArePropertiesEqual(object1, object2) {
     if (Object.keys(object1).length !== Object.keys(object2).length) {
@@ -189,6 +190,7 @@ export function CreateGUID() {
 export function EncodeForHTML(input:string) {
     return $("<div>").text(input).html();
 };
+
 export function GetRandom(Min:number, Max:number, Round:boolean): number {
     if (Min > Max) {
         throw "Min must be less than max.";
@@ -216,6 +218,25 @@ export function HexToRGB(col:string):string {
     b = parseInt(b, 16);
     return 'rgb(' + r + ',' + g + ',' + b + ')';
 };
+export function IsLocalIP(ip:string):boolean{
+    // Get IPv4 address when ip is v6 and v4 together, as in socket.remoteAddress.
+    var split = ip.split(":");
+    var ipv4 = split[split.length - 1];
+    var interfaces = os.networkInterfaces();
+    var addresses = [];
+    for (var key in interfaces) {
+        for (var key2 in interfaces[key]) {
+            var address = interfaces[key][key2];
+            if (key.search("Loopback") > -1 && address.address == ipv4){
+                return true;
+            }
+            else if (address.family == 'IPv4' && !address.internal && address.address == ipv4) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 export function UpdateAndAppend(array:Array<any>, item:any, matchKeys:string[]){
     var existingIndex = array.findIndex((value)=>{
         for (var i = 0; i < matchKeys.length; i++) {

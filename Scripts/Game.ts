@@ -1,5 +1,5 @@
 import * as After from "../After";
-import { KnownServer, ConnectionTypes } from "../Components/Models/index";
+import { KnownServer, ConnectionTypes } from "../Models/Index";
 
 export var Init = async function (){
     After.Storage.Me.CurrentLocationID = After.Storage.Me.InnerVoidID;

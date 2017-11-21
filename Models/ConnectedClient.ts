@@ -1,4 +1,4 @@
-import * as Utilities from "../Utilities";
+import * as Utilities from "../Components/Utilities"
 import * as net from "net";
 import { Player } from "./Player";
 

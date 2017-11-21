@@ -3,8 +3,13 @@ import * as $ from "jquery";
 import * as electron from "electron";
 import * as Game from "./Game";
 import * as Intro from "./Intro";
+import { Utilities } from "../After";
 
 export function Init(){
+    window.onerror = function(messageOrEvent, source, lineno, colno, error) {
+        alert("Error");
+        Utilities.Log(JSON.stringify(error));
+    }
     window["After"] = After;
     window["$"] = $;
     electron.remote.getCurrentWindow().on("close", (event)=>{

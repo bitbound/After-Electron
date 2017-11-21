@@ -5,8 +5,8 @@ import * as path from 'path';
 import * as Storage from './Storage';
 import * as UI from "./UI";
 import * as Utilities from "./Utilities";
-import { KnownServer } from './Models/KnownServer';
-import { Player } from './Models/Player';
+import { KnownServer } from '../Models/KnownServer';
+import { Player } from '../Models/Player';
 
 export var Me = new Player();
 
@@ -35,8 +35,7 @@ export var ServerSettings = new class ServerSettings {
     ServerID: string = Utilities.CreateGUID();
 }
 export var KnownServers: KnownServer[] = [
-    new KnownServer("after.myddns.rocks", 48836),
-    new KnownServer("localhost", 48836)
+    new KnownServer("after.myddns.rocks", 48836, false)
 ];
 
 export var Temp = new class Temp {

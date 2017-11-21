@@ -4,9 +4,9 @@ import * as Utilities from "./Utilities";
 import * as Connectivity from "./Connectivity";
 import * as SocketDataIO from "./SocketDataIO";
 import * as UI from "./UI";
-import { ConnectedClient } from "./Models/ConnectedClient";
-import { ConnectionTypes } from "./Models/ConnectionTypes";
-import { KnownServer } from "./Models/KnownServer";
+import { ConnectedClient } from "../Models/ConnectedClient";
+import { ConnectionTypes } from "../Models/ConnectionTypes";
+import { KnownServer } from "../Models/KnownServer";
 
 export var ClientConnections:Array<ConnectedClient> = new Array<ConnectedClient>();
 
@@ -42,7 +42,7 @@ export var ServerToServerConnections: Array<net.Socket> = new Array<net.Socket>(
 
 
 export async function FindClientToServerConnection(){
-    UI.AddSystemMessage("Attempting to connect client to a server.", 1);
+    UI.AddSystemMessage("Attempting to find a client-to-server connection.", 1);
     for (var i = 0; i < Storage.KnownServers.length; i++){
         try {
             var server = Storage.KnownServers[i];
@@ -68,11 +68,11 @@ export async function FindClientToServerConnection(){
         }
     }
     if (OutboundConnection.IsConnected() == false){
-        UI.AddSystemMessage("Unable to find a server.  Try connecting manually later.", 1);
+        UI.AddSystemMessage("Unable to find a client-to-server connection.  Try connecting manually later.", 1);
     }
 }
 export async function FindServerToServerConnection(){
-    UI.AddSystemMessage("Attempting to connect server to a server.", 1);
+    UI.AddSystemMessage("Attempting to find a server-to-server connection.", 1);
     var connected = false;
     for (var i = 0; i < Storage.KnownServers.length; i++){
         try {
@@ -98,7 +98,7 @@ export async function FindServerToServerConnection(){
     }
     if (!connected)
     {
-        Utilities.WriteDebug("Unable to create server-to-server connection.", 1);
+        UI.AddSystemMessage("Unable to find a server-to-server connection.", 1);
     }
 }
 export async function ConnectToServer(server:KnownServer, connectionType:ConnectionTypes):Promise<net.Socket> {
@@ -106,6 +106,11 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
             try {
                 OutboundConnection.IsDisconnectExpected = true;
                 var socket = net.connect(server.Port, server.Host, ()=>{
+                    if (Utilities.IsLocalIP(socket.remoteAddress)){
+                        Utilities.UpdateAndAppend(Storage.KnownServers, server, ["Host", "Port"]);
+                        resolve(null);
+                        return;
+                    }
                     OutboundConnection.IsDisconnectExpected = false;
                     server.BadConnectionAttempts = 0;
                     Utilities.UpdateAndPrepend(Storage.KnownServers, server, ["Host", "Port"]);
@@ -183,9 +188,10 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
 }
 
 export async function StartServer() {
+    
     var server = net.createServer(function(socket){
-        if (socket.remoteAddress.search("127.0.0.1") > -1) {
-            SocketDataIO.SendHelloToSelf(socket);
+        if (Utilities.IsLocalIP(socket.remoteAddress)) {
+           SocketDataIO.SendHelloToSelf(socket);
             return;
         }
         socket.on("data", (data)=>{
@@ -242,11 +248,8 @@ export async function StartServer() {
     })
     server.on('error', (e: NodeJS.ErrnoException) => {
         if (e.code === 'EADDRINUSE') {
-            Utilities.Log('TCP Server: Address in use.  Retrying...');
-            setTimeout(() => {
-                server.close();
-                server.listen(Storage.ServerSettings.ListeningPort);
-            }, 1000);
+            Utilities.WriteDebug('TCP Server Error: Port already in use.', 1);
+            
         }
         Utilities.Log(e.stack);
     });

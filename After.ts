@@ -6,7 +6,7 @@ import * as storage from "./Components/Storage";
 import * as utilities from "./Components/Utilities";
 import * as socketDataIO from "./Components/SocketDataIO";
 import * as inputProcessor from "./Components/InputProcessor";
-import * as models from "./Components/Models/";
+import * as models from "./Models/";
 
 export var Audio = audio;
 export var Connectivity = connectivity
