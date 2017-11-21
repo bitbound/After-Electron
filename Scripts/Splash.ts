@@ -15,6 +15,8 @@ export function Init(){
     electron.remote.getCurrentWindow().on("close", (event)=>{
         After.Storage.SaveAll();
     });
+    After.UI.ApplyEventHandlers();
+    After.UI.ApplyDataBinds();
     After.Storage.LoadAll();
     window.setInterval(()=>{
         After.Storage.SaveAll();
@@ -76,7 +78,6 @@ export function Init(){
                 "title": "In Progress"
             });
         });
-        After.UI.ApplyEventHandlers();
         $("#divSplash").fadeIn(600);
         raiseParticle();
     })

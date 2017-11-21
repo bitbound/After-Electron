@@ -247,7 +247,7 @@ export async function StartServer() {
         Utilities.Log(e.stack);
     });
     server.listen(Storage.ServerSettings.ListeningPort, function(){
-        Utilities.Log("TCP server started.");
+        Utilities.WriteDebug("TCP server started.", 1);
     });
     Connectivity.LocalServer.Server = server;
     await FindServerToServerConnection();

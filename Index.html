@@ -68,14 +68,23 @@
                 <div id="gridDivider"></div>
             </div>
             <div id="menuFrame">
-                <button id="closeMenuButton" style="width:auto;">→</button>
-                <button id="optionsButton" style="width:30px; float:right; background-image:url('./Assets/gear.png');
-                                            background-position: center; background-repeat:no-repeat; background-size:15px 15px">
+                <button id="closeMenuButton">→</button>
+                <button id="optionsButton">
                     
                 </button>
-                <button>Character</button>
-                <button>Powers</button>
-                <button>Scripts</button>
+                <button class="side-menu-tab">Character</button>
+                <div class="side-menu-section" hidden>
+                    <div>
+                        <div class="side-menu-key">Current Energy:</div>
+                        <div id="currentEnergySideMenu" class="side-menu-value">0</div>
+                    </div>
+                </div>
+                <button class="side-menu-tab">Powers</button>
+                <div class="side-menu-section" hidden>
+                </div>
+                <button class="side-menu-tab">Scripts</button>
+                <div class="side-menu-section" hidden>
+                </div>
             </div>
         </div>
         <div id="inputFrame" class="ui-frame">

@@ -26,7 +26,7 @@ button:active {
 }
 
 /*  Toggle Switch */
-.switch-outer {
+.toggle-switch-outer {
     height: 25px;
     width: 45px;
     border-radius: 10px;
@@ -35,17 +35,17 @@ button:active {
     vertical-align: middle;
 }
 
-.switch-outer[on="true"] {
+.toggle-switch-outer[on="true"] {
     background-color: steelblue;
     transition: .5s;
 }
 
-.switch-outer[on="false"] {
+.toggle-switch-outer[on="false"] {
     background-color: gray;
     transition: .5s;
 }
 
-.switch-inner {
+.toggle-switch-inner {
     border-radius: 100%;
     background-color: white;
     height: 20px;
@@ -57,12 +57,12 @@ button:active {
     transform: translate(-50%, -50%);
 }
 
-.switch-outer[on="true"] .switch-inner {
+.toggle-switch-outer[on="true"] .switch-inner {
     margin-left: 24%;
     transition: .5s;
 }
 
-.switch-outer[on="false"] .switch-inner {
+.toggle-switch-outer[on="false"] .switch-inner {
     margin-left: -24%;
     transition: .5s;
 }
@@ -111,19 +111,7 @@ button:active {
     border-radius: 5px;
     padding: 5px;
 }
-#menuFrame {
-    grid-column: 3;
-    grid-row: 1;
-    width: 0;   
-    overflow:hidden; 
-}
 
-#menuFrame button {
-    width: 100%;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    height: 30px;
-}
 #messageWindow {
     grid-column: 1;
     grid-row: 1;
@@ -265,6 +253,44 @@ button:active {
 }
 
 /* Side Menu */
+#menuFrame {
+    grid-column: 3;
+    grid-row: 1;
+    width: 0;   
+    overflow:hidden; 
+}
+
+#menuFrame button {
+    width: 100%;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    height: 30px;
+}
+#menuFrame #closeMenuButton {
+    width: auto;
+}
+#menuFrame #optionsButton {
+    width:30px; float:right; 
+    background-image:url('./Assets/gear.png');
+    background-position: center; 
+    background-repeat:no-repeat;
+    background-size:15px 15px;
+}
+.side-menu-tab {
+    text-align: center;
+    padding: 5px 0;
+    cursor: pointer;
+    background-color: rgb(80, 80, 80);
+}
+.side-menu-tab:hover {
+    background-color: rgb(173, 173, 173);
+}
+
+.side-menu-section {
+    font-family: sans-serif;
+    font-size: .8em;
+    padding: 10px 5px;
+}
 .side-menu-key {
     vertical-align: middle;
     display: inline-block;

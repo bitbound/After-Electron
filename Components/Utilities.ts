@@ -187,6 +187,29 @@ export function CreateGUID() {
         return v.toString(16);
     });
 };
+
+export function DataBind(dataObject: Object, objectProperty: string, element: HTMLElement, elementPropertyKey: string, appendToPreviousBind: boolean, additionalCallback:Function) {
+    var previousSetter;
+    if (appendToPreviousBind){
+        previousSetter = Object.getOwnPropertyDescriptor(dataObject, objectProperty).set;
+    }
+    Object.defineProperty(dataObject, objectProperty, {
+        configurable: true,
+        enumerable: true,
+        get() {
+            return element[elementPropertyKey];
+        },
+        set(value: any) {
+            if (previousSetter){
+                previousSetter(value);
+            };
+            element[elementPropertyKey] = value;
+            if (additionalCallback){
+                additionalCallback(value);
+            }
+        }
+    })
+};
 export function EncodeForHTML(input:string) {
     return $("<div>").text(input).html();
 };

@@ -80,6 +80,9 @@ export function ApplyEventHandlers(){
             $("#menuButton").show();
         })
     });
+    $("#menuFrame .side-menu-tab").click((e)=>{
+        $(e.currentTarget).next().slideToggle();
+    })
     UI.InputBox.on("keydown", (e) => {
         if (e.key.toLowerCase() == "arrowup"){
             e.preventDefault();
@@ -123,6 +126,12 @@ export function ApplyEventHandlers(){
         }
     });
 };
+export function ApplyDataBinds(){
+    Utilities.DataBind(Storage.Me, "CurrentEnergy", $("#divEnergyAmount")[0], "innerText", false, function(value){
+        $("#currentEnergySideMenu").text(value);
+        $("#svgEnergy").css("width", String(value / Storage.Me.MaxEnergy * 100 || 0) + "%");
+    });   
+}
 export function ChargingAnimationStart(){
     Storage.Me.ReadyState = ReadyStates.Charging;
     ChargingAnimationInt = window.setInterval(()=>{
@@ -173,8 +182,6 @@ export function FadeInText(text:string, delayInMilliseconds:number, callback:Fun
 
 
 export function RefreshUI(){
-    $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
-    $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
     $("#divChargeAmount").text(Storage.Me.CurrentCharge);
     $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
     $("#spanMultiplayerStatus").text(String(Storage.ClientSettings.IsMultiplayerEnabled).replace("true", "Enabled").replace("false", "Disabled"));
