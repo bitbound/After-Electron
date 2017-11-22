@@ -37,16 +37,17 @@ export var LocalServer = new class LocalServer {
         }
     }
 }
-export var ServerToServerConnections: Array<net.Socket> = new Array<net.Socket>();
 
+export var ServerToServerConnections: Array<net.Socket> = new Array<net.Socket>();
 
 export async function FindClientToServerConnection(){
     UI.AddSystemMessage("Attempting to find a client-to-server connection.", 1);
+    var appendServers = [];
     for (var i = 0; i < Storage.KnownServers.length; i++){
+        var server = Storage.KnownServers[i];
         try {
-            var server = Storage.KnownServers[i];
             if (server.ID == Storage.ServerSettings.ServerID) {
-                Utilities.UpdateAndAppend(Storage.KnownServers, server, ["Host", "Port"]);
+                appendServers.push(server);
                 continue;
             }
             var socket = await Connectivity.ConnectToServer(server, ConnectionTypes.ClientToServer);
@@ -56,16 +57,19 @@ export async function FindClientToServerConnection(){
                 break;
             }
             else {
-                Storage.KnownServers[i].BadConnectionAttempts++;
-                Utilities.UpdateAndAppend(Storage.KnownServers, server, ["Host", "Port"]);
+                server.BadConnectionAttempts++;
+                appendServers.push(server);
             }
         }
         catch (ex) {
-            Storage.KnownServers[i].BadConnectionAttempts++;
-            Utilities.UpdateAndAppend(Storage.KnownServers, Storage.KnownServers[i], ["Host", "Port"]);
+            server.BadConnectionAttempts++;
+            appendServers.push(server);
             continue;
         }
     }
+    appendServers.forEach(value=>{
+        Utilities.UpdateAndAppend(Storage.KnownServers, value, ["Host", "Port"]);
+    })
     if (OutboundConnection.IsConnected() == false){
         UI.AddSystemMessage("Unable to find a client-to-server connection.  Try connecting manually later.", 1);
     }
@@ -73,6 +77,7 @@ export async function FindClientToServerConnection(){
 export async function FindServerToServerConnection(){
     UI.AddSystemMessage("Attempting to find a server-to-server connection.", 1);
     var connected = false;
+    var appendServers = [];
     for (var i = 0; i < Storage.KnownServers.length; i++){
         try {
             if (Storage.KnownServers[i].ID == Storage.ServerSettings.ServerID){
@@ -84,15 +89,18 @@ export async function FindServerToServerConnection(){
             }
             else {
                 Storage.KnownServers[i].BadConnectionAttempts++;
-                Utilities.UpdateAndAppend(Storage.KnownServers, Storage.KnownServers[i], ["Host", "Port"]);
+                appendServers.push(Storage.KnownServers[i]);
             }
         }
         catch (ex) {
             Storage.KnownServers[i].BadConnectionAttempts++;
-            Utilities.UpdateAndAppend(Storage.KnownServers, Storage.KnownServers[i], ["Host", "Port"]);
+            appendServers.push(Storage.KnownServers[i]);
             continue;
         }
     }
+    appendServers.forEach(value=>{
+        Utilities.UpdateAndAppend(Storage.KnownServers, value, ["Host", "Port"]);
+    })
     if (!connected)
     {
         UI.AddSystemMessage("Unable to find a server-to-server connection.", 1);
@@ -118,6 +126,8 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
                         SocketDataIO.SendHelloFromClientToServer(socket);
                     }
                     else if (connectionType == ConnectionTypes.ServerToServer){
+                        ServerToServerConnections.push(socket);
+                        UI.RefreshUI();
                         SocketDataIO.SendHelloFromServerToServer(server, socket);
                     }
                     resolve(true);
@@ -161,16 +171,27 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
                 socket.on("data", (data)=>{
                     try
                     {
-                        var jsonData = JSON.parse(data.toString());
-                        if (SocketDataIO.HaveYouGotten(jsonData.ID)){
-                            Utilities.WriteDebug("Already received from server: " + JSON.stringify(jsonData), 1);
-                            return;
+                        var stringData = data.toString();
+                        var messages = [];
+                        while (stringData.indexOf("}{") > -1) {
+                            var message = stringData.substring(0, stringData.indexOf("}{") + 1);
+                            messages.push(message);
+                            stringData = stringData.substring(stringData.indexOf("}{") + 1);
                         }
-                        Utilities.WriteDebug("Received from server: " + JSON.stringify(jsonData), 1);
-                        if (jsonData.TargetServerID != Storage.ServerSettings.ServerID && jsonData.ShouldBroadcast != false){
-                            SocketDataIO.Broadcast(jsonData);
+                        messages.push(stringData);
+                        for (var i = 0; i < messages.length; i++){
+                            var jsonData = JSON.parse(messages[i]);
+                            if (SocketDataIO.HaveYouGotten(jsonData.ID)){
+                                Utilities.WriteDebug("Already received from server: " + JSON.stringify(jsonData), 1);
+                                continue;
+                            }
+                            Utilities.WriteDebug("Received from server: " + JSON.stringify(jsonData), 1);
+                            if (jsonData.TargetServerID != Storage.ServerSettings.ServerID && jsonData.ShouldBroadcast != false){
+                                SocketDataIO.Broadcast(jsonData);
+                            }
+                            eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, socket)");
                         }
-                        eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, socket)");
+                       
                     }
                     catch (ex) {
                         Utilities.Log(ex.stack);
@@ -192,16 +213,30 @@ export async function StartServer() {
         socket.on("data", (data)=>{
             try
             {
-                var jsonData = JSON.parse(data.toString());
-                if (SocketDataIO.HaveYouGotten(jsonData.ID)){
-                    Utilities.WriteDebug("Already received from client: " + JSON.stringify(jsonData), 1);
-                    return;
+                // TODO: Add message limit/throttler.
+                var stringData = data.toString();
+                var messages = [];
+                // Sometimes, multiple messages are received in the same event (at least on LAN).
+                // This ensures that the JSON objects split and parsed separately.
+                while (stringData.indexOf("}{") > -1) {
+                    var message = stringData.substring(0, stringData.indexOf("}{") + 1);
+                    messages.push(message);
+                    stringData = stringData.substring(stringData.indexOf("}{") + 1);
                 }
-                Utilities.WriteDebug("Received from client: " + JSON.stringify(jsonData), 1);
-                if (jsonData.TargetServerID != Storage.ServerSettings.ServerID && jsonData.ShouldBroadcast != false){
-                    SocketDataIO.Broadcast(jsonData);
+                messages.push(stringData);
+                for (var i = 0; i < messages.length; i++){ 
+                    var jsonData = JSON.parse(messages[i]);
+                    if (SocketDataIO.HaveYouGotten(jsonData.ID)){
+                        Utilities.WriteDebug("Already received from client: " + JSON.stringify(jsonData), 1);
+                        return;
+                    }
+                    Utilities.WriteDebug("Received from client: " + JSON.stringify(jsonData), 1);
+                    if (jsonData.TargetServerID != Storage.ServerSettings.ServerID && jsonData.ShouldBroadcast != false){
+                        SocketDataIO.Broadcast(jsonData);
+                    }
+                    eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, socket)");
                 }
-                eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, socket)");
+               
             }
             catch (ex) {
                 Utilities.Log(ex.stack);
@@ -242,7 +277,6 @@ export async function StartServer() {
     server.on('error', (e: NodeJS.ErrnoException) => {
         if (e.code === 'EADDRINUSE') {
             Utilities.WriteDebug('TCP Server Error: Port already in use.', 1);
-            
         }
         Utilities.Log(e.stack);
     });

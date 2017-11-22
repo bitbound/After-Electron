@@ -29,7 +29,19 @@ export function ArePropertiesEqual(object1, object2) {
 
     return match;
 }
-
+export function AppendIfMissing(array:Array<any>, item:any, matchKeys:string[]){
+    var existingIndex = array.findIndex((value)=>{
+        for (var i = 0; i < matchKeys.length; i++) {
+            if (item[matchKeys[i]] != value[matchKeys[i]]){
+                return false;
+            }
+        }
+        return true;
+    });
+    if (existingIndex == -1){
+        array.push(item);
+    }   
+}
 export var ColorNames = ["AliceBlue", "AntiqueWhite", "Aqua", "Aquamarine", "Azure", "Beige", "Bisque", "BlanchedAlmond", "Blue", "BlueViolet", "Brown", "BurlyWood", "CadetBlue", "Chartreuse", "Chocolate", "Coral", "CornflowerBlue", "Cornsilk", "Crimson", "Cyan", "DarkBlue", "DarkCyan", "DarkGoldenrod", "DarkGray", "DarkGreen", "DarkKhaki", "DarkMagenta", "DarkOliveGreen", "DarkOrange", "DarkOrchid", "DarkRed", "DarkSalmon", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkTurquoise", "DarkViolet", "DeepPink", "DeepSkyBlue", "DimGray", "DodgerBlue", "FireBrick", "FloralWhite", "ForestGreen", "Fuchsia", "Gainsboro", "GhostWhite", "Gold", "Goldenrod", "Gray", "Green", "GreenYellow", "Honeydew", "HotPink", "Indigo", "Ivory", "Khaki", "Lavender", "LavenderBlush", "LawnGreen", "LemonChiffon", "LightBlue", "LightCoral", "LightCyan", "LightGoldenrodYellow", "LightGreen", "LightGrey", "LightPink", "LightSalmon", "LightSeaGreen", "LightSkyBlue", "LightSlateGray", "LightSteelBlue", "LightYellow", "Lime", "LimeGreen", "Linen", "Magenta", "Maroon", "MediumAquamarine", "MediumBlue", "MediumOrchid", "MediumPurple", "MediumSeaGreen", "MediumSlateBlue", "MediumSpringGreen", "MediumTurquoise", "MediumVioletRed", "MidnightBlue", "MintCream", "MistyRose", "Moccasin", "NavajoWhite", "Navy", "OldLace", "Olive", "OliveDrab", "Orange", "OrangeRed", "Orchid", "PaleGoldenrod", "PaleGreen", "PaleTurquoise", "PaleVioletRed", "PapayaWhip", "PeachPuff", "Peru", "Pink", "Plum", "PowderBlue", "Purple", "Red", "RosyBrown", "RoyalBlue", "SaddleBrown", "Salmon", "SandyBrown", "SeaGreen", "Seashell", "Sienna", "Silver", "SkyBlue", "SlateBlue", "SlateGray", "Snow", "SpringGreen", "SteelBlue", "Tan", "Teal", "Thistle", "Tomato", "Turquoise", "Violet", "Wheat", "White", "WhiteSmoke", "Yellow", "YellowGreen"];
 export function ColorNameToHex(colour:string):string {
     var colours = {
@@ -188,28 +200,6 @@ export function CreateGUID() {
     });
 };
 
-export function DataBind(dataObject: Object, objectProperty: string, element: HTMLElement, elementPropertyKey: string, appendToPreviousBind: boolean, additionalCallback:Function) {
-    var previousSetter;
-    if (appendToPreviousBind){
-        previousSetter = Object.getOwnPropertyDescriptor(dataObject, objectProperty).set;
-    }
-    Object.defineProperty(dataObject, objectProperty, {
-        configurable: true,
-        enumerable: true,
-        get() {
-            return element[elementPropertyKey];
-        },
-        set(value: any) {
-            if (previousSetter){
-                previousSetter(value);
-            };
-            element[elementPropertyKey] = value;
-            if (additionalCallback){
-                additionalCallback(value);
-            }
-        }
-    })
-};
 export function EncodeForHTML(input:string) {
     return $("<div>").text(input).html();
 };
@@ -316,6 +306,6 @@ export function ReplaceAllInString(inputString:string, toReplace:string, replace
 }
 export function WriteDebug(message:string, newLines: number){
     if (Storage.ClientSettings.IsDebugMode){
-        UI.AddSystemMessage(message, newLines);
+        UI.AddDebugMessage(message, newLines);
     }
 }

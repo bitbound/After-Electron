@@ -117,7 +117,7 @@ export function SendKnownServers(socket: net.Socket) {
 }
 export function ReceiveKnownServers(jsonData: any, socket: net.Socket) {
     for (var i = 0; i < jsonData.KnownServers.length; i++) {
-        Utilities.UpdateAndAppend(Storage.KnownServers, jsonData.KnownServers[i], ["Host", "Port"]);
+        Utilities.AppendIfMissing(Storage.KnownServers, jsonData.KnownServers[i], ["Host", "Port"]);
     }
 }
 export function SendChat(message: string, channel: string) {

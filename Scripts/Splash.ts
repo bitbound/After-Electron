@@ -7,7 +7,6 @@ import { Utilities } from "../After";
 
 export function Init(){
     window.onerror = function(messageOrEvent, source, lineno, colno, error) {
-        alert("Error");
         Utilities.Log(JSON.stringify(error));
     }
     window["After"] = After;
@@ -15,12 +14,14 @@ export function Init(){
     electron.remote.getCurrentWindow().on("close", (event)=>{
         After.Storage.SaveAll();
     });
-    After.UI.ApplyEventHandlers();
-    After.UI.ApplyDataBinds();
+    After.UI.ApplyUIEventHandlers();
     After.Storage.LoadAll();
     window.setInterval(()=>{
         After.Storage.SaveAll();
     }, After.Storage.ClientSettings.AutoSaveIntervalSeconds * 1000);
+    window.setInterval(()=>{
+        After.UI.RefreshUI();
+    }, 1000)
     function raiseParticle() {
         try {
             var rectTunnel = document.getElementById("imgTunnel").getBoundingClientRect();
@@ -74,8 +75,8 @@ export function Init(){
         });
         $("#buttonOptions").click(function () {
             electron.remote.dialog.showMessageBox({
-                "message": "Nothing to show yet.",
-                "title": "In Progress"
+                "message": "Need options window here.",
+                "title": "Options Window"
             });
         });
         $("#divSplash").fadeIn(600);

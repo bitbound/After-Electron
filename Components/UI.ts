@@ -18,6 +18,13 @@ export var MessageWindow:JQuery = $("#messageWindow");
 
 
 // Functions //
+export function AddDebugMessage(message:string, newLines:number){
+    MessageWindow.append(`<div style="color:${Storage.ClientSettings.Colors.Debug}">[Debug]: ${Utilities.EncodeForHTML(message)}</div>`);
+    for (var i = 0; i < newLines; i++){
+        MessageWindow.append("<br>");
+    }
+    MessageWindow[0].scrollTop = MessageWindow[0].scrollHeight;
+}
 export function AddMessageText(message:string, newLines:number){
     MessageWindow.append(Utilities.EncodeForHTML(message));
     for (var i = 0; i < newLines; i++){
@@ -46,7 +53,7 @@ export function AdjustMessageWindowHeight(){
         this.MainGrid.height("calc(100% - " + String(heightAdjust) + "px" + ")");
     }
 };
-export function ApplyEventHandlers(){
+export function ApplyUIEventHandlers(){
     $("#gridDivider").on("pointerdown", (e)=>{
         var initialWidth = $("#menuFrame").width();
         var initialX = e.screenX;
@@ -68,6 +75,12 @@ export function ApplyEventHandlers(){
         $("#menuFrame").animate({
             width: "200px"
         })
+    });
+    $("#optionsButton").on("click", (e)=>{
+        electron.remote.dialog.showMessageBox({
+            "message": "Need options window here.",
+            "title": "Options Window"
+        });
     });
     $("#closeMenuButton").on("click", (e)=>{
         $("#menuFrame").animate({
@@ -122,27 +135,25 @@ export function ApplyEventHandlers(){
             UI.InputBox.val("");
         }
         if (InputModeSelector.val() == "Script") {
-            Intellisense.Evaluate();
+            Intellisense.EvaluateScript();
+        }
+        else if (InputModeSelector.val() == "Command")
+        {
+            Intellisense.EvaluateCommand();
         }
     });
 };
-export function ApplyDataBinds(){
-    Utilities.DataBind(Storage.Me, "CurrentEnergy", $("#divEnergyAmount")[0], "innerText", false, function(value){
-        $("#currentEnergySideMenu").text(value);
-        $("#svgEnergy").css("width", String(value / Storage.Me.MaxEnergy * 100 || 0) + "%");
-    });   
-}
+
 export function ChargingAnimationStart(){
     Storage.Me.ReadyState = ReadyStates.Charging;
     ChargingAnimationInt = window.setInterval(()=>{
         if (Storage.Me.ReadyState != ReadyStates.Charging) {
             if (Storage.Me.CurrentCharge == 0) {
                 $('#startChargeButton').show();
-                $('#chargePoolFrame').hide();
                 window.clearInterval(ChargingAnimationInt);
             }
         }
-        var divRect = $("#chargePoolFrame")[0].getBoundingClientRect();
+        var divRect = $("#divCharge")[0].getBoundingClientRect();
         var riseHeight = $("#divCharge").height();
         var startLeft = Utilities.GetRandom($("#divCharge").width() * .15, $("#divCharge").width() * .85, true);
         var startTop = $("#divCharge").height() * .5;
@@ -182,12 +193,27 @@ export function FadeInText(text:string, delayInMilliseconds:number, callback:Fun
 
 
 export function RefreshUI(){
+
+    $("#coreEnergySideMenu").text(Storage.Me.CoreEnergy);
+    $("#peakCoreEnergySideMenu").text(Storage.Me.CoreEnergyPeak);
+
+    $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
+    $("#currentEnergySideMenu").text(Storage.Me.CurrentEnergy);
+    $("#energyModSideMenu").text(Storage.Me.EnergyMod);
+    $("#maxEnergySideMenu").text(Storage.Me.MaxCharge);
+    $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
+
+
     $("#divChargeAmount").text(Storage.Me.CurrentCharge);
+    $("#currentChargeSideMenu").text(Storage.Me.CurrentCharge);
+    $("#chargeModSideMenu").text(Storage.Me.ChargeMod);
+    $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
     $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
-    $("#spanMultiplayerStatus").text(String(Storage.ClientSettings.IsMultiplayerEnabled).replace("true", "Enabled").replace("false", "Disabled"));
-    $("#spanServerStatus").text(String(Storage.ServerSettings.IsEnabled).replace("true", "Enabled").replace("false", "Disabled"));
-    $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
+
+    $("#spanClientStatus").text((String(Connectivity.OutboundConnection.IsConnected()).replace("true", "Connected").replace("false", "Disconnected")));
+    $("#spanServerStatus").text(String(Connectivity.LocalServer.IsListening()).replace("true", "Listening").replace("false", "Disabled"));
     $("#spanServerConnections").text(Connectivity.ServerToServerConnections.length.toString());
+    $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
 }
 export function ShowDevTools(){
     electron.remote.getCurrentWindow().webContents.openDevTools();

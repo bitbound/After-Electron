@@ -17,7 +17,10 @@ export function AutoComplete(){
     }
    
 }
-export function Evaluate(){
+export function EvaluateCommand() {
+
+}
+export function EvaluateScript(){
     if (UI.InputBox.val().toString().trim().length == 0){
         UI.IntellisenseFrame.hide();
         return;
@@ -26,8 +29,12 @@ export function Evaluate(){
         UI.IntellisenseFrame.show();
     }
     try {
-        var text = "window." + UI.InputBox.val();
-        UI.IntellisenseFrame.css("transform", `translateX(${UI.InputBox.val().toString().length * .35}em)`);
+        var text = UI.InputBox.val() as string;
+        UI.IntellisenseFrame.css("transform", `translateX(${UI.InputBox.val().toString().length * .4}em)`);
+        while (text.search("[ (]") > -1) {
+            text = text.slice(text.search("[ (]") + 1);
+        }
+        text = "window." + text;
         var lastPeriod = text.lastIndexOf(".");
         var member = text.substr(lastPeriod + 1);
         var namespaceAndObject = text.slice(0, lastPeriod);

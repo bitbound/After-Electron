@@ -16,7 +16,8 @@ export var ClientSettings = new class ClientSettings {
         "GlobalChat": "seagreen",
         "VoidChat": "lightsteelblue",
         "Whisper": "magenta",
-        "System": "lightgray"
+        "System": "lightgray",
+        "Debug": "rgb(150,50,50)"
     }
     IsMultiplayerEnabled:boolean = false;
     IsDebugMode: boolean = false;

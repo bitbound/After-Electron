@@ -62,7 +62,7 @@
         <div id="mainGrid">
             <button id="menuButton">Menu</button>
             <div id="messageWindow" class="ui-frame">
-                    
+
             </div>
             <div id="dividerColumn">
                 <div id="gridDivider"></div>
@@ -70,13 +70,41 @@
             <div id="menuFrame">
                 <button id="closeMenuButton">→</button>
                 <button id="optionsButton">
-                    
+
                 </button>
                 <button class="side-menu-tab">Character</button>
                 <div class="side-menu-section" hidden>
                     <div>
+                        <div class="side-menu-key">Core Energy:</div>
+                        <div id="coreEnergySideMenu" class="side-menu-value">0</div>
+                    </div>
+                    <div>
+                        <div class="side-menu-key">Peak Core Energy:</div>
+                        <div id="peakCoreEnergySideMenu" class="side-menu-value">0</div>
+                    </div>
+                    <div>
                         <div class="side-menu-key">Current Energy:</div>
                         <div id="currentEnergySideMenu" class="side-menu-value">0</div>
+                    </div>
+                    <div>
+                        <div class="side-menu-key">Energy Mod:</div>
+                        <div id="energyModSideMenu" class="side-menu-value">0</div>
+                    </div>
+                    <div>
+                        <div class="side-menu-key">Max Energy:</div>
+                        <div id="maxEnergySideMenu" class="side-menu-value">0</div>
+                    </div>
+                    <div>
+                        <div class="side-menu-key">Current Charge:</div>
+                        <div id="currentChargeSideMenu" class="side-menu-value">0</div>
+                    </div>
+                    <div>
+                        <div class="side-menu-key">Charge Mod:</div>
+                        <div id="chargeModSideMenu" class="side-menu-value">0</div>
+                    </div>
+                    <div>
+                        <div class="side-menu-key">Max Charge:</div>
+                        <div id="maxChargeSideMenu" class="side-menu-value">0</div>
                     </div>
                 </div>
                 <button class="side-menu-tab">Powers</button>
@@ -150,11 +178,11 @@
         <div id="statusFrame">
             <table>
                 <td>
-                    Multiplayer:
-                    <span id="spanMultiplayerStatus">Enabled</span>
+                    Client Status:
+                    <span id="spanClientStatus">Enabled</span>
                 </td>
                 <td>
-                    TCP Server:
+                    Server Status:
                     <span id="spanServerStatus">Disabled</span>
                 </td>
                 <td>
