@@ -7,6 +7,7 @@ import * as UI from "./UI";
 import * as Utilities from "./Utilities";
 import { KnownServer } from '../Models/KnownServer';
 import { Player } from '../Models/Player';
+import { MessageCounter } from '../Models/index';
 
 export var Me = new Player();
 
@@ -33,6 +34,8 @@ export var ServerSettings = new class ServerSettings {
     IsEnabled:boolean = false;
     IsPublic: boolean = true;
     ListeningPort: number = 48836;
+    MessageCountMilliseconds: number = 60000;
+    MessageCountLimit: number = 300;
     ServerID: string = Utilities.CreateGUID();
 }
 export var KnownServers: KnownServer[] = [
@@ -40,10 +43,8 @@ export var KnownServers: KnownServer[] = [
 ];
 
 export var Temp = new class Temp {
-    constructor(){
-        this.ReceivedMessages = new Array<string>();
-    }
-    ReceivedMessages: string[];
+    ReceivedMessages: string[] = new Array<string>();
+    MessageCounters: Array<MessageCounter> = new Array<MessageCounter>();
 };
 
 export function LoadAll() {

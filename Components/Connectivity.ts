@@ -7,6 +7,7 @@ import * as UI from "./UI";
 import { ConnectedClient } from "../Models/ConnectedClient";
 import { ConnectionTypes } from "../Models/ConnectionTypes";
 import { KnownServer } from "../Models/KnownServer";
+import { MessageCounter } from "../Models/index";
 
 export var ClientConnections:Array<ConnectedClient> = new Array<ConnectedClient>();
 
@@ -171,21 +172,21 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
                 socket.on("data", (data)=>{
                     try
                     {
-                        var stringData = data.toString();
-                        var messages = [];
-                        while (stringData.indexOf("}{") > -1) {
-                            var message = stringData.substring(0, stringData.indexOf("}{") + 1);
-                            messages.push(message);
-                            stringData = stringData.substring(stringData.indexOf("}{") + 1);
+                        if (!SocketDataIO.CheckMessageCounter(socket)){
+                            return;
                         }
-                        messages.push(stringData);
+                        
+                        // Sometimes, multiple messages are received in the same event (at least on LAN).
+                        // This ensures that the JSON objects are split and parsed separately.
+                        var messages = SocketDataIO.SplitJSONObjects(data.toString());
+
                         for (var i = 0; i < messages.length; i++){
                             var jsonData = JSON.parse(messages[i]);
                             if (SocketDataIO.HaveYouGotten(jsonData.ID)){
-                                Utilities.WriteDebug("Already received from server: " + JSON.stringify(jsonData), 1);
+                                Utilities.WriteDebug(`Already received from server (${socket.remoteAddress}): ` + JSON.stringify(jsonData), 1);
                                 continue;
                             }
-                            Utilities.WriteDebug("Received from server: " + JSON.stringify(jsonData), 1);
+                            Utilities.WriteDebug(`Received from server (${socket.remoteAddress}): ` + JSON.stringify(jsonData), 1);
                             if (jsonData.TargetServerID != Storage.ServerSettings.ServerID && jsonData.ShouldBroadcast != false){
                                 SocketDataIO.Broadcast(jsonData);
                             }
@@ -213,24 +214,21 @@ export async function StartServer() {
         socket.on("data", (data)=>{
             try
             {
-                // TODO: Add message limit/throttler.
-                var stringData = data.toString();
-                var messages = [];
-                // Sometimes, multiple messages are received in the same event (at least on LAN).
-                // This ensures that the JSON objects split and parsed separately.
-                while (stringData.indexOf("}{") > -1) {
-                    var message = stringData.substring(0, stringData.indexOf("}{") + 1);
-                    messages.push(message);
-                    stringData = stringData.substring(stringData.indexOf("}{") + 1);
+                if (!SocketDataIO.CheckMessageCounter(socket)){
+                    return;
                 }
-                messages.push(stringData);
+                
+                // Sometimes, multiple messages are received in the same event (at least on LAN).
+                // This ensures that the JSON objects are split and parsed separately.
+                var messages = SocketDataIO.SplitJSONObjects(data.toString());
+                
                 for (var i = 0; i < messages.length; i++){ 
                     var jsonData = JSON.parse(messages[i]);
                     if (SocketDataIO.HaveYouGotten(jsonData.ID)){
-                        Utilities.WriteDebug("Already received from client: " + JSON.stringify(jsonData), 1);
+                        Utilities.WriteDebug(`Already received from client (${socket.remoteAddress}): ` + JSON.stringify(jsonData), 1);
                         return;
                     }
-                    Utilities.WriteDebug("Received from client: " + JSON.stringify(jsonData), 1);
+                    Utilities.WriteDebug(`Received from client (${socket.remoteAddress}): ` + JSON.stringify(jsonData), 1);
                     if (jsonData.TargetServerID != Storage.ServerSettings.ServerID && jsonData.ShouldBroadcast != false){
                         SocketDataIO.Broadcast(jsonData);
                     }

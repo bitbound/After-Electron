@@ -3,19 +3,7 @@ import * as Storage from "./Storage";
 import * as Utilities from "./Utilities";
 import * as UI from "./UI";
 import * as net from "net";
-import { ConnectedClient, KnownServer } from "../Models/index";
-
-// Check if specific message has been received.
-export function HaveYouGotten(id: string) {
-    if (Storage.Temp.ReceivedMessages.find(item => item == id)) {
-        return true;
-    }
-    else {
-        Storage.Temp.ReceivedMessages.push(id);
-        return false;
-    }
-}
-
+import { ConnectedClient, KnownServer, MessageCounter } from "../Models/index";
 
 // Final Data Out //
 export function Send(jsonData: any, socket: net.Socket) {
@@ -30,6 +18,9 @@ export function Send(jsonData: any, socket: net.Socket) {
         }
     } catch (ex) { }
 }
+
+
+
 // Data Out Target Functions //
 export function Broadcast(jsonData: any) {
 
@@ -52,6 +43,7 @@ export function Broadcast(jsonData: any) {
 export function SendToSpecificSocket(jsonData: any, socket: net.Socket) {
     Send(jsonData, socket);
 }
+
 
 
 // Socket Data In/Out Functions //
@@ -144,4 +136,57 @@ export function ReceiveChat(jsonData: any, socket: net.Socket) {
                 break;
         }
     }
+}
+
+
+
+
+// Utilities //
+
+// Check if specific message has been received.
+export function HaveYouGotten(id: string) {
+    if (Storage.Temp.ReceivedMessages.find(item => item == id)) {
+        return true;
+    }
+    else {
+        Storage.Temp.ReceivedMessages.push(id);
+        return false;
+    }
+}
+
+export function CheckMessageCounter(socket:net.Socket): boolean {
+     if (!Storage.Temp.MessageCounters.some(mc=>mc.RemoteHost == socket.remoteAddress)){
+        var counter = new MessageCounter();
+        counter.RemoteHost = socket.remoteAddress;
+        counter.MessageTimes.push(Date.now());
+    }
+    var messageCounter = Storage.Temp.MessageCounters.find(x=>x.RemoteHost == socket.remoteAddress);
+    while (Date.now() - messageCounter.MessageTimes[0] > Storage.ServerSettings.MessageCountMilliseconds){
+        messageCounter.MessageTimes.splice(0, 1);
+    }
+    messageCounter.MessageTimes.push(Date.now());
+    if (messageCounter.MessageTimes.length > Storage.ServerSettings.MessageCountLimit)
+    {
+        Utilities.WriteDebug(`Message limit exceeded from ${socket.remoteAddress}.`, 1);
+        // Extend message times out by 5 minutes to prevent further messages from IP address.
+        messageCounter.MessageTimes.forEach((value, index)=> {
+            messageCounter.MessageTimes[index] += 300000;
+        })
+        socket.end();
+        return false;
+    }
+    return true;
+}
+
+ // Sometimes, multiple messages are received in the same event (at least on LAN).
+// This ensures that the JSON objects are split and parsed separately.
+export function SplitJSONObjects(stringData:string) : string[] {
+    var messages = [];
+    while (stringData.indexOf("}{") > -1) {
+        var message = stringData.substring(0, stringData.indexOf("}{") + 1);
+        messages.push(message);
+        stringData = stringData.substring(stringData.indexOf("}{") + 1);
+    }
+    messages.push(stringData);
+    return messages;
 }
