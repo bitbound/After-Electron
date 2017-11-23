@@ -159,6 +159,7 @@ export function CheckMessageCounter(socket:net.Socket): boolean {
         var counter = new MessageCounter();
         counter.RemoteHost = socket.remoteAddress;
         counter.MessageTimes.push(Date.now());
+        Storage.Temp.MessageCounters.push(counter);
     }
     var messageCounter = Storage.Temp.MessageCounters.find(x=>x.RemoteHost == socket.remoteAddress);
     while (Date.now() - messageCounter.MessageTimes[0] > Storage.ServerSettings.MessageCountMilliseconds){
