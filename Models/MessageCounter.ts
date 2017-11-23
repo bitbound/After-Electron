@@ -1,4 +1,4 @@
 export class MessageCounter {
     RemoteHost: string;
-    MessageTimes: Array<number>;
+    MessageTimes: Array<number> = new Array<number>();
 }
