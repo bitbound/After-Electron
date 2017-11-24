@@ -26,5 +26,5 @@ After.UI.MessageWindow.html("");
 After.UI.AddMessageText("Welcome to the afterlife, " + After.Storage.Me.Name + ".", 2);
 Audio.StopLoop();
 window.setTimeout(async function(){
-    await Game.Init();
+    await Game.Start();
 },2000);

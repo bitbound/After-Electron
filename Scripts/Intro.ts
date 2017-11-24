@@ -2,7 +2,7 @@ import * as After from "../After";
 import * as $ from "jquery";
 import * as Audio from "../Components/Audio";
 
-export var Init = function(){
+export var Start = function(){
     Audio.PlayLoop("./Assets/ceich93__drone-darkemptiness.mp3", null);
     var introText = [
         "You died.",

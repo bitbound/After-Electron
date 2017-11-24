@@ -5,31 +5,7 @@ import * as Game from "./Game";
 import * as Intro from "./Intro";
 import { Utilities } from "../After";
 
-export function Init(){
-    window.onerror = function(messageOrEvent, source, lineno, colno, error) {
-        Utilities.Log(JSON.stringify(error));
-    }
-    window["After"] = After;
-    window["$"] = $;
-    electron.remote.getCurrentWindow().on("close", (event)=>{
-        After.Storage.SaveAll();
-    });
-    After.UI.ApplyUIEventHandlers();
-    After.Storage.LoadAll();
-    window.setInterval(()=>{
-        After.Storage.SaveAll();
-
-        // Remove old message counters.
-        var messageCounts = After.Storage.Temp.MessageCounters;
-        for (var i = messageCounts.length + 1; i >= 0; i--){
-            if (messageCounts[i].MessageTimes.every(x=>Date.now() - x > 300000)){
-                messageCounts.splice(i, 1);
-            }
-        }
-    }, After.Storage.ClientSettings.AutoSaveIntervalSeconds * 1000);
-    window.setInterval(()=>{
-        After.UI.RefreshUI();
-    }, 1000)
+export function Start(){
     function raiseParticle() {
         try {
             var rectTunnel = document.getElementById("imgTunnel").getBoundingClientRect();
@@ -75,10 +51,10 @@ export function Init(){
             After.UI.AdjustMessageWindowHeight();
             
             if (typeof After.Storage.Me.ID == "undefined"){
-                Intro.Init();
+                Intro.Start();
             }
             else {
-                Game.Init();
+                Game.Start();
             }
         });
         $("#buttonOptions").click(function () {
