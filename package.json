@@ -5,8 +5,7 @@
   "description": "A hackable, peer-to-peer, MUD-like multiplayer RPG.",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
-    "build": "./node-modules/.bin/build.cmd"
+    "start": "./node-modules/.bin/electron.cmd ."
   },
   "repository": "",
   "keywords": [

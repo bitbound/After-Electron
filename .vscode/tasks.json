@@ -6,7 +6,7 @@
         {
             "taskName": "start",
             "type": "shell",
-            "command": "electron ./",
+            "command": "./node_modules/.bin/electron.cmd ./",
             "problemMatcher": []
         }
     ]
