@@ -18,33 +18,43 @@ export var MessageWindow:JQuery = $("#messageWindow");
 
 
 // Functions //
-export function AddDebugMessage(message:string, newLines:number){
-    MessageWindow.append(`<div style="color:${Storage.ClientSettings.Colors.Debug}">[Debug]: ${Utilities.EncodeForHTML(message)}</div>`);
-    for (var i = 0; i < newLines; i++){
-        MessageWindow.append("<br>");
+function AppendMessageToWindow(message:string){
+    var shouldScroll = false;
+    if (MessageWindow[0].scrollTop + MessageWindow[0].clientHeight >= MessageWindow[0].scrollHeight){
+        shouldScroll = true;
     }
-    MessageWindow[0].scrollTop = MessageWindow[0].scrollHeight;
+    MessageWindow.append(message);
+    if (shouldScroll){
+        MessageWindow[0].scrollTop = MessageWindow[0].scrollHeight;
+    }
+}
+export function AddDebugMessage(message:string, newLines:number){
+    var messageText = `<div style="color:${Storage.ClientSettings.Colors.Debug}">[Debug]: ${Utilities.EncodeForHTML(message)}</div>`;
+    for (var i = 0; i < newLines; i++){
+        messageText += "<br>";
+    }
+    AppendMessageToWindow(messageText);
+    
 }
 export function AddMessageText(message:string, newLines:number){
-    MessageWindow.append(Utilities.EncodeForHTML(message));
+    var messageText = Utilities.EncodeForHTML(message);
     for (var i = 0; i < newLines; i++){
-        MessageWindow.append("<br>");
+        messageText += "<br>";
     }
-    MessageWindow[0].scrollTop = MessageWindow[0].scrollHeight;
+    AppendMessageToWindow(messageText);
 };
 export function AddMessageHTML(html:string, newLines:number) {
-    MessageWindow.append(html);
     for (var i = 0; i < newLines; i++){
-        MessageWindow.append("<br>");
+        html += "<br>";
     }
-    MessageWindow[0].scrollTop = MessageWindow[0].scrollHeight;
+    AppendMessageToWindow(html);
 };
 export function AddSystemMessage(message:string, newLines:number){
-    MessageWindow.append(`<div style="color:${Storage.ClientSettings.Colors.System}">[System]: ${message}</div>`);
+    var messageText = `<div style="color:${Storage.ClientSettings.Colors.System}">[System]: ${message}</div>`;
     for (var i = 0; i < newLines; i++){
-        MessageWindow.append("<br>");
+        messageText += "<br>";
     }
-    MessageWindow[0].scrollTop = MessageWindow[0].scrollHeight;
+    AppendMessageToWindow(messageText);
 }
 export function AdjustMessageWindowHeight(){
     var heightAdjust = 0;

@@ -257,7 +257,7 @@ button:active {
     grid-column: 3;
     grid-row: 1;
     width: 0;   
-    overflow:hidden; 
+    overflow:hidden;
 }
 
 #menuFrame button {
