@@ -9,11 +9,11 @@ export class Player {
     ReadyState: ReadyStates;
   
     // Core Energy //
-    CoreEnergy: number = 100;
-    CoreEnergyPeak: number = 100;
+    CoreEnergy: number = 0;
+    CoreEnergyPeak: number = 0;
 
     // Energy //
-    CurrentEnergy:number = 100;
+    CurrentEnergy:number = 0;
     EnergyMod:number = 0;
 
     get MaxEnergy():number {

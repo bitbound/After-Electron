@@ -3,6 +3,9 @@ import { KnownServer, ConnectionTypes } from "../Models/Index";
 
 export var Start = async function (){
     After.Storage.Me.CurrentLocationID = After.Storage.Me.InnerVoidID;
+    After.Storage.Me.CoreEnergy = 100;
+    After.Storage.Me.CoreEnergyPeak = 100;
+    After.Storage.Me.CurrentEnergy = 100;
     After.Storage.Me.CurrentCharge = 0;
     After.Models.Void.Load(After.Storage.Me.InnerVoidID).Display();
     

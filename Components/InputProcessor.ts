@@ -47,7 +47,18 @@ export function ProcessInput(){
             try {
                 UI.IntellisenseFrame.hide();
                 var result = eval(input);
-                var output = result instanceof Object ? JSON.stringify(result, null, "&emsp;") : result;
+                Storage.Temp.JSONObjects = new Array<any>();
+                var output = result instanceof Object ? JSON.stringify(result, function(key, value) {
+                    if (typeof value == "object" && value != null) {
+                        if (Storage.Temp.JSONObjects.findIndex(x=>x == value) > -1) {
+                            return "[Possible circular reference.]"
+                        }
+                        else {
+                            Storage.Temp.JSONObjects.push(value);
+                        }
+                    }
+                    return value;
+                }, "&emsp;") : result;
                 UI.AddSystemMessage(Utilities.ReplaceAllInString(output, "\n", "<br/>"), 1);
             }
             catch (ex){

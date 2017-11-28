@@ -4,14 +4,21 @@ export function AutoComplete(){
     if (UI.IntellisenseFrame.is(":visible") && split.length > 0){
         var completeWith = split[split.length - 1];
         var text = UI.InputBox.val() as string;
-        var lastPeriod = text.lastIndexOf(".");
-        if (lastPeriod == -1){
+        var lastSeparator = Math.max(
+            text.lastIndexOf("."), 
+            text.lastIndexOf(" "),
+            text.lastIndexOf("("),
+            text.lastIndexOf(")"),
+            text.lastIndexOf("{"),
+            text.lastIndexOf("}")
+        );
+        if (lastSeparator == -1){
             namespaceAndObject = "";
             UI.InputBox.val(completeWith);
         }
         else {
-            var namespaceAndObject = text.slice(0, lastPeriod);
-            UI.InputBox.val(namespaceAndObject + "." + completeWith);
+            var namespaceAndObject = text.slice(0, lastSeparator + 1);
+            UI.InputBox.val(namespaceAndObject + completeWith);
         }
         UI.IntellisenseFrame.hide();
     }
@@ -31,8 +38,8 @@ export function EvaluateScript(){
     try {
         var text = UI.InputBox.val() as string;
         UI.IntellisenseFrame.css("transform", `translateX(${UI.InputBox.val().toString().length * .4}em)`);
-        while (text.search("[ (]") > -1) {
-            text = text.slice(text.search("[ (]") + 1);
+        while (text.search("[ (){}]") > -1) {
+            text = text.slice(text.search("[ (){}]") + 1);
         }
         text = "window." + text;
         var lastPeriod = text.lastIndexOf(".");

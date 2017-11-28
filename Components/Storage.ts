@@ -43,8 +43,9 @@ export var KnownServers: KnownServer[] = [
 ];
 
 export var Temp = new class Temp {
-    ReceivedMessages: string[] = new Array<string>();
+    JSONObjects: Array<any> = new Array<any>();
     MessageCounters: Array<MessageCounter> = new Array<MessageCounter>();
+    ReceivedMessages: string[] = new Array<string>();
 };
 
 export function LoadAll() {

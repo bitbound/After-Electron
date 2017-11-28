@@ -250,6 +250,38 @@ export function IsLocalIP(ip:string):boolean{
     }
     return false;
 }
+export function Log(message:string){
+    console.log(message);
+    var logPath = path.join(FileSystem.UserDataPath, "Log.txt");
+    fs.appendFileSync(logPath, (new Date()).toLocaleString() + " -   " + message + "\r\n")
+}
+export function NumberIsBetween(NumberAnalyzed: number, Min: number, Max: number, IncludeMinMax: boolean): boolean {
+    if (IncludeMinMax) {
+        if (NumberAnalyzed == Min || NumberAnalyzed == Max) {
+            return true;
+        }
+    }
+    if (NumberAnalyzed > Min && NumberAnalyzed < Max) {
+        return true;
+    }
+    else {
+        return false;
+    }
+};
+export function StringifyCircular(inputObject:any): string {
+    Storage.Temp.JSONObjects = new Array<any>();
+    return JSON.stringify(inputObject, function(key, value){
+        if (typeof value == "object" && value != null) {
+            if (Storage.Temp.JSONObjects.findIndex(x=>x == value) > -1) {
+                return "[Possible circular reference.]"
+            }
+            else {
+                Storage.Temp.JSONObjects.push(value);
+            }
+        }
+        return value;
+    })
+}
 export function UpdateAndAppend(array:Array<any>, item:any, matchKeys:string[]){
     var existingIndex = array.findIndex((value)=>{
         for (var i = 0; i < matchKeys.length; i++) {
@@ -278,24 +310,7 @@ export function UpdateAndPrepend(array:Array<any>, item:any, matchKeys:string[])
     }
     array.unshift(item);
 }
-export function Log(message:string){
-    console.log(message);
-    var logPath = path.join(FileSystem.UserDataPath, "Log.txt");
-    fs.appendFileSync(logPath, (new Date()).toLocaleString() + " -   " + message + "\r\n")
-}
-export function NumberIsBetween(NumberAnalyzed: number, Min: number, Max: number, IncludeMinMax: boolean): boolean {
-    if (IncludeMinMax) {
-        if (NumberAnalyzed == Min || NumberAnalyzed == Max) {
-            return true;
-        }
-    }
-    if (NumberAnalyzed > Min && NumberAnalyzed < Max) {
-        return true;
-    }
-    else {
-        return false;
-    }
-};
+
 export function ReplaceAllInString(inputString:string, toReplace:string, replaceWith:string):string{
     try {
         return inputString.split(toReplace).join(replaceWith);

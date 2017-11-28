@@ -54,7 +54,7 @@ export async function FindClientToServerConnection(){
             var socket = await Connectivity.ConnectToServer(server, ConnectionTypes.ClientToServer);
             if (socket)
             {
-                UI.AddSystemMessage("Connected to server.", 1);
+                UI.AddSystemMessage("Client-to-server connection successful.", 1);
                 break;
             }
             else {
@@ -85,6 +85,7 @@ export async function FindServerToServerConnection(){
                 continue;
             }
             if (await ConnectToServer(Storage.KnownServers[i], ConnectionTypes.ServerToServer)) {
+                UI.AddSystemMessage("Server-to-server connection successful.", 1);
                 connected = true;
                 break;
             }
