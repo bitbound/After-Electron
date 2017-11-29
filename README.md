@@ -1,6 +1,8 @@
 # After
 A hackable, infinite-progression, MUD-like, multiplayer RPG.
 
+![After Preview](http://after-game.net/Assets/Images/After-Intellisense.gif)
+
 Documentation and task cards coming soon-ish.
 
 After I get a rough framework down, I'll be looking for other developers with whom to collaborate!
