@@ -1,7 +1,7 @@
 # After
 A hackable, infinite-progression, MUD-like, multiplayer RPG.
 
-![After Preview](http://after-game.net/Assets/Images/After-Intellisense.gif)
+![After Preview](http://after-game.net/Assets/Images/After-Preview.gif)
 
 Documentation and task cards coming soon-ish.
 
