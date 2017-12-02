@@ -1,4 +1,4 @@
-import * as After from "../After";
+import * as After from "../API/After";
 import * as electron from "electron";
 import * as $ from "jquery";
 
@@ -11,7 +11,7 @@ export function Start(){
     electron.remote.getCurrentWindow().on("close", (event)=>{
         After.Storage.SaveAll();
     });
-    After.UI.ApplyUIEventHandlers();
+    After.UIEventHandler.ApplyUIEventHandlers();
     After.Storage.LoadAll();
     window.setInterval(()=>{
         After.Storage.SaveAll();

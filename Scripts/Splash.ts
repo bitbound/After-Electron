@@ -1,9 +1,9 @@
-import * as After from "../After";
+import * as After from "../API/After";
 import * as $ from "jquery";
 import * as electron from "electron";
 import * as Game from "./Game";
 import * as Intro from "./Intro";
-import { Utilities } from "../After";
+import { Utilities } from "../API/After";
 
 export function Start(){
     function raiseParticle() {

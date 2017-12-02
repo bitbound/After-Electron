@@ -1,4 +1,4 @@
-import * as After from "../After";
+import * as After from "../API/After";
 import { KnownServer, ConnectionTypes } from "../Models/Index";
 
 export var Start = async function (){
