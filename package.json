@@ -20,10 +20,16 @@
     "@types/jquery": "^3.2.15",
     "@types/node": "^8.0.47",
     "electron": "^1.7.9",
-    "electron-builder": "^19.45.7",
+    "electron-builder": "^19.47.1",
     "typescript": "^2.5.3"
   },
   "dependencies": {
     "jquery": "^3.2.1"
+  },
+  "build": {
+    "nsis": {
+      "artifactName": "After_Setup_${version}.${ext}",
+      "shortcutName": "After"
+    }
   }
 }
