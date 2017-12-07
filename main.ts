@@ -59,10 +59,10 @@ app.on('activate', function () {
 
 electron.ipcMain.on("options-menu", (event, args) =>{
     var optionsWindow = new electron.BrowserWindow({
-        width: 500,
-        height: 400,
-        minWidth: 500,
-        minHeight: 400,
+        width: 700,
+        height: 500,
+        minWidth: 700,
+        minHeight: 500,
         icon: "./Assets/A-512.png"
     });
     optionsWindow.loadURL(url.format({

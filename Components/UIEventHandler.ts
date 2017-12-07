@@ -25,10 +25,7 @@ export function ApplyUIEventHandlers(){
         })
     });
     $("#optionsButton").on("click", (e)=>{
-        electron.remote.dialog.showMessageBox({
-            "message": "Need options window here.",
-            "title": "Options Window"
-        });
+        electron.ipcRenderer.send("options-menu");
     });
     $("#closeMenuButton").on("click", (e)=>{
         $("#menuFrame").animate({

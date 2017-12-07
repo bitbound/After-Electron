@@ -280,10 +280,10 @@ button:active {
     text-align: center;
     padding: 5px 0;
     cursor: pointer;
-    background-color: rgb(80, 80, 80);
+    background-color: rgb(55, 55, 55);
 }
 .side-menu-tab:hover {
-    background-color: rgb(173, 173, 173);
+    background-color: rgb(150, 150, 150);
 }
 
 .side-menu-section {
