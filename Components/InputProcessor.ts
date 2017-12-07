@@ -1,8 +1,4 @@
-import * as UI from "./UI";
-import * as SocketDataIO from "./SocketDataIO";
-import * as Storage from "./Storage";
-import * as Utilities from "./Utilities";
-
+import {UI, SocketDataIO, Storage, Utilities } from "./";
 
 export var NextInputHandler:Function;
 

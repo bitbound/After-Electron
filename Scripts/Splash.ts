@@ -3,6 +3,7 @@ import * as $ from "jquery";
 import * as electron from "electron";
 import * as Game from "./Game";
 import * as Intro from "./Intro";
+import { UI, Storage } from "../Components/index";
 
 export function Start(){
     function raiseParticle() {
@@ -46,10 +47,10 @@ export function Start(){
             var path = require("path");
             $("#divSplash").remove();
             $("#divGame").show();
-            After.Components.UI.InputBox.focus();
-            After.Components.UI.AdjustMessageWindowHeight();
+            UI.InputBox.focus();
+            UI.AdjustMessageWindowHeight();
             
-            if (typeof After.Components.Storage.Me.ID == "undefined"){
+            if (typeof Storage.Me.ID == "undefined"){
                 Intro.Start();
             }
             else {

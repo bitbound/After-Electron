@@ -1,10 +1,9 @@
-import * as FileSystem from "./FileSystem";
-import * as UI from "./UI";
-import * as Storage from "./Storage";
+import * as $ from "jquery";
 import * as fs from "fs";
 import * as path from "path";
-import * as $ from "jquery";
 import * as os from "os";
+import { Storage, FileSystem, UI } from "./";
+
 
 export function ArePropertiesEqual(object1, object2) {
     if (Object.keys(object1).length !== Object.keys(object2).length) {

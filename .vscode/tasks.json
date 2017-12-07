@@ -4,9 +4,27 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "start",
+            "label": "start",
             "type": "shell",
-            "command": "./node_modules/.bin/electron.cmd ./",
+            "command": "Need non-Windows script.",
+            "windows": {
+                "command": "./node_modules/.bin/electron.cmd",
+                "args": [
+                    "./"
+                ]
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "rebuild indices",
+            "type": "shell",
+            "command": "Need non-Windows script.",
+            "windows": {
+                "command": "powershell.exe",
+                "args": [
+                    "-file ./.vscode/Rebuild_Indices.ps1"
+                ]
+            },
             "problemMatcher": []
         }
     ]

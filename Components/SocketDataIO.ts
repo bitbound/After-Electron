@@ -1,8 +1,5 @@
-import * as Connectivity from "./Connectivity";
-import * as Storage from "./Storage";
-import * as Utilities from "./Utilities";
-import * as UI from "./UI";
 import * as net from "net";
+import { Connectivity, Storage, Utilities, UI } from "./";
 import { ConnectedClient, KnownServer, MessageCounter } from "../Models/index";
 
 // Final Data Out //

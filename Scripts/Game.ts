@@ -1,20 +1,21 @@
 import * as After from "../API/";
 import { KnownServer, ConnectionTypes } from "../Models/Index";
+import { Storage, Connectivity } from "../Components/index";
 
 export var Start = async function (){
-    After.Components.Storage.Me.CurrentLocationID = After.Components.Storage.Me.InnerVoidID;
-    After.Components.Storage.Me.CoreEnergy = 100;
-    After.Components.Storage.Me.CoreEnergyPeak = 100;
-    After.Components.Storage.Me.CurrentEnergy = 100;
-    After.Components.Storage.Me.CurrentCharge = 0;
-    After.Models.Void.Load(After.Components.Storage.Me.InnerVoidID).Display();
+    Storage.Me.CurrentLocationID = Storage.Me.InnerVoidID;
+    Storage.Me.CoreEnergy = 100;
+    Storage.Me.CoreEnergyPeak = 100;
+    Storage.Me.CurrentEnergy = 100;
+    Storage.Me.CurrentCharge = 0;
+    After.Models.Void.Load(Storage.Me.InnerVoidID).Display();
     
-    if (After.Components.Storage.ServerSettings.IsEnabled) {
-        await After.Components.Connectivity.StartServer();
+    if (Storage.ServerSettings.IsEnabled) {
+        await Connectivity.StartServer();
     }
-    if (After.Components.Storage.ClientSettings.IsMultiplayerEnabled) {
-        await After.Components.Connectivity.FindClientToServerConnection();
+    if (Storage.ClientSettings.IsMultiplayerEnabled) {
+        await Connectivity.FindClientToServerConnection();
     }
-    After.Components.Connectivity.OutboundConnection.TargetServerID = After.Components.Storage.ServerSettings.ServerID;
+    Connectivity.OutboundConnection.TargetServerID = Storage.ServerSettings.ServerID;
 }
 

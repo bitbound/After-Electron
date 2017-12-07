@@ -1,13 +1,6 @@
 import * as net from "net";
-import * as Storage from "./Storage";
-import * as Utilities from "./Utilities";
-import * as Connectivity from "./Connectivity";
-import * as SocketDataIO from "./SocketDataIO";
-import * as UI from "./UI";
-import { ConnectedClient } from "../Models/ConnectedClient";
-import { ConnectionTypes } from "../Models/ConnectionTypes";
-import { KnownServer } from "../Models/KnownServer";
-import { MessageCounter } from "../Models/index";
+import {UI, SocketDataIO, Connectivity, Utilities, Storage} from "./";
+import { ConnectedClient, ConnectionTypes, KnownServer, MessageCounter } from "../Models/index";
 
 export var ClientConnections:Array<ConnectedClient> = new Array<ConnectedClient>();
 
@@ -191,7 +184,7 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
                             if (jsonData.TargetServerID != Storage.ServerSettings.ServerID && jsonData.ShouldBroadcast != false){
                                 SocketDataIO.Broadcast(jsonData);
                             }
-                            eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, socket)");
+                            SocketDataIO["Receive" + jsonData.Type](jsonData, socket);
                         }
                        
                     }
@@ -234,7 +227,7 @@ export async function StartServer() {
                     if (jsonData.TargetServerID != Storage.ServerSettings.ServerID && jsonData.ShouldBroadcast != false){
                         SocketDataIO.Broadcast(jsonData);
                     }
-                    eval("SocketDataIO.Receive" + jsonData.Type + "(jsonData, socket)");
+                    SocketDataIO["Receive" + jsonData.Type](jsonData, socket);
                 }
                
             }

@@ -1,13 +1,10 @@
 import * as $ from 'jquery';
 import * as fs from 'fs';
-import * as FileSystem from './FileSystem';
 import * as path from 'path';
-import * as Storage from './Storage';
-import * as UI from "./UI";
+import { FileSystem, UI, Storage } from "./";
 import * as Utilities from "./Utilities";
-import { KnownServer } from '../Models/KnownServer';
-import { Player } from '../Models/Player';
-import { MessageCounter } from '../Models/index';
+import { Player, KnownServer, MessageCounter } from '../Models';
+
 
 export var Me = new Player();
 
@@ -30,14 +27,16 @@ export var ClientSettings = new class ClientSettings {
         Script: "/s "
     };
 };
+
 export var ServerSettings = new class ServerSettings {
     IsEnabled:boolean = false;
     IsPublic: boolean = true;
     ListeningPort: number = 48836;
     MessageCountMilliseconds: number = 60000;
     MessageCountLimit: number = 300;
-    ServerID: string;
+    ServerID: string = Utilities.CreateGUID();
 }
+
 export var KnownServers: KnownServer[] = [
     new KnownServer("after.myddns.rocks", 48836, false)
 ];
