@@ -4,6 +4,8 @@ import * as electron from "electron";
 import * as Game from "./Game";
 import * as Intro from "./Intro";
 import { UI, Storage } from "../Components/index";
+import * as url from "url";
+import * as path from "path";
 
 export function Start(){
     function raiseParticle() {
@@ -58,10 +60,7 @@ export function Start(){
             }
         });
         $("#buttonOptions").click(function () {
-            electron.remote.dialog.showMessageBox({
-                "message": "Need options window here.",
-                "title": "Options Window"
-            });
+            electron.ipcRenderer.send("options-menu");
         });
         $("#divSplash").fadeIn(600);
         raiseParticle();

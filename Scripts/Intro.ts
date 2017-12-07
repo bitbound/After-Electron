@@ -48,7 +48,7 @@ export var Start = function(){
                 }
                 Storage.Me.Name = Utilities.EncodeForHTML(input);
                 UI.MessageWindow.html("");
-                $.get("./Widgets/CharacterColor.html", (data)=>{UI.AddMessageHTML(data, 1);})
+                $.get("./Widgets/CharacterColorPicker.html", (data)=>{UI.AddMessageHTML(data, 1);})
             });
         }
     }, waitTime);
