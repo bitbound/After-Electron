@@ -208,6 +208,7 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
 }
 
 export async function StartServer() {
+    Storage.ServerSettings.ServerID = Storage.ServerSettings.ServerID || Utilities.CreateGUID();
     var server = net.createServer(function(socket){
         if (Utilities.IsLocalIP(socket.remoteAddress)) {
             return;

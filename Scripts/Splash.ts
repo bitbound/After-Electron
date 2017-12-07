@@ -1,9 +1,8 @@
-import * as After from "../API/After";
+import * as After from "../API/";
 import * as $ from "jquery";
 import * as electron from "electron";
 import * as Game from "./Game";
 import * as Intro from "./Intro";
-import { Utilities } from "../API/After";
 
 export function Start(){
     function raiseParticle() {
@@ -47,10 +46,10 @@ export function Start(){
             var path = require("path");
             $("#divSplash").remove();
             $("#divGame").show();
-            After.UI.InputBox.focus();
-            After.UI.AdjustMessageWindowHeight();
+            After.Components.UI.InputBox.focus();
+            After.Components.UI.AdjustMessageWindowHeight();
             
-            if (typeof After.Storage.Me.ID == "undefined"){
+            if (typeof After.Components.Storage.Me.ID == "undefined"){
                 Intro.Start();
             }
             else {

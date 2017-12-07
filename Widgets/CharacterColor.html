@@ -49,7 +49,7 @@
         $("#divCharacterColorPreview").css("background", "radial-gradient(white 5%, " + temp.SoulColor + "50%, rgba(0,0,0,0) 75%)");
     };
     temp.SubmitColor = function () {
-        After.Storage.Me.Color = temp.SoulColor;
+        After.Components.Storage.Me.Color = temp.SoulColor;
         $.when($("#divCreateCharacter").animate({ opacity: 0 }, 1000)).then(function () {
             delete temp;
             require("./Scripts/CreateCharacter");
@@ -62,15 +62,15 @@
             $("#inputBlue").val(125);
             return;
         }
-        var hexColor = After.Utilities.ColorNameToHex($("#selectColor").val());
-        var rgbColor = After.Utilities.HexToRGB(hexColor);
+        var hexColor = After.Components.Utilities.ColorNameToHex($("#selectColor").val());
+        var rgbColor = After.Components.Utilities.HexToRGB(hexColor);
         temp.SoulColor = rgbColor;
         $("#inputRed").val(rgbColor.replace("rgb(", "").split(",")[0]);
         $("#inputGreen").val(rgbColor.split(",")[1]);
         $("#inputBlue").val(rgbColor.replace(")", "").split(",")[2]);
         $("#divCharacterColorPreview").css("background", "radial-gradient(white 5%, " + temp.SoulColor + "50%, rgba(0,0,0,0) 75%)");
     };
-    After.Utilities.ColorNames.forEach(function (value, index) {
+    After.Components.Utilities.ColorNames.forEach(function (value, index) {
         var option = document.createElement("option");
         option.innerHTML = value;
         option.value = value;
@@ -79,6 +79,6 @@
         document.getElementById("selectColor").appendChild(option);
     });
     window.setTimeout(function(){
-        After.UI.MessageWindow.scrollTop(0);
+        After.Components.UI.MessageWindow.scrollTop(0);
     }, 500);
 </script>

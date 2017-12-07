@@ -36,7 +36,7 @@ export var ServerSettings = new class ServerSettings {
     ListeningPort: number = 48836;
     MessageCountMilliseconds: number = 60000;
     MessageCountLimit: number = 300;
-    ServerID: string = Utilities.CreateGUID();
+    ServerID: string;
 }
 export var KnownServers: KnownServer[] = [
     new KnownServer("after.myddns.rocks", 48836, false)

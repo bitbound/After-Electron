@@ -1,4 +1,4 @@
-import * as After from "../API/After";
+import * as After from "../API/";
 import * as $ from "jquery";
 import * as Audio from "../Components/Audio";
 
@@ -12,23 +12,23 @@ export var Start = function(){
         "You command this small pocket of emptiness.",
         "This is your inner void.",
         "You sense others.  They are neither near nor far.  Distance is irrelevant here.",
-        "It's time to set out and discover what comes after."
+        "It's time to set out and discover what comes After."
     ]
     
     var waitTime = 500;
     for (var i = 0; i < introText.length; i++){
         var message = introText[i];
         window.setTimeout((message)=>{
-            After.UI.FadeInText(message, 0, null);
+            After.Components.UI.FadeInText(message, 0, null);
         }, waitTime, message);
         waitTime += 1000 + (message.length * 30);
     }
     
     
     window.setTimeout(()=>{
-        After.UI.AddMessageHTML("<br><br><span class='glowing'>Press Enter to continue...</span>", 2);
-        After.InputProcessor.NextInputHandler = function(){
-            After.UI.MessageWindow.html("");
+        After.Components.UI.AddMessageHTML("<br><br><span class='glowing'>Press Enter to continue...</span>", 2);
+        After.Components.InputProcessor.NextInputHandler = function(){
+            After.Components.UI.MessageWindow.html("");
             var askNameMessage = `
                 <div style="text-align:center">
                     <div id="divTopBorder" style="margin: auto; height:3px; width:200px; background-color:white; border-radius:100%"></div>
@@ -36,18 +36,18 @@ export var Start = function(){
                     <div id="divBottomBorder" style="margin:auto; height:3px; width:200px; background-color:white; border-radius:100%"></div>
                 </div>
             `;
-            After.UI.AddMessageHTML(askNameMessage, 2);
-            After.InputProcessor.SetNextInputHandler(function(input) {
+            After.Components.UI.AddMessageHTML(askNameMessage, 2);
+            After.Components.InputProcessor.SetNextInputHandler(function(input) {
                 if (input.trim().length == 0 || input.search("[^a-zA-Z0-9_ ]") > -1)
                 {
-                    After.UI.AddMessageText("Your name can only contain letters, numbers, spaces, and underscores.", 2);
-                    After.UI.AddMessageHTML(askNameMessage, 2);
-                    After.InputProcessor.SetNextInputHandler(After.InputProcessor.NextInputHandler);
+                    After.Components.UI.AddMessageText("Your name can only contain letters, numbers, spaces, and underscores.", 2);
+                    After.Components.UI.AddMessageHTML(askNameMessage, 2);
+                    After.Components.InputProcessor.SetNextInputHandler(After.Components.InputProcessor.NextInputHandler);
                     return;
                 }
-                After.Storage.Me.Name = After.Utilities.EncodeForHTML(input);
-                After.UI.MessageWindow.html("");
-                $.get("./Widgets/CharacterColor.html", (data)=>{After.UI.AddMessageHTML(data, 1);})
+                After.Components.Storage.Me.Name = After.Components.Utilities.EncodeForHTML(input);
+                After.Components.UI.MessageWindow.html("");
+                $.get("./Widgets/CharacterColor.html", (data)=>{After.Components.UI.AddMessageHTML(data, 1);})
             });
         }
     }, waitTime);
