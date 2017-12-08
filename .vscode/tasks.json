@@ -6,7 +6,7 @@
         {
             "label": "start",
             "type": "shell",
-            "command": "Need non-Windows script.",
+            "command": "./node_modules/.bin/electron ./",
             "windows": {
                 "command": "./node_modules/.bin/electron.cmd",
                 "args": [

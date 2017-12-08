@@ -1,9 +1,9 @@
-import * as After from "../API/";
+import * as After from "../API/Index";
 import * as $ from "jquery";
 import * as electron from "electron";
 import * as Game from "./Game";
 import * as Intro from "./Intro";
-import { UI, Storage } from "../Components/index";
+import { UI, Storage } from "../Components/Index";
 import * as url from "url";
 import * as path from "path";
 

@@ -27,9 +27,16 @@
     "jquery": "^3.2.1"
   },
   "build": {
+    "productName": "After",
+    "linux": {
+      "category": "Game"
+    },
     "nsis": {
       "artifactName": "After_Setup_${version}.${ext}",
       "shortcutName": "After"
+    },
+    "appImage": {
+      "artifactName": "After_${version}.${ext}"
     }
   }
 }

@@ -1,4 +1,4 @@
-import {UI, SocketDataIO, Storage, Utilities } from "./";
+import {UI, SocketDataIO, Storage, Utilities } from "./Index";
 
 export var NextInputHandler:Function;
 

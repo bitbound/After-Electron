@@ -2,7 +2,7 @@ import * as $ from "jquery";
 import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
-import { Storage, FileSystem, UI } from "./";
+import { Storage, FileSystem, UI } from "./Index";
 
 
 export function ArePropertiesEqual(object1, object2) {

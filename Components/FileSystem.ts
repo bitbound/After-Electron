@@ -2,7 +2,7 @@
 import * as fs from "fs";
 import * as electron from "electron";
 import * as path from "path";
-import { FileSystem } from "./index";
+import { FileSystem } from "./Index";
 
 export var AppRootPath = electron.remote.app.getAppPath();
 

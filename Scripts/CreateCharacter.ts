@@ -1,7 +1,7 @@
-import * as After from "../API/";
+import * as After from "../API/Index";
 import * as Audio from "../Components/Audio";
 import * as Game from "./Game";
-import { Storage, Utilities, UI } from "../Components/index";
+import { Storage, Utilities, UI } from "../Components/Index";
 
 Storage.Me.ID = Utilities.CreateGUID();
 Storage.Me.CurrentEnergy = 100;

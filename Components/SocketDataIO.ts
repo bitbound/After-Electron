@@ -1,6 +1,6 @@
 import * as net from "net";
-import { Connectivity, Storage, Utilities, UI } from "./";
-import { ConnectedClient, KnownServer, MessageCounter } from "../Models/index";
+import { Connectivity, Storage, Utilities, UI } from "./Index";
+import { ConnectedClient, KnownServer, MessageCounter } from "../Models/Index";
 
 // Final Data Out //
 export function Send(jsonData: any, socket: net.Socket) {

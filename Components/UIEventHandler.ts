@@ -1,5 +1,5 @@
 import * as electron from "electron";
-import { UI, InputProcessor, Intellisense, Storage } from "./";
+import { UI, InputProcessor, Intellisense, Storage } from "./Index";
 
 export function ApplyUIEventHandlers(){
     $("#gridDivider").on("pointerdown", (e)=>{

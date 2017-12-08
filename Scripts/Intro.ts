@@ -1,7 +1,7 @@
-import * as After from "../API/";
+import * as After from "../API/Index";
 import * as $ from "jquery";
 import * as Audio from "../Components/Audio";
-import { UI, InputProcessor, Storage, Utilities } from "../Components/index";
+import { UI, InputProcessor, Storage, Utilities } from "../Components/Index";
 
 export var Start = function(){
     Audio.PlayLoop("./Assets/ceich93__drone-darkemptiness.mp3", null);
