@@ -22,7 +22,7 @@ function createWindow() {
     //mainWindow.setMenu(null);
     // and load the index.html of the app.
     mainWindow.loadURL(url.format({
-        pathname: path.join(__dirname, '/Index.html'),
+        pathname: path.join(__dirname, '/HTML/Index.html'),
         protocol: 'file:',
         slashes: true
     }));
@@ -57,6 +57,8 @@ app.on('activate', function () {
     }
 });
 
+// Message from mainWindow that tells the main process to
+// open the options window.
 electron.ipcMain.on("options-menu", (event, args) =>{
     var optionsWindow = new electron.BrowserWindow({
         width: 700,
@@ -66,9 +68,14 @@ electron.ipcMain.on("options-menu", (event, args) =>{
         icon: "./Assets/A-512.png"
     });
     optionsWindow.loadURL(url.format({
-        pathname: path.join(__dirname, '/Widgets/Options.html'),
+        pathname: path.join(__dirname, '/HTML/Options.html'),
         protocol: 'file:',
         slashes: true
     }));
 })
 
+// Message from options window that contains updated options.
+// The updated options get sent to mainWindow to be applied and saved.
+electron.ipcMain.on("options-update", (event, args)=>{
+
+})

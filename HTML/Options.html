@@ -9,13 +9,16 @@
 <body>
     <div id="optionsGrid">
         <div id="optionsSideTabs">
-            <div class="options-side-tab">
+            <div class="options-side-tab" onclick="switchContentFrame(event)">
+                General
+            </div>
+            <div class="options-side-tab" onclick="switchContentFrame(event)">
                 Interface
             </div>
-            <div class="options-side-tab">
+            <div class="options-side-tab" onclick="switchContentFrame(event)">
                 Client
             </div>
-            <div class="options-side-tab">
+            <div class="options-side-tab" onclick="switchContentFrame(event)">
                 Server
             </div>
         </div>
@@ -61,5 +64,10 @@
             background-color: rgb(100,100,100);
         }
     </style>
+    <script>
+        function switchContentFrame() {
+
+        }
+    </script>
 </body>
 </html>

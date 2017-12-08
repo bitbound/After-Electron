@@ -3,17 +3,17 @@
 
 <head>
     <title>After</title>
-    <link href="./Styles.css" rel="stylesheet">
-    <link href="./Assets/A-512.png" rel="icon">
+    <link href="../Styles.css" rel="stylesheet">
+    <link href="../Assets/A-512.png" rel="icon">
 </head>
 
 <body>
     <div id="divSplash" hidden>
         <div style="text-align:center;">
-            <img id="imgTitle" src="./Assets/AfterTitle.png" />
+            <img id="imgTitle" src="../Assets/AfterTitle.png" />
         </div>
         <div id="divTunnel" style="text-align:center">
-            <img id="imgTunnel" class="glowing" src="./Assets/Tunnel and Shadow.png" style="height:250px; width:auto" />
+            <img id="imgTunnel" class="glowing" src="../Assets/Tunnel and Shadow.png" style="height:250px; width:auto" />
         </div>
         <div style="text-align:center;">
             <button id="buttonPlay" autofocus>Play</button>
@@ -28,7 +28,7 @@
             Sound by
             <a href="http://www.freesound.org/people/ceich93/">Operation Contrast</a> at FreeSound.org.
         </div>
-        <audio id="backgroundAudio" loop autoplay src="./Assets/ceich93_drone-ominousdistortion.mp3"></audio>
+        <audio id="backgroundAudio" loop autoplay src="../Assets/ceich93_drone-ominousdistortion.mp3"></audio>
         <style>
             body {
                 vertical-align: middle;
@@ -203,9 +203,9 @@
     </div>
 
     <script>
-        var init = require("./Scripts/Init");
+        var init = require("../Scripts/Init");
         init.Start();
-        var splash = require("./Scripts/Splash");
+        var splash = require("../Scripts/Splash");
         splash.Start();
     </script>
 </body>
