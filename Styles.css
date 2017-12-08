@@ -291,11 +291,11 @@ button:active {
     font-size: .8em;
     padding: 5px 5px 10px 5px;
 }
-.side-menu-key {
+.menu-item-key {
     vertical-align: middle;
     display: inline-block;
 }
-.side-menu-value {
+.menu-item-value {
     float: right;
     clear: right;
 }

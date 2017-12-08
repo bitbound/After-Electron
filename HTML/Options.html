@@ -6,14 +6,18 @@
     <link href="../Styles.css" rel="stylesheet">
     <link href="../Assets/A-512.png" rel="icon">
 </head>
+
 <body>
     <div id="optionsGrid">
         <div id="optionsSideTabs">
-            <div class="options-side-tab" onclick="switchContentFrame(event)">
+            <div class="options-side-tab selected" onclick="switchContentFrame(event)">
                 General
             </div>
             <div class="options-side-tab" onclick="switchContentFrame(event)">
                 Interface
+            </div>
+            <div class="options-side-tab" onclick="switchContentFrame(event)">
+                Keybinds
             </div>
             <div class="options-side-tab" onclick="switchContentFrame(event)">
                 Client
@@ -23,19 +27,40 @@
             </div>
         </div>
         <div id="optionsContentFrame">
+            <div id="generalOptions" class="options-content">
+                <div class="menu-item-key">
+                    Auto Save Interval (seconds):
+                </div>
+                <div class="menu-item-value">
+                    <input />
+                </div>
+            </div>
+            <div id="interfaceOptions" class="options-content" hidden>
 
+            </div>
+            <div id="keybindsOptions" class="options-content" hidden>
+
+            </div>
+            <div id="clientOptions" class="options-content" hidden>
+
+            </div>
+            <div id="serverOptions" class="options-content" hidden>
+
+            </div>
         </div>
     </div>
     <style>
         body {
             margin-left: 0;
         }
+
         #optionsGrid {
             display: grid;
             height: 100%;
             width: 100%;
             grid-template-columns: 150px auto;
         }
+
         #optionsSideTabs {
             grid-row: 1;
             grid-column: 1;
@@ -43,6 +68,7 @@
             width: 100%;
             border-right: 1px solid whitesmoke;
         }
+
         #optionsContentFrame {
             grid-row: 1;
             grid-column: 2;
@@ -50,7 +76,7 @@
         }
 
         .options-side-tab {
-            background-color: rgb(25,25,25);
+            background-color: rgb(25, 25, 25);
             cursor: pointer;
             display: block;
             height: 3em;
@@ -60,14 +86,32 @@
             font-family: sans-serif;
             font-size: .9em;
         }
+
         .options-side-tab:hover {
-            background-color: rgb(100,100,100);
+            background-color: rgb(100, 100, 100);
+        }
+        .options-side-tab.selected {
+            background-color: steelblue;
+        }
+
+        .options-content {
+            height: calc(100% - 20px);
+            width: calc(100% - 40px);
+            margin: 10px 20px;
+            font-family: sans-serif;
+            font-size: .9em;
         }
     </style>
     <script>
-        function switchContentFrame() {
-
+        var $ = require("jquery");
+        function switchContentFrame(e) {
+            $(".options-content").hide();
+            $(".options-side-tab").removeClass("selected");
+            $(e.currentTarget).addClass("selected");
+            var targetID = e.currentTarget.innerHTML.trim().toLowerCase() + "Options";
+            $("#" + targetID).show();
         }
     </script>
 </body>
+
 </html>
