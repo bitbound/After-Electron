@@ -111,6 +111,9 @@
             var targetID = e.currentTarget.innerHTML.trim().toLowerCase() + "Options";
             $("#" + targetID).show();
         }
+        function applyStorageData(data){
+            var storage = JSON.parse(data);
+        }
     </script>
 </body>
 

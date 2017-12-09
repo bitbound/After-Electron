@@ -72,6 +72,7 @@ electron.ipcMain.on("options-menu", (event, args) =>{
         protocol: 'file:',
         slashes: true
     }));
+    optionsWindow.webContents.executeJavaScript(`applyStorageData('${args}')`);
 })
 
 // Message from options window that contains updated options.
