@@ -20,9 +20,11 @@ button {
 button:hover {
     background-color: rgb(100, 100, 100);
     border: 1px solid white;
+    transition: .2s all;
 }
 button:active {
     background-color: rgb(50, 50, 50);
+    transition: .1s all;
 }
 
 /*  Toggle Switch */

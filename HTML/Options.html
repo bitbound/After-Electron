@@ -10,19 +10,19 @@
 <body>
     <div id="optionsGrid">
         <div id="optionsSideTabs">
-            <div class="options-side-tab selected" onclick="switchContentFrame(event)">
+            <div class="options-side-tab selected">
                 General
             </div>
-            <div class="options-side-tab" onclick="switchContentFrame(event)">
+            <div class="options-side-tab">
                 Interface
             </div>
-            <div class="options-side-tab" onclick="switchContentFrame(event)">
+            <div class="options-side-tab">
                 Keybinds
             </div>
-            <div class="options-side-tab" onclick="switchContentFrame(event)">
+            <div class="options-side-tab">
                 Client
             </div>
-            <div class="options-side-tab" onclick="switchContentFrame(event)">
+            <div class="options-side-tab">
                 Server
             </div>
         </div>
@@ -32,7 +32,7 @@
                     Auto Save Interval (seconds):
                 </div>
                 <div class="menu-item-value">
-                    <input />
+                    <input id="autoSaveInterval" />
                 </div>
             </div>
             <div id="interfaceOptions" class="options-content" hidden>
@@ -89,9 +89,11 @@
 
         .options-side-tab:hover {
             background-color: rgb(100, 100, 100);
+            transition: .2s all;
         }
         .options-side-tab.selected {
             background-color: steelblue;
+            transition: .2s all;
         }
 
         .options-content {
@@ -103,17 +105,7 @@
         }
     </style>
     <script>
-        var $ = require("jquery");
-        function switchContentFrame(e) {
-            $(".options-content").hide();
-            $(".options-side-tab").removeClass("selected");
-            $(e.currentTarget).addClass("selected");
-            var targetID = e.currentTarget.innerHTML.trim().toLowerCase() + "Options";
-            $("#" + targetID).show();
-        }
-        function applyStorageData(data){
-            var storage = JSON.parse(data);
-        }
+        window["Options"] = require("../Scripts/Options.js");
     </script>
 </body>
 

@@ -25,7 +25,8 @@ export function ApplyUIEventHandlers(){
         })
     });
     $("#optionsButton").on("click", (e)=>{
-        electron.ipcRenderer.send("options-menu", JSON.stringify(Storage));
+        Storage.SaveAll();
+        electron.ipcRenderer.send("options-menu");
     });
     $("#closeMenuButton").on("click", (e)=>{
         $("#menuFrame").animate({

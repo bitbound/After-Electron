@@ -199,6 +199,23 @@ export function CreateGUID() {
     });
 };
 
+export function DataBind(DataObject: Object, ObjectProperty: string,
+                         Element: HTMLElement, ElementPropertyKey: string) {
+    Object.defineProperty(DataObject, ObjectProperty, {
+        configurable: true,
+        enumerable: true,
+        get() {
+            return Element[ElementPropertyKey];
+        },
+        set(value: any) {
+            Element[ElementPropertyKey] = value;
+        }
+    });
+    $(Element).on("change", e=>{
+        Element[ElementPropertyKey] = DataObject[ObjectProperty];
+    });
+};
+
 export function EncodeForHTML(input:string) {
     return $("<div>").text(input).html();
 };

@@ -60,7 +60,8 @@ export function Start(){
             }
         });
         $("#buttonOptions").click(function () {
-            electron.ipcRenderer.send("options-menu", JSON.stringify(After.Components.Storage));
+            Storage.SaveAll();
+            electron.ipcRenderer.send("options-menu");
         });
         $("#divSplash").fadeIn(600);
         raiseParticle();

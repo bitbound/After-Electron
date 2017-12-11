@@ -65,14 +65,14 @@ electron.ipcMain.on("options-menu", (event, args) =>{
         height: 500,
         minWidth: 700,
         minHeight: 500,
-        icon: "./Assets/A-512.png"
+        icon: "./Assets/A-512.png",
+        modal: true
     });
     optionsWindow.loadURL(url.format({
         pathname: path.join(__dirname, '/HTML/Options.html'),
         protocol: 'file:',
         slashes: true
     }));
-    optionsWindow.webContents.executeJavaScript(`applyStorageData('${args}')`);
 })
 
 // Message from options window that contains updated options.
