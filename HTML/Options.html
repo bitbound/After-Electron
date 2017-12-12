@@ -28,12 +28,25 @@
         </div>
         <div id="optionsContentFrame">
             <div id="generalOptions" class="options-content">
-                <div class="menu-item-key">
-                    Auto Save Interval (seconds):
+                <div style="margin-bottom:10px">
+                    <div class="menu-item-key">
+                        Auto Save Interval (seconds):
+                    </div>
+                    <div class="menu-item-value">
+                        <input id="autoSaveInterval" />
+                    </div>
                 </div>
-                <div class="menu-item-value">
-                    <input id="autoSaveInterval" />
+                <div style="margin-bottom:10px">
+                    <div class="menu-item-key">
+                        Debug Mode:
+                    </div>
+                    <div class="menu-item-value">
+                        <div id="debugMode" class="toggle-switch-outer" data-property="StorageData.ClientSettings.IsDebugModeEnabled">
+                            <div class="toggle-switch-inner"></div>
+                        </div>
+                    </div>
                 </div>
+
             </div>
             <div id="interfaceOptions" class="options-content" hidden>
 
@@ -53,7 +66,9 @@
         body {
             margin-left: 0;
         }
-
+        input {
+            width: 100px;
+        }
         #optionsGrid {
             display: grid;
             height: 100%;
@@ -91,6 +106,7 @@
             background-color: rgb(100, 100, 100);
             transition: .2s all;
         }
+
         .options-side-tab.selected {
             background-color: steelblue;
             transition: .2s all;

@@ -18,7 +18,7 @@ export var ClientSettings = new class ClientSettings {
         "Debug": "rgb(150,50,50)"
     }
     IsMultiplayerEnabled:boolean = false;
-    IsDebugMode: boolean = false;
+    IsDebugModeEnabled: boolean = false;
     IsNetworkBarVisible: boolean = true;
     TextInputAliases = {
         Command: "/c ",

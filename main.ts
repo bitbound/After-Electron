@@ -66,7 +66,8 @@ electron.ipcMain.on("options-menu", (event, args) =>{
         minWidth: 700,
         minHeight: 500,
         icon: "./Assets/A-512.png",
-        modal: true
+        modal: true,
+        parent: mainWindow
     });
     optionsWindow.loadURL(url.format({
         pathname: path.join(__dirname, '/HTML/Options.html'),

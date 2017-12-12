@@ -59,12 +59,12 @@ button:active {
     transform: translate(-50%, -50%);
 }
 
-.toggle-switch-outer[on="true"] .switch-inner {
+.toggle-switch-outer[on="true"] .toggle-switch-inner {
     margin-left: 24%;
     transition: .5s;
 }
 
-.toggle-switch-outer[on="false"] .switch-inner {
+.toggle-switch-outer[on="false"] .toggle-switch-inner {
     margin-left: -24%;
     transition: .5s;
 }

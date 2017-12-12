@@ -366,7 +366,7 @@ export function ReplaceAllInString(inputString:string, toReplace:string, replace
     }
 }
 export function WriteDebug(message:string, newLines: number){
-    if (Storage.ClientSettings.IsDebugMode){
+    if (Storage.ClientSettings.IsDebugModeEnabled){
         UI.AddDebugMessage(message, newLines);
     }
 }
