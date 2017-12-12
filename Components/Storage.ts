@@ -59,7 +59,6 @@ export function LoadAll() {
             $.extend(Storage[itemName], JSON.parse(content));
         }
     });
-    UI.RefreshUI();
 };
 
 export function SaveAll() {
@@ -88,7 +87,6 @@ export function LoadMe(slot:string){
     }
     var content = fs.readFileSync(loadPath).toString();
     $.extend(this.Me, JSON.parse(content));
-    UI.RefreshUI();
 }
 export function SaveMe(slot:string) {
     fs.writeFileSync(path.join(FileSystem.StorageDataPath, "Me.json"), JSON.stringify(this.Me));

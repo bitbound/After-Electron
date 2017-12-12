@@ -199,21 +199,51 @@ export function CreateGUID() {
     });
 };
 
-export function DataBind(DataObject: Object, ObjectProperty: string,
-                         Element: HTMLElement, ElementPropertyKey: string) {
+export function DataBindOneWay(DataObject: Object, ObjectProperty: string,
+                                PostSetterFunction: Function, PreGetterFunction: Function) {
+    var backingValue;
     Object.defineProperty(DataObject, ObjectProperty, {
         configurable: true,
         enumerable: true,
         get() {
+            if (PreGetterFunction) {
+                PreGetterFunction();
+            }
+            return backingValue;
+        },
+        set(value: any) {
+            backingValue = value;
+            if (PostSetterFunction) {
+                PostSetterFunction();
+            }
+        }
+    });
+};
+export function DataBindTwoWay(DataObject: Object, ObjectProperty: string,
+                         Element: HTMLElement, ElementPropertyKey: string,
+                         PostSetterFunction: Function, PreGetterFunction: Function) {
+    Object.defineProperty(DataObject, ObjectProperty, {
+        configurable: true,
+        enumerable: true,
+        get() {
+            if (PreGetterFunction) {
+                PreGetterFunction();
+            }
             return Element[ElementPropertyKey];
         },
         set(value: any) {
             Element[ElementPropertyKey] = value;
+            if (PostSetterFunction) {
+                PostSetterFunction();
+            }
         }
     });
-    $(Element).on("change", e=>{
-        Element[ElementPropertyKey] = DataObject[ObjectProperty];
-    });
+    Element.onchange = function(e) {
+        if (PostSetterFunction) {
+            PostSetterFunction();
+        }
+       DataObject[ObjectProperty] = Element[ElementPropertyKey];
+    };
 };
 
 export function EncodeForHTML(input:string) {

@@ -13,6 +13,7 @@ export function Start(){
         Storage.SaveAll();
     });
     UIEventHandler.ApplyUIEventHandlers();
+    UI.SetUIDatabinds();
     Storage.LoadAll();
     window.setInterval(()=>{
         Storage.SaveAll();
@@ -25,7 +26,4 @@ export function Start(){
             }
         }
     }, Storage.ClientSettings.AutoSaveIntervalSeconds * 1000);
-    window.setInterval(()=>{
-        UI.RefreshUI();
-    }, 1000)
 }

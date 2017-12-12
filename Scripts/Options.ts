@@ -14,7 +14,7 @@ export function switchContentFrame(e) {
 }
 
 $(document).ready(function(){
-    Utilities.DataBind(StorageData.ClientSettings, "AutoSaveIntervalSeconds", $("#autoSaveInterval")[0], "value");
+    Utilities.DataBindTwoWay(StorageData.ClientSettings, "AutoSaveIntervalSeconds", $("#autoSaveInterval")[0], "value", null, null);
     StorageData.LoadAll();
     $(".options-side-tab").on("click", event=>{
         switchContentFrame(event);

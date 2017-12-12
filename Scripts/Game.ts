@@ -4,9 +4,6 @@ import { Storage, Connectivity } from "../Components/Index";
 
 export var Start = async function (){
     Storage.Me.CurrentLocationID = Storage.Me.InnerVoidID;
-    Storage.Me.CoreEnergy = 100;
-    Storage.Me.CoreEnergyPeak = 100;
-    Storage.Me.CurrentEnergy = 100;
     Storage.Me.CurrentCharge = 0;
     After.Models.Void.Load(Storage.Me.InnerVoidID).Display();
     

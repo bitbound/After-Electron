@@ -52,7 +52,7 @@
         After.Components.Storage.Me.Color = temp.SoulColor;
         $.when($("#divCreateCharacter").animate({ opacity: 0 }, 1000)).then(function () {
             delete temp;
-            require("./Scripts/CreateCharacter");
+            require("../Scripts/CreateCharacter");
         });
     }
     temp.ColorSelected = function () {

@@ -100,7 +100,12 @@ export function FadeInText(text:string, delayInMilliseconds:number, callback:Fun
         for (var i = 0; i < text.length; i++){
             var letter = text.substr(i, 1);
             window.setTimeout((letter)=>{
-                UI.AddMessageHTML("<span class='fade-in-text'>" + letter + "</span>", 0);
+                if (letter == " ") {
+                    UI.AddMessageText(" ", 0);
+                }
+                else {
+                    UI.AddMessageHTML("<div class='fade-in-text'>" + letter + "</div>", 0);
+                }
             }, i * 30, letter)
         }
         if (callback){
@@ -112,28 +117,51 @@ export function FadeInText(text:string, delayInMilliseconds:number, callback:Fun
 }
 
 
-export function RefreshUI(){
-
-    $("#coreEnergySideMenu").text(Storage.Me.CoreEnergy);
-    $("#peakCoreEnergySideMenu").text(Storage.Me.CoreEnergyPeak);
-
-    $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
-    $("#currentEnergySideMenu").text(Storage.Me.CurrentEnergy);
-    $("#energyModSideMenu").text(Storage.Me.EnergyMod);
-    $("#maxEnergySideMenu").text(Storage.Me.MaxCharge);
-    $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
-
-
-    $("#divChargeAmount").text(Storage.Me.CurrentCharge);
-    $("#currentChargeSideMenu").text(Storage.Me.CurrentCharge);
-    $("#chargeModSideMenu").text(Storage.Me.ChargeMod);
-    $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
-    $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
-
+export function RefreshConnectivityBar(){
     $("#spanClientStatus").text((String(Connectivity.OutboundConnection.IsConnected()).replace("true", "Connected").replace("false", "Disconnected")));
     $("#spanServerStatus").text(String(Connectivity.LocalServer.IsListening()).replace("true", "Listening").replace("false", "Disabled"));
     $("#spanServerConnections").text(Connectivity.ServerToServerConnections.length.toString());
     $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
+}
+export function SetUIDatabinds(){
+    Utilities.DataBindOneWay(Storage.Me, "CoreEnergy", function(){
+        if (Storage.Me.CoreEnergy > Storage.Me.CoreEnergyPeak) {
+            Storage.Me.CoreEnergyPeak = Storage.Me.CoreEnergy;
+        }
+        Storage.Me.MaxEnergy = Storage.Me.CoreEnergy + Storage.Me.EnergyMod;
+        Storage.Me.MaxCharge = Storage.Me.CoreEnergy + Storage.Me.ChargeMod;
+        $("#coreEnergySideMenu").text(Storage.Me.CoreEnergy);
+        $("#peakCoreEnergySideMenu").text(Storage.Me.CoreEnergyPeak);
+    }, null);
+
+    Utilities.DataBindOneWay(Storage.Me, "CurrentEnergy", function(){
+        $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
+        $("#currentEnergySideMenu").text(Storage.Me.CurrentEnergy);
+        $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
+    }, null);
+    Utilities.DataBindOneWay(Storage.Me, "EnergyMod", function(){
+        Storage.Me.MaxEnergy = Storage.Me.CoreEnergy + Storage.Me.EnergyMod;
+        $("#energyModSideMenu").text(Storage.Me.EnergyMod);
+        $("#maxEnergySideMenu").text(Storage.Me.MaxEnergy);
+    }, null);
+    Utilities.DataBindOneWay(Storage.Me, "MaxEnergy", function(){
+        $("#maxEnergySideMenu").text(Storage.Me.MaxEnergy);
+        $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
+    }, null);
+    Utilities.DataBindOneWay(Storage.Me, "CurrentCharge", function(){
+        $("#divChargeAmount").text(Storage.Me.CurrentCharge);
+        $("#currentChargeSideMenu").text(Storage.Me.CurrentCharge);
+        $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
+    }, null);
+    Utilities.DataBindOneWay(Storage.Me, "ChargeMod", function(){
+        Storage.Me.MaxCharge = Storage.Me.CoreEnergy + Storage.Me.ChargeMod;
+        $("#chargeModSideMenu").text(Storage.Me.ChargeMod);
+        $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
+    }, null);
+    Utilities.DataBindOneWay(Storage.Me, "MaxCharge", function(){
+        $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
+        $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
+    }, null);
 }
 export function ShowDevTools(){
     electron.remote.getCurrentWindow().webContents.openDevTools();

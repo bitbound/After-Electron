@@ -67,6 +67,7 @@ export async function FindClientToServerConnection(){
     if (OutboundConnection.IsConnected() == false){
         UI.AddSystemMessage("Unable to find a client-to-server connection.  Try connecting manually later.", 1);
     }
+    UI.RefreshConnectivityBar();
 }
 export async function FindServerToServerConnection(){
     UI.AddSystemMessage("Attempting to find a server-to-server connection.", 1);
@@ -100,6 +101,7 @@ export async function FindServerToServerConnection(){
     {
         UI.AddSystemMessage("Unable to find a server-to-server connection.", 1);
     }
+    UI.RefreshConnectivityBar();
 }
 export async function ConnectToServer(server:KnownServer, connectionType:ConnectionTypes):Promise<boolean> {
         var promise = new Promise<boolean>(function(resolve, reject){
@@ -122,7 +124,7 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
                     }
                     else if (connectionType == ConnectionTypes.ServerToServer){
                         ServerToServerConnections.push(socket);
-                        UI.RefreshUI();
+                        UI.RefreshConnectivityBar();
                         SocketDataIO.SendHelloFromServerToServer(server, socket);
                     }
                     resolve(true);
@@ -140,7 +142,7 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
                         var index = ServerToServerConnections.findIndex(x=>x==socket);
                         if (index > -1){
                             ServerToServerConnections.splice(index, 1);
-                            UI.RefreshUI();
+                            UI.RefreshConnectivityBar();
                         }
                     }
                     resolve(false);
@@ -158,7 +160,7 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
                         var index = ServerToServerConnections.findIndex(x=>x==socket);
                         if (index > -1){
                             ServerToServerConnections.splice(index, 1);
-                            UI.RefreshUI();
+                            UI.RefreshConnectivityBar();
                         }
                     }
                     resolve(false);
@@ -240,23 +242,25 @@ export async function StartServer() {
             var index = Connectivity.ClientConnections.findIndex(x=>x.Socket == socket);
             if (index > -1){
                 Connectivity.ClientConnections.splice(index, 1);
+                UI.RefreshConnectivityBar();
             }
             var index = Connectivity.ServerToServerConnections.findIndex(x=>x == socket);
             if (index > -1){
                 Connectivity.ServerToServerConnections.splice(index, 1);
+                UI.RefreshConnectivityBar();
             }
-            UI.RefreshUI();
         })
         socket.on("close", ()=>{
             var index = Connectivity.ClientConnections.findIndex(x=>x.Socket == socket);
             if (index > -1){
                 Connectivity.ClientConnections.splice(index, 1);
+                UI.RefreshConnectivityBar();
             }
             var index = Connectivity.ServerToServerConnections.findIndex(x=>x == socket);
             if (index > -1){
                 Connectivity.ServerToServerConnections.splice(index, 1);
+                UI.RefreshConnectivityBar();
             }
-            UI.RefreshUI();
         })
     });
     server.on("close", function(){

@@ -4,7 +4,7 @@ import * as Audio from "../Components/Audio";
 import { UI, InputProcessor, Storage, Utilities } from "../Components/Index";
 
 export var Start = function(){
-    Audio.PlayLoop("./Assets/ceich93__drone-darkemptiness.mp3", null);
+    Audio.PlayLoop("../Assets/ceich93__drone-darkemptiness.mp3", null);
     var introText = [
         "You died.",
         "Slowly, your consciousness becomes aware of itself.",
@@ -48,7 +48,7 @@ export var Start = function(){
                 }
                 Storage.Me.Name = Utilities.EncodeForHTML(input);
                 UI.MessageWindow.html("");
-                $.get("./HTML/CharacterColorPicker.html", (data)=>{UI.AddMessageHTML(data, 1);})
+                $.get("../HTML/CharacterColorPicker.html", (data)=>{UI.AddMessageHTML(data, 1);})
             });
         }
     }, waitTime);

@@ -56,7 +56,7 @@ export function ReceiveHelloFromClientToServer(jsonData: any, socket: net.Socket
     var client = new ConnectedClient();
     client.Socket = socket;
     Connectivity.ClientConnections.push(client);
-    UI.RefreshUI();
+    $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
     Utilities.WriteDebug(`Connection received from ${socket.remoteAddress}.`, 1);
     SendHelloFromServerToClient(socket);
     SendKnownServers(socket);
@@ -92,7 +92,7 @@ export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket
         return;
     }
     Connectivity.ServerToServerConnections.push(socket);
-    UI.RefreshUI();
+    $("#spanServerConnections").text(Connectivity.ServerToServerConnections.length.toString());
     Utilities.WriteDebug(`Server connection received from ${socket.remoteAddress}.`, 1);
     SendKnownServers(socket);
 }

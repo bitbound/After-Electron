@@ -15,15 +15,10 @@ export class Player {
     // Energy //
     CurrentEnergy:number = 0;
     EnergyMod:number = 0;
-
-    get MaxEnergy():number {
-        return this.CoreEnergy + this.EnergyMod;
-    }
+    MaxEnergy:number = 0;
 
     // Charge //
     CurrentCharge:number = 0;
     ChargeMod:number = 0;
-    get MaxCharge(): number{
-        return this.CoreEnergy + this.ChargeMod;
-    }
+    MaxCharge:number = 0;
 };
