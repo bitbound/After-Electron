@@ -29,7 +29,7 @@ function AppendMessageToWindow(message:string){
     }
 }
 export function AddDebugMessage(message:string, newLines:number){
-    var messageText = `<div style="color:${Storage.ClientSettings.Colors.Debug}">[Debug]: ${Utilities.EncodeForHTML(message)}</div>`;
+    var messageText = `<div style="color:${Storage.ApplicationSettings.Colors.Debug}">[Debug]: ${Utilities.EncodeForHTML(message)}</div>`;
     for (var i = 0; i < newLines; i++){
         messageText += "<br>";
     }
@@ -50,7 +50,7 @@ export function AddMessageHTML(html:string, newLines:number) {
     AppendMessageToWindow(html);
 };
 export function AddSystemMessage(message:string, newLines:number){
-    var messageText = `<div style="color:${Storage.ClientSettings.Colors.System}">[System]: ${message}</div>`;
+    var messageText = `<div style="color:${Storage.ApplicationSettings.Colors.System}">[System]: ${message}</div>`;
     for (var i = 0; i < newLines; i++){
         messageText += "<br>";
     }

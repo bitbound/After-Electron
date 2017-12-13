@@ -8,7 +8,7 @@ import { Player, KnownServer, MessageCounter } from '../Models/Index';
 
 export var Me = new Player();
 
-export var ClientSettings = new class ClientSettings {
+export var ApplicationSettings = new class ApplicationSettings {
     AutoSaveIntervalSeconds: number = 300;
     Colors = {
         "GlobalChat": "seagreen",
@@ -17,7 +17,6 @@ export var ClientSettings = new class ClientSettings {
         "System": "lightgray",
         "Debug": "rgb(150,50,50)"
     }
-    IsMultiplayerEnabled:boolean = false;
     IsDebugModeEnabled: boolean = false;
     IsNetworkBarVisible: boolean = true;
     TextInputAliases = {
@@ -28,17 +27,20 @@ export var ClientSettings = new class ClientSettings {
     };
 };
 
-export var ServerSettings = new class ServerSettings {
-    IsEnabled:boolean = false;
-    IsPublic: boolean = true;
-    ListeningPort: number = 48836;
+export var ConnectionSettings = new class ConnectionSettings {
+    IsClientEnabled:boolean = false;
+    IsServerEnabled:boolean = false;
+    IsPublicServer: boolean = true;
+    ServerListeningPort: number = 48836;
+    ServerID: string = Utilities.CreateGUID();
     MessageCountMilliseconds: number = 60000;
     MessageCountLimit: number = 300;
-    ServerID: string = Utilities.CreateGUID();
+    MaxConnectionAttempts:number = 10;
 }
 
 export var KnownServers: KnownServer[] = [
-    new KnownServer("after.myddns.rocks", 48836, false)
+    new KnownServer("after.myddns.rocks", 48836, false),
+    new KnownServer("after.myddns.rocks", 48837, false),
 ];
 
 export var Temp = new class Temp {
@@ -94,4 +96,31 @@ export function SaveMe(slot:string) {
         fs.mkdirSync(path.join(FileSystem.StorageDataPath, "Character_Saves"));
     }
     fs.writeFileSync(path.join(FileSystem.StorageDataPath, "Character_Saves", slot + ".json"), JSON.stringify(this.Me));
+}
+export function LoadSettings() {
+    if (fs.existsSync(FileSystem.StorageDataPath) == false) {
+        fs.mkdirSync(FileSystem.StorageDataPath);
+    }
+    fs.readdirSync(FileSystem.StorageDataPath).forEach(function (value) {
+        if (fs.lstatSync(path.join(FileSystem.StorageDataPath, value)).isFile()){
+            var itemName = value.replace(".json", "");
+            if (itemName != "Me") {
+                var content = fs.readFileSync(path.join(FileSystem.StorageDataPath, value)).toString();
+                var storage = JSON.parse(content);
+                $.extend(Storage[itemName], JSON.parse(content));
+            }
+        }
+    });
+};
+
+export function SaveSettings() {
+    if (fs.existsSync(FileSystem.StorageDataPath) == false) {
+        fs.mkdirSync(path.join(FileSystem.StorageDataPath, "Storage"));
+    }
+    for (var item in Storage) {
+        if (item == "Temp" || item == "Me" || typeof this[item] == "function") {
+            continue;
+        }
+        fs.writeFileSync(path.join(FileSystem.StorageDataPath, item + ".json"), JSON.stringify(Storage[item]));
+    }
 }

@@ -16,10 +16,13 @@ export function switchContentFrame(e) {
 
 $(document).ready(function(){
     electron.remote.getCurrentWindow().on("close", (event)=>{
-        StorageData.SaveAll();
+        StorageData.SaveSettings();
+        electron.ipcRenderer.send("options-update");
     });
-    Utilities.DataBindTwoWay(StorageData.ClientSettings, "AutoSaveIntervalSeconds", $("#autoSaveInterval")[0], "value", null, null);
-    Utilities.DataBindOneWay(StorageData.ClientSettings, "IsDebugModeEnabled", ()=>{$("#debugMode").attr("on", String(StorageData.ClientSettings.IsDebugModeEnabled))}, null);
+    Utilities.DataBindTwoWay(StorageData.ApplicationSettings, "AutoSaveIntervalSeconds", $("#autoSaveInterval")[0], "value", null, null);
+    Utilities.DataBindOneWay(StorageData.ApplicationSettings, "IsDebugModeEnabled", ()=>{$("#debugMode").attr("on", String(StorageData.ApplicationSettings.IsDebugModeEnabled))}, null);
+    Utilities.DataBindOneWay(StorageData.ConnectionSettings, "IsClientEnabled", ()=>{$("#clientEnabled").attr("on", String(StorageData.ConnectionSettings.IsClientEnabled))}, null);
+    Utilities.DataBindOneWay(StorageData.ConnectionSettings, "IsServerEnabled", ()=>{$("#serverEnabled").attr("on", String(StorageData.ConnectionSettings.IsServerEnabled))}, null);
     StorageData.LoadAll();
     window["StorageData"] = StorageData;
     $(".options-side-tab").on("click", event=>{

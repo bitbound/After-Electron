@@ -40,7 +40,7 @@ export async function FindClientToServerConnection(){
     for (var i = 0; i < Storage.KnownServers.length; i++){
         var server = Storage.KnownServers[i];
         try {
-            if (server.ID == Storage.ServerSettings.ServerID) {
+            if (server.ID == Storage.ConnectionSettings.ServerID) {
                 appendServers.push(server);
                 continue;
             }
@@ -68,6 +68,11 @@ export async function FindClientToServerConnection(){
         UI.AddSystemMessage("Unable to find a client-to-server connection.  Try connecting manually later.", 1);
     }
     UI.RefreshConnectivityBar();
+    for (var i = Storage.KnownServers.length - 1; i >= 0; i--) {
+        if (Storage.KnownServers[i].BadConnectionAttempts > Storage.ConnectionSettings.MaxConnectionAttempts){
+            Storage.KnownServers.splice(i, 1);
+        }
+    }
 }
 export async function FindServerToServerConnection(){
     UI.AddSystemMessage("Attempting to find a server-to-server connection.", 1);
@@ -75,7 +80,7 @@ export async function FindServerToServerConnection(){
     var appendServers = [];
     for (var i = 0; i < Storage.KnownServers.length; i++){
         try {
-            if (Storage.KnownServers[i].ID == Storage.ServerSettings.ServerID){
+            if (Storage.KnownServers[i].ID == Storage.ConnectionSettings.ServerID){
                 continue;
             }
             if (await ConnectToServer(Storage.KnownServers[i], ConnectionTypes.ServerToServer)) {
@@ -102,6 +107,11 @@ export async function FindServerToServerConnection(){
         UI.AddSystemMessage("Unable to find a server-to-server connection.", 1);
     }
     UI.RefreshConnectivityBar();
+    for (var i = Storage.KnownServers.length - 1; i >= 0; i--) {
+        if (Storage.KnownServers[i].BadConnectionAttempts > Storage.ConnectionSettings.MaxConnectionAttempts){
+            Storage.KnownServers.splice(i, 1);
+        }
+    }
 }
 export async function ConnectToServer(server:KnownServer, connectionType:ConnectionTypes):Promise<boolean> {
         var promise = new Promise<boolean>(function(resolve, reject){
@@ -139,11 +149,8 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
                         }
                     }
                     else if (connectionType == ConnectionTypes.ServerToServer){
-                        var index = ServerToServerConnections.findIndex(x=>x==socket);
-                        if (index > -1){
-                            ServerToServerConnections.splice(index, 1);
-                            UI.RefreshConnectivityBar();
-                        }
+                        Utilities.RemoveFromArray(ServerToServerConnections, socket);
+                        UI.RefreshConnectivityBar();
                     }
                     resolve(false);
                 });
@@ -157,11 +164,8 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
                         }
                     }
                     else if (connectionType == ConnectionTypes.ServerToServer){
-                        var index = ServerToServerConnections.findIndex(x=>x==socket);
-                        if (index > -1){
-                            ServerToServerConnections.splice(index, 1);
-                            UI.RefreshConnectivityBar();
-                        }
+                        Utilities.RemoveFromArray(ServerToServerConnections, socket);
+                        UI.RefreshConnectivityBar();
                     }
                     resolve(false);
                 })
@@ -183,7 +187,7 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
                                 continue;
                             }
                             Utilities.WriteDebug(`Received from server (${socket.remoteAddress}): ` + JSON.stringify(jsonData), 1);
-                            if (jsonData.TargetServerID != Storage.ServerSettings.ServerID && jsonData.ShouldBroadcast != false){
+                            if (jsonData.TargetServerID != Storage.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false){
                                 SocketDataIO.Broadcast(jsonData);
                             }
                             SocketDataIO["Receive" + jsonData.Type](jsonData, socket);
@@ -203,7 +207,7 @@ export async function ConnectToServer(server:KnownServer, connectionType:Connect
 }
 
 export async function StartServer() {
-    Storage.ServerSettings.ServerID = Storage.ServerSettings.ServerID || Utilities.CreateGUID();
+    Storage.ConnectionSettings.ServerID = Storage.ConnectionSettings.ServerID || Utilities.CreateGUID();
     var server = net.createServer(function(socket){
         if (Utilities.IsLocalIP(socket.remoteAddress)) {
             return;
@@ -226,7 +230,7 @@ export async function StartServer() {
                         return;
                     }
                     Utilities.WriteDebug(`Received from client (${socket.remoteAddress}): ` + JSON.stringify(jsonData), 1);
-                    if (jsonData.TargetServerID != Storage.ServerSettings.ServerID && jsonData.ShouldBroadcast != false){
+                    if (jsonData.TargetServerID != Storage.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false){
                         SocketDataIO.Broadcast(jsonData);
                     }
                     SocketDataIO["Receive" + jsonData.Type](jsonData, socket);
@@ -239,35 +243,21 @@ export async function StartServer() {
         });
         socket.on("error", (err:Error)=>{
             Utilities.Log(err.stack);
-            var index = Connectivity.ClientConnections.findIndex(x=>x.Socket == socket);
-            if (index > -1){
-                Connectivity.ClientConnections.splice(index, 1);
-                UI.RefreshConnectivityBar();
-            }
-            var index = Connectivity.ServerToServerConnections.findIndex(x=>x == socket);
-            if (index > -1){
-                Connectivity.ServerToServerConnections.splice(index, 1);
-                UI.RefreshConnectivityBar();
-            }
+            Utilities.RemoveFromArray(ClientConnections, socket);
+            Utilities.RemoveFromArray(ServerToServerConnections, socket);
+            UI.RefreshConnectivityBar();
         })
         socket.on("close", ()=>{
-            var index = Connectivity.ClientConnections.findIndex(x=>x.Socket == socket);
-            if (index > -1){
-                Connectivity.ClientConnections.splice(index, 1);
-                UI.RefreshConnectivityBar();
-            }
-            var index = Connectivity.ServerToServerConnections.findIndex(x=>x == socket);
-            if (index > -1){
-                Connectivity.ServerToServerConnections.splice(index, 1);
-                UI.RefreshConnectivityBar();
-            }
+            Utilities.RemoveFromArray(ClientConnections, socket);
+            Utilities.RemoveFromArray(ServerToServerConnections, socket);
+            UI.RefreshConnectivityBar();
         })
     });
     server.on("close", function(){
         if (!Connectivity.LocalServer.IsShutdownExpected){
             setTimeout(() => {
                 server.close();
-                server.listen(Storage.ServerSettings.ListeningPort);
+                server.listen(Storage.ConnectionSettings.ServerListeningPort);
             }, 1000);
         }
     })
@@ -277,7 +267,7 @@ export async function StartServer() {
         }
         Utilities.Log(e.stack);
     });
-    server.listen(Storage.ServerSettings.ListeningPort, function(){
+    server.listen(Storage.ConnectionSettings.ServerListeningPort, function(){
         Utilities.WriteDebug("TCP server started.", 1);
     });
     Connectivity.LocalServer.Server = server;

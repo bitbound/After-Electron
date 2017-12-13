@@ -28,7 +28,37 @@
         </div>
         <div id="optionsContentFrame">
             <div id="generalOptions" class="options-content">
-                <div style="margin-bottom:10px">
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        Client Connectivity:
+                    </div>
+                    <div class="menu-item-value">
+                        <div id="clientEnabled" class="toggle-switch-outer" data-property="StorageData.ConnectionSettings.IsClientEnabled">
+                            <div class="toggle-switch-inner"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        Server Connectivity:
+                    </div>
+                    <div class="menu-item-value">
+                        <div id="serverEnabled" class="toggle-switch-outer" data-property="StorageData.ConnectionSettings.IsServerEnabled">
+                            <div class="toggle-switch-inner"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        Debug Mode:
+                    </div>
+                    <div class="menu-item-value">
+                        <div id="debugMode" class="toggle-switch-outer" data-property="StorageData.ApplicationSettings.IsDebugModeEnabled">
+                            <div class="toggle-switch-inner"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-item">
                     <div class="menu-item-key">
                         Auto Save Interval (seconds):
                     </div>
@@ -36,17 +66,6 @@
                         <input id="autoSaveInterval" />
                     </div>
                 </div>
-                <div style="margin-bottom:10px">
-                    <div class="menu-item-key">
-                        Debug Mode:
-                    </div>
-                    <div class="menu-item-value">
-                        <div id="debugMode" class="toggle-switch-outer" data-property="StorageData.ClientSettings.IsDebugModeEnabled">
-                            <div class="toggle-switch-inner"></div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
             <div id="interfaceOptions" class="options-content" hidden>
 
@@ -66,9 +85,11 @@
         body {
             margin-left: 0;
         }
+
         input {
             width: 100px;
         }
+
         #optionsGrid {
             display: grid;
             height: 100%;

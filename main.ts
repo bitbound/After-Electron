@@ -9,7 +9,7 @@ var path = require('path');
 var url = require('url');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-var mainWindow;
+var mainWindow : electron.BrowserWindow;
 function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
@@ -74,10 +74,11 @@ electron.ipcMain.on("options-menu", (event, args) =>{
         protocol: 'file:',
         slashes: true
     }));
+
 })
 
-// Message from options window that contains updated options.
-// The updated options get sent to mainWindow to be applied and saved.
+// Message from options window that tells the mainWindow to
+// reload settings from disk.
 electron.ipcMain.on("options-update", (event, args)=>{
-
+    mainWindow.webContents.send("options-update");
 })

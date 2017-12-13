@@ -365,8 +365,15 @@ export function ReplaceAllInString(inputString:string, toReplace:string, replace
         return inputString;
     }
 }
+
+export function RemoveFromArray(inputArray:Array<any>, inputItem:any){
+    var index = inputArray.findIndex(x=>x==inputItem);
+    if (index > -1){
+        inputArray.splice(index, 1);
+    }
+}
 export function WriteDebug(message:string, newLines: number){
-    if (Storage.ClientSettings.IsDebugModeEnabled){
+    if (Storage.ApplicationSettings.IsDebugModeEnabled){
         UI.AddDebugMessage(message, newLines);
     }
 }

@@ -7,12 +7,12 @@ export var Start = async function (){
     Storage.Me.CurrentCharge = 0;
     After.Models.Void.Load(Storage.Me.InnerVoidID).Display();
     
-    if (Storage.ServerSettings.IsEnabled) {
+    if (Storage.ConnectionSettings.IsServerEnabled) {
         await Connectivity.StartServer();
     }
-    if (Storage.ClientSettings.IsMultiplayerEnabled) {
+    if (Storage.ConnectionSettings.IsClientEnabled) {
         await Connectivity.FindClientToServerConnection();
     }
-    Connectivity.OutboundConnection.TargetServerID = Storage.ServerSettings.ServerID;
+    Connectivity.OutboundConnection.TargetServerID = Storage.ConnectionSettings.ServerID;
 }
 

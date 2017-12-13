@@ -48,7 +48,7 @@ export function SendHelloFromClientToServer(socket: net.Socket) {
     SendToSpecificSocket({
         "Type": "HelloFromClientToServer",
         "ID": Utilities.CreateGUID(),
-        "ServerID": Storage.ServerSettings.ServerID,
+        "ServerID": Storage.ConnectionSettings.ServerID,
         "ShouldBroadcast": false
     }, socket)
 }
@@ -65,7 +65,7 @@ export function SendHelloFromServerToClient(socket: net.Socket) {
     SendToSpecificSocket({
         "Type": "HelloFromServerToClient",
         "ID": Utilities.CreateGUID(),
-        "ServerID": Storage.ServerSettings.ServerID,
+        "ServerID": Storage.ConnectionSettings.ServerID,
         "ShouldBroadcast": false
     }, socket)
 }
@@ -77,13 +77,13 @@ export function SendHelloFromServerToServer(toServer: KnownServer, socket: net.S
     SendToSpecificSocket({
         "Type": "HelloFromServerToServer",
         "ID": Utilities.CreateGUID(),
-        "ServerID": Storage.ServerSettings.ServerID,
+        "ServerID": Storage.ConnectionSettings.ServerID,
         "KnownServer": toServer,
         "ShouldBroadcast": false
     }, socket)
 }
 export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket) {
-    if (jsonData.ServerID == Storage.ServerSettings.ServerID){
+    if (jsonData.ServerID == Storage.ConnectionSettings.ServerID){
         var server = Storage.KnownServers.find(x=>x.Host == jsonData.KnownServer.Host && x.Port == jsonData.KnownServer.Port);
         server.ID == jsonData.ServerID;
         Utilities.UpdateAndAppend(Storage.KnownServers, server, ["Host", "Port"]);
@@ -120,11 +120,11 @@ export function SendChat(message: string, channel: string) {
 }
 
 export function ReceiveChat(jsonData: any, socket: net.Socket) {
-    if (Storage.ClientSettings.IsMultiplayerEnabled){
+    if (Storage.ConnectionSettings.IsClientEnabled){
         switch (jsonData.Channel) {
             case "GlobalChat":
                 UI.AddMessageHTML(`<span style='color:` +
-                    Storage.ClientSettings.Colors.GlobalChat + `'>(Global) ` +
+                    Storage.ApplicationSettings.Colors.GlobalChat + `'>(Global) ` +
                     Utilities.EncodeForHTML(jsonData.From) + `: </span>` +
                     Utilities.EncodeForHTML(jsonData.Message), 1);
                 break;
@@ -159,11 +159,11 @@ export function CheckMessageCounter(socket:net.Socket): boolean {
         Storage.Temp.MessageCounters.push(counter);
     }
     var messageCounter = Storage.Temp.MessageCounters.find(x=>x.RemoteHost == socket.remoteAddress);
-    while (Date.now() - messageCounter.MessageTimes[0] > Storage.ServerSettings.MessageCountMilliseconds){
+    while (Date.now() - messageCounter.MessageTimes[0] > Storage.ConnectionSettings.MessageCountMilliseconds){
         messageCounter.MessageTimes.splice(0, 1);
     }
     messageCounter.MessageTimes.push(Date.now());
-    if (messageCounter.MessageTimes.length > Storage.ServerSettings.MessageCountLimit)
+    if (messageCounter.MessageTimes.length > Storage.ConnectionSettings.MessageCountLimit)
     {
         Utilities.WriteDebug(`Message limit exceeded from ${socket.remoteAddress}.`, 1);
         // Extend message times out by 5 minutes to prevent further messages from IP address.

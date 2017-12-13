@@ -304,3 +304,6 @@ button:active {
     float: right;
     clear: right;
 }
+.menu-item {
+    margin-bottom: 12px;
+}
