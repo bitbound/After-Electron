@@ -124,44 +124,44 @@ export function RefreshConnectivityBar(){
     $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
 }
 export function SetUIDatabinds(){
-    Utilities.DataBindOneWay(Storage.Me, "CoreEnergy", function(){
-        if (Storage.Me.CoreEnergy > Storage.Me.CoreEnergyPeak) {
-            Storage.Me.CoreEnergyPeak = Storage.Me.CoreEnergy;
-        }
-        Storage.Me.MaxEnergy = Storage.Me.CoreEnergy + Storage.Me.EnergyMod;
-        Storage.Me.MaxCharge = Storage.Me.CoreEnergy + Storage.Me.ChargeMod;
-        $("#coreEnergySideMenu").text(Storage.Me.CoreEnergy);
-        $("#peakCoreEnergySideMenu").text(Storage.Me.CoreEnergyPeak);
-    }, null);
-
-    Utilities.DataBindOneWay(Storage.Me, "CurrentEnergy", function(){
-        $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
-        $("#currentEnergySideMenu").text(Storage.Me.CurrentEnergy);
-        $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
-    }, null);
-    Utilities.DataBindOneWay(Storage.Me, "EnergyMod", function(){
-        Storage.Me.MaxEnergy = Storage.Me.CoreEnergy + Storage.Me.EnergyMod;
-        $("#energyModSideMenu").text(Storage.Me.EnergyMod);
-        $("#maxEnergySideMenu").text(Storage.Me.MaxEnergy);
-    }, null);
-    Utilities.DataBindOneWay(Storage.Me, "MaxEnergy", function(){
-        $("#maxEnergySideMenu").text(Storage.Me.MaxEnergy);
-        $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
-    }, null);
-    Utilities.DataBindOneWay(Storage.Me, "CurrentCharge", function(){
-        $("#divChargeAmount").text(Storage.Me.CurrentCharge);
-        $("#currentChargeSideMenu").text(Storage.Me.CurrentCharge);
-        $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
-    }, null);
-    Utilities.DataBindOneWay(Storage.Me, "ChargeMod", function(){
-        Storage.Me.MaxCharge = Storage.Me.CoreEnergy + Storage.Me.ChargeMod;
-        $("#chargeModSideMenu").text(Storage.Me.ChargeMod);
-        $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
-    }, null);
-    Utilities.DataBindOneWay(Storage.Me, "MaxCharge", function(){
-        $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
-        $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
-    }, null);
+    //Utilities.DataBindOneWay(Storage.Me, "CoreEnergy", function(){
+    //    if (Storage.Me.CoreEnergy > Storage.Me.CoreEnergyPeak) {
+    //        Storage.Me.CoreEnergyPeak = Storage.Me.CoreEnergy;
+    //    }
+    //    Storage.Me.MaxEnergy = Storage.Me.CoreEnergy + Storage.Me.EnergyMod;
+    //    Storage.Me.MaxCharge = Storage.Me.CoreEnergy + Storage.Me.ChargeMod;
+    //    $("#coreEnergySideMenu").text(Storage.Me.CoreEnergy);
+    //    $("#peakCoreEnergySideMenu").text(Storage.Me.CoreEnergyPeak);
+    //}, null);
+//
+    //Utilities.DataBindOneWay(Storage.Me, "CurrentEnergy", function(){
+    //    $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
+    //    $("#currentEnergySideMenu").text(Storage.Me.CurrentEnergy);
+    //    $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
+    //}, null);
+    //Utilities.DataBindOneWay(Storage.Me, "EnergyMod", function(){
+    //    Storage.Me.MaxEnergy = Storage.Me.CoreEnergy + Storage.Me.EnergyMod;
+    //    $("#energyModSideMenu").text(Storage.Me.EnergyMod);
+    //    $("#maxEnergySideMenu").text(Storage.Me.MaxEnergy);
+    //}, null);
+    //Utilities.DataBindOneWay(Storage.Me, "MaxEnergy", function(){
+    //    $("#maxEnergySideMenu").text(Storage.Me.MaxEnergy);
+    //    $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
+    //}, null);
+    //Utilities.DataBindOneWay(Storage.Me, "CurrentCharge", function(){
+    //    $("#divChargeAmount").text(Storage.Me.CurrentCharge);
+    //    $("#currentChargeSideMenu").text(Storage.Me.CurrentCharge);
+    //    $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
+    //}, null);
+    //Utilities.DataBindOneWay(Storage.Me, "ChargeMod", function(){
+    //    Storage.Me.MaxCharge = Storage.Me.CoreEnergy + Storage.Me.ChargeMod;
+    //    $("#chargeModSideMenu").text(Storage.Me.ChargeMod);
+    //    $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
+    //}, null);
+    //Utilities.DataBindOneWay(Storage.Me, "MaxCharge", function(){
+    //    $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
+    //    $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
+    //}, null);
 }
 export function ShowDevTools(){
     electron.remote.getCurrentWindow().webContents.openDevTools();
