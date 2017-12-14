@@ -56,7 +56,6 @@ export function LoadAll() {
         if (fs.lstatSync(path.join(FileSystem.StorageDataPath, value)).isFile()){
             var itemName = value.replace(".json", "");
             var content = fs.readFileSync(path.join(FileSystem.StorageDataPath, value)).toString();
-            var storage = JSON.parse(content);
             $.extend(true, Storage[itemName], JSON.parse(content));
         }
     });
@@ -105,7 +104,6 @@ export function LoadSettings() {
             var itemName = value.replace(".json", "");
             if (itemName != "Me") {
                 var content = fs.readFileSync(path.join(FileSystem.StorageDataPath, value)).toString();
-                var storage = JSON.parse(content);
                 $.extend(true, Storage[itemName], JSON.parse(content));
             }
         }
