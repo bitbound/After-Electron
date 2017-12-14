@@ -28,6 +28,7 @@ export var ApplicationSettings = new class ApplicationSettings {
 
 export var ConnectionSettings = new class ConnectionSettings {
     IsClientEnabled:boolean = false;
+    IsClientDiscoverable:boolean = true;
     IsServerEnabled:boolean = false;
     IsPublicServer: boolean = true;
     ServerListeningPort: number = 48836;

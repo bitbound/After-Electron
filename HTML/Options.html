@@ -27,6 +27,7 @@
             </div>
         </div>
         <div id="optionsContentFrame">
+            <!-- General Options -->
             <div id="generalOptions" class="options-content">
                 <div class="menu-item" title="Whether the client will attempt to connect to servers for multiplayer.">
                     <div class="menu-item-key">
@@ -67,6 +68,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Interface Options -->
             <div id="interfaceOptions" class="options-content" hidden>
                 <div class="menu-item" title="The color that will be used for the chat channel titles in the main window.">
                     <div class="menu-item-key">
@@ -78,6 +80,7 @@
                         Global Chat
                     </div>
                     <div class="menu-item-value">
+                        <button class="color-wheel-button"></button>
                         <input id="globalChat" data-object="StorageData.ApplicationSettings.Colors" data-property="GlobalChat">
                     </div>
                 </div>
@@ -86,6 +89,7 @@
                         Void Chat
                     </div>
                     <div class="menu-item-value">
+                        <button class="color-wheel-button"></button>
                         <input id="voidChat" data-object="StorageData.ApplicationSettings.Colors" data-property="VoidChat">
                     </div>
                 </div>
@@ -94,6 +98,7 @@
                         Whisper
                     </div>
                     <div class="menu-item-value">
+                        <button class="color-wheel-button"></button>
                         <input id="whisper" data-object="StorageData.ApplicationSettings.Colors" data-property="Whisper">
                     </div>
                 </div>
@@ -102,6 +107,7 @@
                         System
                     </div>
                     <div class="menu-item-value">
+                        <button class="color-wheel-button"></button>
                         <input id="system" data-object="StorageData.ApplicationSettings.Colors" data-property="System">
                     </div>
                 </div>
@@ -110,16 +116,29 @@
                         Debug
                     </div>
                     <div class="menu-item-value">
+                        <button class="color-wheel-button"></button>
                         <input id="system" data-object="StorageData.ApplicationSettings.Colors" data-property="Debug">
                     </div>
                 </div>
             </div>
+            <!-- Keybinds -->
             <div id="keybindsOptions" class="options-content" hidden>
 
             </div>
+            <!-- Client Options -->
             <div id="clientOptions" class="options-content" hidden>
-
+                <div class="menu-item" title="Whether the client will respond to ""who"" requests.">
+                    <div class="menu-item-key">
+                        Discoverable:
+                    </div>
+                    <div class="menu-item-value">
+                        <div id="clientDiscoverable" class="toggle-switch-outer" data-object="StorageData.ConnectionSettings" data-property="IsClientDiscoverable">
+                            <div class="toggle-switch-inner"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <!-- Server Options -->
             <div id="serverOptions" class="options-content" hidden>
 
             </div>
@@ -183,6 +202,19 @@
             margin: 10px 20px;
             font-family: sans-serif;
             font-size: .9em;
+        }
+
+        .color-wheel-button {
+            border-radius: 100%;
+            margin-top: 0;
+            margin-bottom: 0;
+            margin-right: 10px;
+            height: 20px;
+            width: 20px;
+            background-image: url('../Assets/ColorWheel.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
         }
     </style>
     <script>

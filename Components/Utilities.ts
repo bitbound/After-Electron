@@ -28,21 +28,21 @@ export function ArePropertiesEqual(object1, object2) {
 
     return match;
 }
-export function AppendIfMissing(array:Array<any>, item:any, matchKeys:string[]){
-    var existingIndex = array.findIndex((value)=>{
+export function AppendIfMissing(array: Array<any>, item: any, matchKeys: string[]) {
+    var existingIndex = array.findIndex((value) => {
         for (var i = 0; i < matchKeys.length; i++) {
-            if (item[matchKeys[i]] != value[matchKeys[i]]){
+            if (item[matchKeys[i]] != value[matchKeys[i]]) {
                 return false;
             }
         }
         return true;
     });
-    if (existingIndex == -1){
+    if (existingIndex == -1) {
         array.push(item);
-    }   
+    }
 }
 export var ColorNames = ["AliceBlue", "AntiqueWhite", "Aqua", "Aquamarine", "Azure", "Beige", "Bisque", "BlanchedAlmond", "Blue", "BlueViolet", "Brown", "BurlyWood", "CadetBlue", "Chartreuse", "Chocolate", "Coral", "CornflowerBlue", "Cornsilk", "Crimson", "Cyan", "DarkBlue", "DarkCyan", "DarkGoldenrod", "DarkGray", "DarkGreen", "DarkKhaki", "DarkMagenta", "DarkOliveGreen", "DarkOrange", "DarkOrchid", "DarkRed", "DarkSalmon", "DarkSeaGreen", "DarkSlateBlue", "DarkSlateGray", "DarkTurquoise", "DarkViolet", "DeepPink", "DeepSkyBlue", "DimGray", "DodgerBlue", "FireBrick", "FloralWhite", "ForestGreen", "Fuchsia", "Gainsboro", "GhostWhite", "Gold", "Goldenrod", "Gray", "Green", "GreenYellow", "Honeydew", "HotPink", "Indigo", "Ivory", "Khaki", "Lavender", "LavenderBlush", "LawnGreen", "LemonChiffon", "LightBlue", "LightCoral", "LightCyan", "LightGoldenrodYellow", "LightGreen", "LightGrey", "LightPink", "LightSalmon", "LightSeaGreen", "LightSkyBlue", "LightSlateGray", "LightSteelBlue", "LightYellow", "Lime", "LimeGreen", "Linen", "Magenta", "Maroon", "MediumAquamarine", "MediumBlue", "MediumOrchid", "MediumPurple", "MediumSeaGreen", "MediumSlateBlue", "MediumSpringGreen", "MediumTurquoise", "MediumVioletRed", "MidnightBlue", "MintCream", "MistyRose", "Moccasin", "NavajoWhite", "Navy", "OldLace", "Olive", "OliveDrab", "Orange", "OrangeRed", "Orchid", "PaleGoldenrod", "PaleGreen", "PaleTurquoise", "PaleVioletRed", "PapayaWhip", "PeachPuff", "Peru", "Pink", "Plum", "PowderBlue", "Purple", "Red", "RosyBrown", "RoyalBlue", "SaddleBrown", "Salmon", "SandyBrown", "SeaGreen", "Seashell", "Sienna", "Silver", "SkyBlue", "SlateBlue", "SlateGray", "Snow", "SpringGreen", "SteelBlue", "Tan", "Teal", "Thistle", "Tomato", "Turquoise", "Violet", "Wheat", "White", "WhiteSmoke", "Yellow", "YellowGreen"];
-export function ColorNameToHex(colour:string):string {
+export function ColorNameToHex(colour: string): string {
     var colours = {
         "aliceblue": "#f0f8ff",
         "antiquewhite": "#faebd7",
@@ -193,36 +193,15 @@ export function ColorNameToHex(colour:string):string {
 };
 
 export function CreateGUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random()*16|0, v = c === 'x' ? r : (r&0x3|0x8);
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
 };
 
 export function DataBindOneWay(DataObject: Object, ObjectProperty: string,
-                                Element: HTMLElement, ElementPropertyKey: string,
-                                PostSetterCallback: Function, PreGetterCallback: Function) {
-    Object.defineProperty(DataObject, ObjectProperty, {
-        configurable: true,
-        enumerable: true,
-        get() {
-            if (PreGetterCallback) {
-                PreGetterCallback(Element[ElementPropertyKey]);
-            }
-            return Element[ElementPropertyKey];
-        },
-        set(value: any) {
-            Element[ElementPropertyKey] = value;
-            if (PostSetterCallback) {
-                PostSetterCallback(value);
-            }
-        }
-    });
-};
-export function DataBindTwoWay(DataObject: Object, ObjectProperty: string,
-                                Element: HTMLElement, ElementPropertyKey: string,
-                                PostSetterCallback: Function, PreGetterCallback: Function,
-                                ElementEventTriggers: Array<string>) {
+    Element: HTMLElement, ElementPropertyKey: string,
+    PostSetterCallback: Function, PreGetterCallback: Function) {
     var backingValue;
     Object.defineProperty(DataObject, ObjectProperty, {
         configurable: true,
@@ -234,8 +213,45 @@ export function DataBindTwoWay(DataObject: Object, ObjectProperty: string,
             return backingValue;
         },
         set(value: any) {
-            Element[ElementPropertyKey] = value;
             backingValue = value;
+            if (Element){
+                if (ElementPropertyKey in Element) {
+                    Element[ElementPropertyKey] = value;
+                }
+                else {
+                    Element.setAttribute(ElementPropertyKey, value);
+                }
+            }
+            if (PostSetterCallback) {
+                PostSetterCallback(value);
+            }
+        }
+    });
+};
+export function DataBindTwoWay(DataObject: Object, ObjectProperty: string,
+    Element: HTMLElement, ElementPropertyKey: string,
+    PostSetterCallback: Function, PreGetterCallback: Function,
+    ElementEventTriggers: Array<string>) {
+    var backingValue;
+    Object.defineProperty(DataObject, ObjectProperty, {
+        configurable: true,
+        enumerable: true,
+        get() {
+            if (PreGetterCallback) {
+                PreGetterCallback(backingValue);
+            }
+            return backingValue;
+        },
+        set(value: any) {
+            backingValue = value;
+            if (Element){
+                if (ElementPropertyKey in Element) {
+                    Element[ElementPropertyKey] = value;
+                }
+                else {
+                    Element.setAttribute(ElementPropertyKey, value);
+                }
+            }
             if (PostSetterCallback) {
                 PostSetterCallback(value);
             }
@@ -243,16 +259,16 @@ export function DataBindTwoWay(DataObject: Object, ObjectProperty: string,
     })
     ElementEventTriggers.forEach(trigger => {
         eval(`Element.${trigger} = function(e) {
-            ${Element.getAttribute("data-object")}.${Element.getAttribute("data-property")} = "${Element[ElementPropertyKey] || Element.getAttribute(ElementPropertyKey)}"
+            ${Element.getAttribute("data-object")}.${Element.getAttribute("data-property")} = e.currentTarget${Element.hasAttribute(ElementPropertyKey) ? ".getAttribute(" + ElementPropertyKey + ")" : "['" + ElementPropertyKey + "']" };
         };`)
     });
 };
 
-export function EncodeForHTML(input:string) {
+export function EncodeForHTML(input: string) {
     return $("<div>").text(input).html();
 };
 
-export function GetRandom(Min:number, Max:number, Round:boolean): number {
+export function GetRandom(Min: number, Max: number, Round: boolean): number {
     if (Min > Max) {
         throw "Min must be less than max.";
     }
@@ -266,7 +282,7 @@ export function GetRandom(Min:number, Max:number, Round:boolean): number {
         return result + Min;
     }
 };
-export function HexToRGB(col:string):string {
+export function HexToRGB(col: string): string {
     var r, g, b;
     if (col.charAt(0) == '#') {
         col = col.substr(1);
@@ -279,7 +295,7 @@ export function HexToRGB(col:string):string {
     b = parseInt(b, 16);
     return 'rgb(' + r + ',' + g + ',' + b + ')';
 };
-export function IsLocalIP(ip:string):boolean{
+export function IsLocalIP(ip: string): boolean {
     // Get IPv4 address when ip is v6 and v4 together, as in socket.remoteAddress.
     var split = ip.split(":");
     var ipv4 = split[split.length - 1];
@@ -288,7 +304,7 @@ export function IsLocalIP(ip:string):boolean{
     for (var key in interfaces) {
         for (var key2 in interfaces[key]) {
             var address = interfaces[key][key2];
-            if (key.search("Loopback") > -1 && address.address == ipv4){
+            if (key.search("Loopback") > -1 && address.address == ipv4) {
                 return true;
             }
             else if (address.family == 'IPv4' && !address.internal && address.address == ipv4) {
@@ -298,7 +314,7 @@ export function IsLocalIP(ip:string):boolean{
     }
     return false;
 }
-export function Log(message:string){
+export function Log(message: string) {
     console.log(message);
     var logPath = path.join(FileSystem.UserDataPath, "Log.txt");
     fs.appendFileSync(logPath, (new Date()).toLocaleString() + " -   " + message + "\r\n")
@@ -316,11 +332,11 @@ export function NumberIsBetween(NumberAnalyzed: number, Min: number, Max: number
         return false;
     }
 };
-export function StringifyCircular(inputObject:any): string {
+export function StringifyCircular(inputObject: any): string {
     Storage.Temp.JSONObjects = new Array<any>();
-    return JSON.stringify(inputObject, function(key, value){
+    return JSON.stringify(inputObject, function (key, value) {
         if (typeof value == "object" && value != null) {
-            if (Storage.Temp.JSONObjects.findIndex(x=>x == value) > -1) {
+            if (Storage.Temp.JSONObjects.findIndex(x => x == value) > -1) {
                 return "[Possible circular reference.]"
             }
             else {
@@ -330,83 +346,81 @@ export function StringifyCircular(inputObject:any): string {
         return value;
     })
 }
-export function UpdateAndAppend(array:Array<any>, item:any, matchKeys:string[]){
-    var existingIndex = array.findIndex((value)=>{
+export function UpdateAndAppend(array: Array<any>, item: any, matchKeys: string[]) {
+    var existingIndex = array.findIndex((value) => {
         for (var i = 0; i < matchKeys.length; i++) {
-            if (item[matchKeys[i]] != value[matchKeys[i]]){
+            if (item[matchKeys[i]] != value[matchKeys[i]]) {
                 return false;
             }
         }
         return true;
     });
-    if (existingIndex > -1){
+    if (existingIndex > -1) {
         array.splice(existingIndex, 1);
     }
     array.push(item);
 }
-export function UpdateAndPrepend(array:Array<any>, item:any, matchKeys:string[]){
-    var existingIndex = array.findIndex((value)=>{
+export function UpdateAndPrepend(array: Array<any>, item: any, matchKeys: string[]) {
+    var existingIndex = array.findIndex((value) => {
         for (var i = 0; i < matchKeys.length; i++) {
-            if (item[matchKeys[i]] != value[matchKeys[i]]){
+            if (item[matchKeys[i]] != value[matchKeys[i]]) {
                 return false;
             }
         }
         return true;
     });
-    if (existingIndex > -1){
+    if (existingIndex > -1) {
         array.splice(existingIndex, 1);
     }
     array.unshift(item);
 }
 
-export function ReplaceAllInString(inputString:string, toReplace:string, replaceWith:string):string{
+export function ReplaceAllInString(inputString: string, toReplace: string, replaceWith: string): string {
     try {
         return inputString.split(toReplace).join(replaceWith);
     }
-    catch (ex){
+    catch (ex) {
         return inputString;
     }
 }
 
-export function RemoveFromArray(inputArray:Array<any>, inputItem:any){
-    var index = inputArray.findIndex(x=>x==inputItem);
-    if (index > -1){
+export function RemoveFromArray(inputArray: Array<any>, inputItem: any) {
+    var index = inputArray.findIndex(x => x == inputItem);
+    if (index > -1) {
         inputArray.splice(index, 1);
     }
 }
 
 
-export function SetAllDatabinds(dataChangedCallback:Function) {
-    $("input[data-object][data-property]").each((index, elem)=>{
+export function SetAllDatabinds(dataChangedCallback: Function) {
+    $("input[data-object][data-property]").each((index, elem:HTMLElement) => {
         DataBindTwoWay(eval(elem.getAttribute("data-object")), elem.getAttribute("data-property"), elem, "value", null, null, ["onchange"]);
     })
-    $("div[data-object][data-property]").each((index, elem)=>{
+    $("div[data-object][data-property]").each((index, elem:HTMLElement) => {
         DataBindOneWay(eval(elem.getAttribute("data-object")), elem.getAttribute("data-property"), elem, "innerHTML", null, null);
     })
-    $(".toggle-switch-outer[data-object][data-property]").each((index, elem)=>{
-        DataBindOneWay(eval(elem.getAttribute("data-object")), elem.getAttribute("data-property"), elem, "on", ()=>{
-            elem.setAttribute("on", eval("String(" + elem.getAttribute("data-object") + "." + elem.getAttribute("data-property") + ")"));
-        }, null);
+    $(".toggle-switch-outer[data-object][data-property]").each((index, elem:HTMLElement) => {
+        DataBindOneWay(eval(elem.getAttribute("data-object")), elem.getAttribute("data-property"), elem, "on", null, null);
     })
     if (dataChangedCallback) {
-        $("input[data-object][data-property]").on("change", (e)=>{
+        $("input[data-object][data-property]").on("change", (e) => {
             dataChangedCallback();
         })
     }
-    $(".toggle-switch-outer[data-object][data-property]").on("click", e=>{
-        if (e.currentTarget.getAttribute("on") == "true"){
+    $(".toggle-switch-outer[data-object][data-property]").on("click", e => {
+        if (e.currentTarget.getAttribute("on") == "true") {
             e.currentTarget.setAttribute("on", "false");
         } else {
             e.currentTarget.setAttribute("on", "true");
         }
         eval(e.currentTarget.getAttribute("data-object") + "." + e.currentTarget.getAttribute("data-property") + " = " + e.currentTarget.getAttribute("on"));
-        if (dataChangedCallback){
+        if (dataChangedCallback) {
             dataChangedCallback();
         }
     })
 }
-export function WriteDebug(message:string, newLines: number){
-    if (Storage.ApplicationSettings.IsDebugModeEnabled){
+export function WriteDebug(message: string, newLines: number) {
+    if (Storage.ApplicationSettings.IsDebugModeEnabled) {
         UI.AddDebugMessage(message, newLines);
     }
 }
