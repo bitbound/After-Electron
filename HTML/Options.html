@@ -28,47 +28,67 @@
         </div>
         <div id="optionsContentFrame">
             <div id="generalOptions" class="options-content">
-                <div class="menu-item">
+                <div class="menu-item" title="Whether the client will attempt to connect to servers for multiplayer.">
                     <div class="menu-item-key">
                         Client Connectivity:
                     </div>
                     <div class="menu-item-value">
-                        <div id="clientEnabled" class="toggle-switch-outer" data-property="StorageData.ConnectionSettings.IsClientEnabled">
+                        <div id="clientEnabled" class="toggle-switch-outer" data-object="StorageData.ConnectionSettings" data-property="IsClientEnabled">
                             <div class="toggle-switch-inner"></div>
                         </div>
                     </div>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" title="Whether the server will listen and accept client connections.">
                     <div class="menu-item-key">
                         Server Connectivity:
                     </div>
                     <div class="menu-item-value">
-                        <div id="serverEnabled" class="toggle-switch-outer" data-property="StorageData.ConnectionSettings.IsServerEnabled">
+                        <div id="serverEnabled" class="toggle-switch-outer" data-object="StorageData.ConnectionSettings" data-property="IsServerEnabled">
                             <div class="toggle-switch-inner"></div>
                         </div>
                     </div>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" title="If enabled, additional debug info will be shown on the main window.">
                     <div class="menu-item-key">
                         Debug Mode:
                     </div>
                     <div class="menu-item-value">
-                        <div id="debugMode" class="toggle-switch-outer" data-property="StorageData.ApplicationSettings.IsDebugModeEnabled">
+                        <div id="debugMode" class="toggle-switch-outer" data-object="StorageData.ApplicationSettings" data-property="IsDebugModeEnabled">
                             <div class="toggle-switch-inner"></div>
                         </div>
                     </div>
                 </div>
-                <div class="menu-item">
+                <div class="menu-item" title="How often, in seconds, character and settings information will be saved to disk.">
                     <div class="menu-item-key">
                         Auto Save Interval (seconds):
                     </div>
                     <div class="menu-item-value">
-                        <input id="autoSaveInterval" />
+                        <input id="autoSaveInterval" data-object="StorageData.ApplicationSettings" data-property="AutoSaveIntervalSeconds" />
                     </div>
                 </div>
             </div>
             <div id="interfaceOptions" class="options-content" hidden>
-
+                <div class="menu-item" title="The color that will be used for the chat channel titles in the main window.">
+                    <div class="menu-item-key">
+                        <strong>Chat Channel Colors</strong>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        Global Chat
+                    </div>
+                    <div class="menu-item-value">
+                        <input id="globalChat" data-object="StorageData.ApplicationSettings.Colors" data-property="GlobalChat">
+                    </div>
+                </div>
+                <div class="menu-item">
+                        <div class="menu-item-key">
+                            Void Chat
+                        </div>
+                        <div class="menu-item-value">
+                            <input id="voidChat" data-object="StorageData.ApplicationSettings.Colors" data-property="VoidChat">
+                        </div>
+                    </div>
             </div>
             <div id="keybindsOptions" class="options-content" hidden>
 

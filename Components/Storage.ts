@@ -18,7 +18,6 @@ export var ApplicationSettings = new class ApplicationSettings {
         "Debug": "rgb(150,50,50)"
     }
     IsDebugModeEnabled: boolean = false;
-    IsNetworkBarVisible: boolean = true;
     TextInputAliases = {
         Command: "/c ",
         GlobalChat: "/g ",
@@ -58,7 +57,7 @@ export function LoadAll() {
             var itemName = value.replace(".json", "");
             var content = fs.readFileSync(path.join(FileSystem.StorageDataPath, value)).toString();
             var storage = JSON.parse(content);
-            $.extend(Storage[itemName], JSON.parse(content));
+            $.extend(true, Storage[itemName], JSON.parse(content));
         }
     });
 };
@@ -88,7 +87,7 @@ export function LoadMe(slot:string){
         throw "Save file not found.";
     }
     var content = fs.readFileSync(loadPath).toString();
-    $.extend(this.Me, JSON.parse(content));
+    $.extend(true, this.Me, JSON.parse(content));
 }
 export function SaveMe(slot:string) {
     fs.writeFileSync(path.join(FileSystem.StorageDataPath, "Me.json"), JSON.stringify(this.Me));
@@ -107,7 +106,7 @@ export function LoadSettings() {
             if (itemName != "Me") {
                 var content = fs.readFileSync(path.join(FileSystem.StorageDataPath, value)).toString();
                 var storage = JSON.parse(content);
-                $.extend(Storage[itemName], JSON.parse(content));
+                $.extend(true, Storage[itemName], JSON.parse(content));
             }
         }
     });

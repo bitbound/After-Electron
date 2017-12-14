@@ -19,21 +19,33 @@ $(document).ready(function(){
         StorageData.SaveSettings();
         electron.ipcRenderer.send("options-update");
     });
-    Utilities.DataBindTwoWay(StorageData.ApplicationSettings, "AutoSaveIntervalSeconds", $("#autoSaveInterval")[0], "value", null, null);
-    Utilities.DataBindOneWay(StorageData.ApplicationSettings, "IsDebugModeEnabled", ()=>{$("#debugMode").attr("on", String(StorageData.ApplicationSettings.IsDebugModeEnabled))}, null);
-    Utilities.DataBindOneWay(StorageData.ConnectionSettings, "IsClientEnabled", ()=>{$("#clientEnabled").attr("on", String(StorageData.ConnectionSettings.IsClientEnabled))}, null);
-    Utilities.DataBindOneWay(StorageData.ConnectionSettings, "IsServerEnabled", ()=>{$("#serverEnabled").attr("on", String(StorageData.ConnectionSettings.IsServerEnabled))}, null);
-    StorageData.LoadAll();
+    
+    $(".menu-item-value input").each((index, elem)=>{
+        Utilities.DataBindTwoWay(eval(elem.getAttribute("data-object")), elem.getAttribute("data-property"), elem, "value", null, null);
+    })
+    $(".toggle-switch-outer").each((index, elem)=>{
+        Utilities.DataBindOneWay(eval(elem.getAttribute("data-object")), elem.getAttribute("data-property"), ()=>{
+            elem.setAttribute("on", eval("String(" + elem.getAttribute("data-object") + "." + elem.getAttribute("data-property") + ")"));
+        }, null);
+    })
+
+    StorageData.LoadSettings();
+
+    $(".menu-item-value input").on("change", (e)=>{
+        StorageData.SaveSettings();
+    })
     window["StorageData"] = StorageData;
     $(".options-side-tab").on("click", event=>{
         switchContentFrame(event);
     });
+    
     $(".toggle-switch-outer").on("click", e=>{
         if (e.currentTarget.getAttribute("on") == "true"){
             e.currentTarget.setAttribute("on", "false");
         } else {
             e.currentTarget.setAttribute("on", "true");
         }
-        eval(e.currentTarget.getAttribute("data-property") + " = " + e.currentTarget.getAttribute("on"));
+        eval(e.currentTarget.getAttribute("data-object") + "." + e.currentTarget.getAttribute("data-property") + " = " + e.currentTarget.getAttribute("on"));
+        StorageData.SaveSettings();
     });
 })
