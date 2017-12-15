@@ -1,30 +1,39 @@
 ﻿<div style="text-align: center">
     <strong>Brush Color</strong>
     <br />
-    <div id="divBrushPreview" class="preview-circle" style="background-color: rgba(125,125,125, 1)"></div>
+    <br />
+    <div id="divBrushPreview" class="preview-circle" style="border-radius: 100%; width:50px; height: 50px; display:inline-block; background-color: rgb(125,125,125)"></div>
+    <br />
+    <br />
 </div>
 
-<label style="color:red">Red:</label>
-<br />
-<input id="inputBrushRed" type="range" min="0" max="255" value="125" onchange="setBrushColor()" />
-<br />
-<label style="color:green">Green:</label>
-<br />
-<input id="inputBrushGreen" type="range" min="0" max="255" value="125"  onchange="setBrushColor()" />
-<br />
-<label style="color:blue">Blue:</label>
-<br />
-<input id="inputBrushBlue" type="range" min="0" max="255" value="125" onchange="setBrushColor()" />
-<br />
-<label style="color:white">Alpha:</label>
+<div style="text-align: center">
+
+        <label style="color:red">Red:</label>
+        <br />
+        <input id="inputBrushRed" type="range" min="0" max="255" value="125" onchange="setBrushColor()" />
+        <br />
+        <label style="color:green">Green:</label>
+        <br />
+        <input id="inputBrushGreen" type="range" min="0" max="255" value="125"  onchange="setBrushColor()" />
+        <br />
+        <label style="color:blue">Blue:</label>
+        <br />
+        <input id="inputBrushBlue" type="range" min="0" max="255" value="125" onchange="setBrushColor()" />
+        <br />
+        <br />
+        <br />
+        <select id="selectColor" onchange="temp.ColorSelected()" style="background-color: black; color: white"></select>
+        <br />
+        <br />
+</div>
 
 
 <script>
-    function setBrushColor() {
-        var brushColor = "rgba(" + document.getElementById("inputBrushRed").value + ", " +
+    window["setBrushColor"] = function setBrushColor() {
+        var brushColor = "rgb(" + document.getElementById("inputBrushRed").value + ", " +
             document.getElementById("inputBrushGreen").value + ", " +
-            document.getElementById("inputBrushBlue").value + ", " +
-            document.getElementById("inputBrushAlpha").value + ")";
+            document.getElementById("inputBrushBlue").value + ")";
         document.getElementById("divBrushPreview").style.backgroundColor = brushColor;
     }
 </script>

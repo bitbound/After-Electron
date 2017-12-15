@@ -41,7 +41,7 @@ export function EvaluateScript(){
         while (text.search("[ (){}]") > -1) {
             text = text.slice(text.search("[ (){}]") + 1);
         }
-        text = "window." + text;
+        text = "global." + text;
         var lastPeriod = text.lastIndexOf(".");
         var member = text.substr(lastPeriod + 1);
         var namespaceAndObject = text.slice(0, lastPeriod);
@@ -50,13 +50,13 @@ export function EvaluateScript(){
             var matches;
             // After 3 characters of the member, match more specifically (startsWith).
             if (member.length <= 3) {
-                matches = Object.keys(currentObject).filter(value=>{
-                    return value.toLowerCase().search(member.toLowerCase()) > -1;
+                matches = Object.getOwnPropertyNames(currentObject).filter(value=>{
+                    return value.toLowerCase().search(member.toLowerCase()) > -1 && value != "__esModule";
                 })
             }
             else {
-                matches = Object.keys(currentObject).filter(value=>{
-                    return value.toLowerCase().startsWith(member.toLowerCase());
+                matches = Object.getOwnPropertyNames(currentObject).filter(value=>{
+                    return value.toLowerCase().startsWith(member.toLowerCase()) && value != "__esModule";
                 })
             }
             if (matches.length > 0){

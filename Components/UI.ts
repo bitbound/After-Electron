@@ -133,11 +133,13 @@ export function SetUIDatabinds(){
         $("#coreEnergySideMenu").text(Storage.Me.CoreEnergy);
         $("#peakCoreEnergySideMenu").text(Storage.Me.CoreEnergyPeak);
     }, null);
-
+    Utilities.DataBindOneWay(Storage.Me, "CoreEnergyPeak", null, null, function(){
+        $("#peakCoreEnergySideMenu").text(Storage.Me.CoreEnergyPeak);
+    }, null);
     Utilities.DataBindOneWay(Storage.Me, "CurrentEnergy", null, null, function(){
         $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
         $("#currentEnergySideMenu").text(Storage.Me.CurrentEnergy);
-        $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
+        $("#svgEnergy").css("width", String(Math.min(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100, 100) || 0) + "%");
     }, null);
     Utilities.DataBindOneWay(Storage.Me, "EnergyMod", null, null, function(){
         Storage.Me.MaxEnergy = Storage.Me.CoreEnergy + Storage.Me.EnergyMod;
@@ -146,12 +148,12 @@ export function SetUIDatabinds(){
     }, null);
     Utilities.DataBindOneWay(Storage.Me, "MaxEnergy", null, null, function(){
         $("#maxEnergySideMenu").text(Storage.Me.MaxEnergy);
-        $("#svgEnergy").css("width", String(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100 || 0) + "%");
+        $("#svgEnergy").css("width", String(Math.min(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100, 100) || 0) + "%");
     }, null);
     Utilities.DataBindOneWay(Storage.Me, "CurrentCharge", null, null, function(){
         $("#divChargeAmount").text(Storage.Me.CurrentCharge);
         $("#currentChargeSideMenu").text(Storage.Me.CurrentCharge);
-        $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
+        $("#svgCharge").css("width", String(Math.min(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100, 100) || 0) + "%");
     }, null);
     Utilities.DataBindOneWay(Storage.Me, "ChargeMod", null, null, function(){
         Storage.Me.MaxCharge = Storage.Me.CoreEnergy + Storage.Me.ChargeMod;
@@ -160,7 +162,7 @@ export function SetUIDatabinds(){
     }, null);
     Utilities.DataBindOneWay(Storage.Me, "MaxCharge", null, null, function(){
         $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
-        $("#svgCharge").css("width", String(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100 || 0) + "%");
+        $("#svgCharge").css("width", String(Math.min(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100, 100) || 0) + "%");
     }, null);
 }
 export function ShowDevTools(){
