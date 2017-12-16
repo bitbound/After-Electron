@@ -1,6 +1,6 @@
 import * as net from "net";
-import {UI, SocketDataIO, Connectivity, Utilities, Storage} from "./Index";
-import { ConnectedClient, ConnectionTypes, KnownServer, MessageCounter } from "../Models/Index";
+import {UI, SocketDataIO, Connectivity, Utilities, Storage} from "./All";
+import { ConnectedClient, ConnectionTypes, KnownServer, MessageCounter } from "../Models/All";
 
 export var ClientConnections:Array<ConnectedClient> = new Array<ConnectedClient>();
 

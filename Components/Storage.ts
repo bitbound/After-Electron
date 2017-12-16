@@ -1,9 +1,9 @@
 import * as $ from 'jquery';
 import * as fs from 'fs';
 import * as path from 'path';
-import { FileSystem, UI, Storage } from "./Index";
+import { FileSystem, UI, Storage } from "./All";
 import * as Utilities from "./Utilities";
-import { Player, KnownServer, MessageCounter } from '../Models/Index';
+import { Player, KnownServer, MessageCounter } from '../Models/All';
 
 
 export var Me = new Player();

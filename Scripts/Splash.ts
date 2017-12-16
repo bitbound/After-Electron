@@ -3,7 +3,7 @@ import * as $ from "jquery";
 import * as electron from "electron";
 import * as Game from "./Game";
 import * as Intro from "./Intro";
-import { UI, Storage } from "../Components/Index";
+import { UI, Storage } from "../Components/All";
 import * as url from "url";
 import * as path from "path";
 

@@ -2,7 +2,7 @@
   "name": "after",
   "displayName": "After",
   "version": "0.1.0",
-  "description": "A hackable, peer-to-peer, MUD-like multiplayer RPG.",
+  "description": "A scriptable, decentralized, text-based multiplayer RPG.",
   "main": "main.js",
   "scripts": {
     "start": "./node-modules/.bin/electron.cmd ."

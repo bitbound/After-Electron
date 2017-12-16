@@ -17,7 +17,7 @@ function createWindow() {
         height: 650,
         minWidth: 850,
         minHeight: 650,
-        icon: "./Assets/A-512.png"
+        icon: "./Assets/A-512.png",
     });
     //mainWindow.setMenu(null);
     // and load the index.html of the app.

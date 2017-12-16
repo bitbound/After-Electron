@@ -1,7 +1,7 @@
 import * as After from "../API/Index";
 import * as electron from "electron";
 import * as $ from "jquery";
-import { Utilities, Storage, UIEventHandler, UI } from "../Components/Index";
+import { Utilities, Storage, UIEventHandler, UI } from "../Components/All";
 
 export function Start(){
     window.onerror = function(messageOrEvent, source, lineno, colno, error) {

@@ -1,7 +1,7 @@
 import * as After from "../API/Index";
 import * as Audio from "../Components/Audio";
 import * as Game from "./Game";
-import { Storage, Utilities, UI } from "../Components/Index";
+import { Storage, Utilities, UI } from "../Components/All";
 
 Storage.Me.ID = Utilities.CreateGUID();
 Storage.Me.ChargeMod = 0;

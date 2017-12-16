@@ -1,5 +1,5 @@
 # After
-A hackable, infinite-progression, MUD-like, multiplayer RPG.
+A hackable, text-based multiplayer RPG.
 
 ![After Preview](http://after-game.net/Assets/Images/After-Preview.gif)
 

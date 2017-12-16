@@ -1,6 +1,6 @@
 import * as StorageData from "../Components/Storage"
 import * as $ from "jquery";
-import { Utilities } from "../Components/Index";
+import { Utilities } from "../Components/All";
 import * as electron from "electron";
 import * as fs from "fs";
 

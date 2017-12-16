@@ -1,6 +1,6 @@
 import * as After from "../API/Index";
-import { KnownServer, ConnectionTypes } from "../Models/Index";
-import { Storage, Connectivity } from "../Components/Index";
+import { KnownServer, ConnectionTypes } from "../Models/All";
+import { Storage, Connectivity } from "../Components/All";
 
 export var Start = async function (){
     Storage.Me.CurrentLocationID = Storage.Me.InnerVoidID;
