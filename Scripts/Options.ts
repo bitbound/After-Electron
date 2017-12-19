@@ -16,7 +16,9 @@ export function switchContentFrame(e) {
 }
 
 $(document).ready(function () {
+    window["$"] = $;
     window["StorageData"] = StorageData;
+    window["Utilities"] = Utilities;
     electron.remote.getCurrentWindow().on("close", (event) => {
         StorageData.SaveSettings();
         electron.ipcRenderer.send("options-update");
@@ -31,8 +33,10 @@ $(document).ready(function () {
     });
 
     $(".color-wheel-button").on("click", (elem) => {
+        $("#colorPopup").remove();
         var input = $(elem).next();
         var popup = document.createElement("div");
+        popup.id = "colorPopup";
         $(popup).css({
             "position": "fixed",
             "left": "50%",
@@ -47,6 +51,7 @@ $(document).ready(function () {
         $(popup).html(fs.readFileSync(electron.remote.app.getAppPath() + "/HTML/Color_Picker.html").toString());
         document.body.appendChild(popup);
         eval($(popup).find("script").text());
-        // TODO
+        var dataProperty = $(elem.currentTarget).next().attr("data-object") + "." + $(elem.currentTarget).next().attr("data-property");
+        // TODO.
     })
 })

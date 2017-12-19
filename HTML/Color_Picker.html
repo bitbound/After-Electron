@@ -1,4 +1,7 @@
-﻿<div style="text-align: center">
+﻿<div style="text-align: right">
+    <button onclick="$('#colorPopup').remove()" style="margin-right:10px">X</button>
+</div>
+<div style="text-align: center">
     <strong>Brush Color</strong>
     <br />
     <br />
@@ -11,29 +14,61 @@
 
         <label style="color:red">Red:</label>
         <br />
-        <input id="inputBrushRed" type="range" min="0" max="255" value="125" onchange="setBrushColor()" />
+        <input id="inputBrushRed" type="range" min="0" max="255" value="125" onchange="ApplyBrushColor()" />
         <br />
         <label style="color:green">Green:</label>
         <br />
-        <input id="inputBrushGreen" type="range" min="0" max="255" value="125"  onchange="setBrushColor()" />
+        <input id="inputBrushGreen" type="range" min="0" max="255" value="125"  onchange="ApplyBrushColor()" />
         <br />
         <label style="color:blue">Blue:</label>
         <br />
-        <input id="inputBrushBlue" type="range" min="0" max="255" value="125" onchange="setBrushColor()" />
+        <input id="inputBrushBlue" type="range" min="0" max="255" value="125" onchange="ApplyBrushColor()" />
         <br />
         <br />
         <br />
-        <select id="selectColor" onchange="temp.ColorSelected()" style="background-color: black; color: white"></select>
+        <select id="selectColor" onchange="ColorSelected()" style="background-color: black; color: white"></select>
         <br />
         <br />
 </div>
 
 
+<div style="text-align: center">
+    <button style="padding: 5px">Set</button>
+</div>
+
 <script>
-    window["setBrushColor"] = function setBrushColor() {
+    window["ApplyBrushColor"] = function ApplyBrushColor() {
+        $("#selectColor")[0].selectedIndex = 0;
+        while (Number($("#inputBrushRed").val()) + Number($("#inputBrushGreen").val()) + Number($("#inputBrushBlue").val()) < 125) {
+            $("#inputBrushRed")[0].value = String(Number($("#inputBrushRed")[0].value) + 1);
+            $("#inputBrushGreen")[0].value = String(Number($("#inputBrushGreen")[0].value) + 1);
+            $("#inputBrushBlue")[0].value = String(Number($("#inputBrushBlue")[0].value) + 1);
+        }
         var brushColor = "rgb(" + document.getElementById("inputBrushRed").value + ", " +
             document.getElementById("inputBrushGreen").value + ", " +
             document.getElementById("inputBrushBlue").value + ")";
         document.getElementById("divBrushPreview").style.backgroundColor = brushColor;
     }
+    window["ColorSelected"] = function ColorSelected() {
+        if ($("#selectColor").val() == "") {
+            $("#inputBrushRed").val(125);
+            $("#inputBrushGreen").val(125);
+            $("#inputBrushBlue").val(125);
+            return;
+        }
+        var hexColor = Utilities.ColorNameToHex($("#selectColor").val());
+        var rgbColor = Utilities.HexToRGB(hexColor);
+        $("#inputBrushRed").val(rgbColor.replace("rgb(", "").split(",")[0]);
+        $("#inputBrushGreen").val(rgbColor.split(",")[1]);
+        $("#inputBrushBlue").val(rgbColor.replace(")", "").split(",")[2]);
+        $("#divBrushPreview").css("background-color", rgbColor);
+    };
+    Utilities.ColorNames.forEach(function (value, index) {
+        var option = document.createElement("option");
+        option.innerHTML = value;
+        option.value = value;
+        option.style.color = value;
+
+        document.getElementById("selectColor").appendChild(option);
+    });
 </script>
