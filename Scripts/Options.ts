@@ -37,21 +37,17 @@ $(document).ready(function () {
         var input = $(elem).next();
         var popup = document.createElement("div");
         popup.id = "colorPopup";
-        $(popup).css({
-            "position": "fixed",
-            "left": "50%",
-            "top": "50%",
-            "transform": "translate(-50%, -50%)",
-            "border-radius": "20px",
-            "border": "2px solid white",
-            "width": "80%",
-            "height": "90%",
-            "background-color": "black"
-        });
+        popup.classList.add("popup");
         $(popup).html(fs.readFileSync(electron.remote.app.getAppPath() + "/HTML/Color_Picker.html").toString());
         document.body.appendChild(popup);
         eval($(popup).find("script").text());
-        var dataProperty = $(elem.currentTarget).next().attr("data-object") + "." + $(elem.currentTarget).next().attr("data-property");
-        // TODO.
+        var relatedInput = $(elem.currentTarget).next();
+        var dataProperty = relatedInput.attr("data-object") + "." + relatedInput.attr("data-property");
+        $(popup).find("#divBrushPreview").css("background-color", relatedInput.val().toString());
+        $(popup).find("#setColorButton").on("click", (event)=>{
+            relatedInput.val($(popup).find("#divBrushPreview").css("background-color"));
+            $(relatedInput).change();
+            $(popup).remove();
+        })
     })
 })

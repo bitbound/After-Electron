@@ -256,6 +256,31 @@ button:active {
         transform: translateX(0);
     }
 }
+.popup {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    overflow: hidden;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    border: 2px solid white;
+    background-color: black;
+    animation-name: popup;
+    animation-duration: .5s;
+    animation-fill-mode: forwards;
+}
+@keyframes popup {
+    from {
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+    to {
+        width: 80%;
+        height: 90%;
+        opacity: 1;
+    }
+}
 
 /* Side Menu */
 #menuFrame {

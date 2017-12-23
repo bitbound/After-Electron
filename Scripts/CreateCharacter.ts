@@ -1,4 +1,4 @@
-import * as After from "../API/Index";
+import * as After from "../Exports";
 import * as Audio from "../Components/Audio";
 import * as Game from "./Game";
 import { Storage, Utilities, UI } from "../Components/All";

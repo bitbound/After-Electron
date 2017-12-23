@@ -1,4 +1,4 @@
-import * as After from "../API/Index";
+import * as After from "../Exports";
 import * as $ from "jquery";
 import * as electron from "electron";
 import * as Game from "./Game";
@@ -52,7 +52,7 @@ export function Start(){
             UI.InputBox.focus();
             UI.AdjustMessageWindowHeight();
             
-            if (typeof Storage.Me.ID == "undefined"){
+            if (typeof Storage.Me.ID != "string"){
                 Intro.Start();
             }
             else {

@@ -1,7 +1,8 @@
-import * as After from "../API/Index";
+import * as After from "../Exports";
 import * as electron from "electron";
 import * as $ from "jquery";
 import { Utilities, Storage, UIEventHandler, UI } from "../Components/All";
+import * as Splash from "../Scripts/Splash"
 
 export function Start(){
     window.onerror = function(messageOrEvent, source, lineno, colno, error) {
@@ -28,4 +29,5 @@ export function Start(){
             }
         }
     }, Storage.ApplicationSettings.AutoSaveIntervalSeconds * 1000);
+    Splash.Start();
 }

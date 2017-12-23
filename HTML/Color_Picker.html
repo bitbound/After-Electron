@@ -1,5 +1,5 @@
 ﻿<div style="text-align: right">
-    <button onclick="$('#colorPopup').remove()" style="margin-right:10px">X</button>
+    <button onclick="$('#colorPopup').remove()" style="margin-right:10px;">X</button>
 </div>
 <div style="text-align: center">
     <strong>Brush Color</strong>
@@ -26,14 +26,16 @@
         <br />
         <br />
         <br />
-        <select id="selectColor" onchange="ColorSelected()" style="background-color: black; color: white"></select>
+        <select id="selectColor" onchange="ColorSelected()" style="background-color: black; color: white">
+            <option></option>
+        </select>
         <br />
         <br />
 </div>
 
 
 <div style="text-align: center">
-    <button style="padding: 5px">Set</button>
+    <button id="setColorButton" style="padding: 5px 10px">Set</button>
 </div>
 
 <script>
