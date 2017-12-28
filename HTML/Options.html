@@ -20,15 +20,20 @@
                 Keybinds
             </div>
             <div class="options-side-tab">
-                Client
-            </div>
-            <div class="options-side-tab">
-                Server
+                Network
             </div>
         </div>
         <div id="optionsContentFrame">
             <!-- General Options -->
             <div id="generalOptions" class="options-content">
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                    </div>
+                    <div class="menu-item-value">
+                        <img src="../Assets/help.png" style="height:20px; width:20px;" title="Many options have tooltips like this one that explain their purpose.&#013;&#013;If you're unsure about an option, don't forget to try hovering over it!"
+                        />
+                    </div>
+                </div>
                 <div class="menu-item" title="Whether the client will attempt to connect to servers for multiplayer.">
                     <div class="menu-item-key">
                         Client Connectivity:
@@ -81,7 +86,7 @@
                     </div>
                     <div class="menu-item-value">
                         <button class="color-wheel-button"></button>
-                        <input id="globalChat" data-object="StorageData.ApplicationSettings.Colors" data-property="GlobalChat">
+                        <input data-object="StorageData.ApplicationSettings.Colors" data-property="GlobalChat">
                     </div>
                 </div>
                 <div class="menu-item">
@@ -90,7 +95,7 @@
                     </div>
                     <div class="menu-item-value">
                         <button class="color-wheel-button"></button>
-                        <input id="voidChat" data-object="StorageData.ApplicationSettings.Colors" data-property="VoidChat">
+                        <input data-object="StorageData.ApplicationSettings.Colors" data-property="VoidChat">
                     </div>
                 </div>
                 <div class="menu-item">
@@ -99,7 +104,7 @@
                     </div>
                     <div class="menu-item-value">
                         <button class="color-wheel-button"></button>
-                        <input id="whisper" data-object="StorageData.ApplicationSettings.Colors" data-property="Whisper">
+                        <input data-object="StorageData.ApplicationSettings.Colors" data-property="Whisper">
                     </div>
                 </div>
                 <div class="menu-item">
@@ -108,7 +113,7 @@
                     </div>
                     <div class="menu-item-value">
                         <button class="color-wheel-button"></button>
-                        <input id="system" data-object="StorageData.ApplicationSettings.Colors" data-property="System">
+                        <input data-object="StorageData.ApplicationSettings.Colors" data-property="System">
                     </div>
                 </div>
                 <div class="menu-item">
@@ -117,19 +122,63 @@
                     </div>
                     <div class="menu-item-value">
                         <button class="color-wheel-button"></button>
-                        <input id="system" data-object="StorageData.ApplicationSettings.Colors" data-property="Debug">
+                        <input data-object="StorageData.ApplicationSettings.Colors" data-property="Debug">
                     </div>
                 </div>
             </div>
             <!-- Keybinds -->
             <div id="keybindsOptions" class="options-content" hidden>
-
-            </div>
-            <!-- Client Options -->
-            <div id="clientOptions" class="options-content" hidden>
-                <div class="menu-item" title="Whether the client will respond to ""who"" requests.">
+                <div class="menu-item" title="Switches to the input mode when the corresponding text is typed.">
                     <div class="menu-item-key">
-                        Discoverable:
+                        <strong>Input Mode Aliases</strong>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        Command
+                    </div>
+                    <div class="menu-item-value">
+                        <input data-object="StorageData.ApplicationSettings.InputModeAliases" data-property="Command">
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        Global Chat
+                    </div>
+                    <div class="menu-item-value">
+                        <input data-object="StorageData.ApplicationSettings.InputModeAliases" data-property="GlobalChat">
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        Void Chat
+                    </div>
+                    <div class="menu-item-value">
+                        <input data-object="StorageData.ApplicationSettings.InputModeAliases" data-property="VoidChat">
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        Whisper
+                    </div>
+                    <div class="menu-item-value">
+                        <input data-object="StorageData.ApplicationSettings.InputModeAliases" data-property="Whisper">
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        Script
+                    </div>
+                    <div class="menu-item-value">
+                        <input data-object="StorageData.ApplicationSettings.InputModeAliases" data-property="Script">
+                    </div>
+                </div>
+            </div>
+            <!-- Network Options -->
+            <div id="networkOptions" class="options-content" hidden>
+                <div class="menu-item" title='Whether the client will respond to "who" requests.'>
+                    <div class="menu-item-key">
+                        Client Discoverable:
                     </div>
                     <div class="menu-item-value">
                         <div id="clientDiscoverable" class="toggle-switch-outer" data-object="StorageData.ConnectionSettings" data-property="IsClientDiscoverable">
@@ -137,10 +186,22 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- Server Options -->
-            <div id="serverOptions" class="options-content" hidden>
-
+                <div class="menu-item">
+                        <div class="menu-item-key" title="The list of servers that your client knows about and to which will attempt connecting.">
+                            Known Server List:
+                        </div>
+                        <div class="menu-item-value">
+                            <select id="knownServerList" size="4" style="width: 200px; height: 100px"></select>
+                        </div>
+                    </div>
+                    <div class="menu-item">
+                        <div class="menu-item-key"  title="Servers that will be ignored.">
+                            Blocked Servers:
+                        </div>
+                        <div class="menu-item-value">
+                            <select id="blockedServerList" multiple style="width: 200px; height: 100px"></select>
+                        </div>
+                    </div>
             </div>
         </div>
     </div>

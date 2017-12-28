@@ -18,10 +18,11 @@ export var ApplicationSettings = new class ApplicationSettings {
         "Debug": "rgb(150,50,50)"
     }
     IsDebugModeEnabled: boolean = false;
-    TextInputAliases = {
+    InputModeAliases = {
         Command: "/c ",
         GlobalChat: "/g ",
         VoidChat: "/v ",
+        Whisper: "/w ",
         Script: "/s "
     };
 };

@@ -50,4 +50,17 @@ $(document).ready(function () {
             $(popup).remove();
         })
     })
+    var selectKnown = $("#knownServerList")[0] as HTMLSelectElement;
+    for (var i = 0; i < StorageData.KnownServers.length; i++){
+        var server =  StorageData.KnownServers[i];
+        var option = document.createElement("option");
+        option.value = server.ID;
+        option.innerHTML = `${server.Host}:${server.Port}`;
+        option.title = `Host: ${server.Host}\r\n`;
+        option.title += `Port: ${server.Port}\r\n`;
+        option.title += `ID: ${server.ID}\r\n`;
+        option.title += `Bad Connection Attempts: ${server.BadConnectionAttempts}\r\n`;
+        option.title += `Is Local: ${server.IsLocalNetwork}`;
+        selectKnown.options.add(option);
+    }
 })

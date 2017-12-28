@@ -324,11 +324,16 @@ button:active {
 .menu-item-key {
     vertical-align: middle;
     display: inline-block;
+    cursor: default;
+    grid-row: 1;
+    grid-column: 1;
 }
 .menu-item-value {
-    float: right;
-    clear: right;
+    grid-row: 1;
+    grid-column: 2;
+    text-align: right;
 }
 .menu-item {
-    margin-bottom: 12px;
+    display: grid;
+    margin-bottom: 5px;
 }

@@ -64,21 +64,12 @@ export function ApplyUIEventHandlers(){
     
     // Check aliases.
     UI.InputBox.on("input", (e)=>{
-        if (UI.InputBox.val().toString().toLowerCase() == Storage.ApplicationSettings.TextInputAliases.Command.toLowerCase()) {
-            (UI.InputModeSelector[0] as HTMLSelectElement).value = "Command";
-            UI.InputBox.val("");
-        }
-        else if (UI.InputBox.val().toString().toLowerCase() == Storage.ApplicationSettings.TextInputAliases.GlobalChat.toLowerCase()) {
-            (UI.InputModeSelector[0] as HTMLSelectElement).value = "Global Chat";
-            UI.InputBox.val("");
-        }
-        else if (UI.InputBox.val().toString().toLowerCase() == Storage.ApplicationSettings.TextInputAliases.VoidChat.toLowerCase()) {
-            (UI.InputModeSelector[0] as HTMLSelectElement).value = "Void Chat";
-            UI.InputBox.val("");
-        }
-        else if (UI.InputBox.val().toString().toLowerCase() == Storage.ApplicationSettings.TextInputAliases.Script.toLowerCase()) {
-            (UI.InputModeSelector[0] as HTMLSelectElement).value = "Script";
-            UI.InputBox.val("");
+        var inputModeAlises = Object.keys(Storage.ApplicationSettings.InputModeAliases);
+        for (var mode in Storage.ApplicationSettings.InputModeAliases){
+            if (UI.InputBox.val().toString().toLowerCase() == Storage.ApplicationSettings.InputModeAliases[mode].toLowerCase()){
+                (UI.InputModeSelector[0] as HTMLSelectElement).value = mode;
+                UI.InputBox.val("");
+            }
         }
         if (UI.InputModeSelector.val() == "Script") {
             Intellisense.EvaluateScript();
