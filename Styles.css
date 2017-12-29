@@ -27,6 +27,11 @@ button:active {
     transition: .1s all;
 }
 
+/* Icons */
+.fa {
+    color: white;
+}
+
 /*  Toggle Switch */
 .toggle-switch-outer {
     height: 25px;

@@ -4,6 +4,7 @@
 <head>
     <title>After Options</title>
     <link href="../Styles.css" rel="stylesheet">
+    <link href="../css/font-awesome.css" rel="stylesheet">
     <link href="../Assets/A-512.png" rel="icon">
 </head>
 
@@ -187,21 +188,37 @@
                     </div>
                 </div>
                 <div class="menu-item">
-                        <div class="menu-item-key" title="The list of servers that your client knows about and to which will attempt connecting.">
-                            Known Server List:
-                        </div>
-                        <div class="menu-item-value">
-                            <select id="knownServerList" size="4" style="width: 200px; height: 100px"></select>
+                    <div class="menu-item-key" title="The list of servers that your client knows about and to which will attempt connecting.">
+                        Known Server List:
+                    </div>
+                    <div class="menu-item-value">
+                        <div style="display:inline-block">
+                            <div style="display:grid; grid-template-columns: max-content max-content">
+                                <div style="grid-column: 1">
+                                    <i class="fa fa-arrow-up"></i>
+                                    <br>
+                                    <i class="fa fa-arrow-down"></i>
+                                    <br>
+                                    <i class="fa fa-ban"></i>
+                                    <br>
+                                    <i class="fa fa-trash"></i>
+                                    <br>
+                                </div>
+                                <div style="grid-column: 2">
+                                    <select id="knownServerList" size="4" style="width: 200px; height: 100px;"></select>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="menu-item">
-                        <div class="menu-item-key"  title="Servers that will be ignored.">
-                            Blocked Servers:
-                        </div>
-                        <div class="menu-item-value">
-                            <select id="blockedServerList" multiple style="width: 200px; height: 100px"></select>
-                        </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-item-key" title="Servers that will be ignored.">
+                        Blocked Servers:
                     </div>
+                    <div class="menu-item-value">
+                        <select id="blockedServerList" multiple style="width: 200px; height: 100px"></select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -276,6 +293,11 @@
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
+        }
+
+        .menu-item-value .fa {
+            margin-bottom: 5px;
+            cursor: pointer;
         }
     </style>
     <script>

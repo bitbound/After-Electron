@@ -44,6 +44,10 @@ export var KnownServers: KnownServer[] = [
     new KnownServer("after.myddns.rocks", 48837, false),
 ];
 
+export var BlockedServers: KnownServer[] = [
+    
+]
+
 export var Temp = new class Temp {
     JSONObjects: Array<any> = new Array<any>();
     MessageCounters: Array<MessageCounter> = new Array<MessageCounter>();
