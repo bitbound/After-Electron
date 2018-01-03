@@ -61,10 +61,10 @@ export function ProcessInput(){
                 UI.AddSystemMessage(ex, 1);
             }
             break;
-        case "Global Chat":
+        case "GlobalChat":
             SocketDataIO.SendChat(input, "GlobalChat");
             break;
-        case "Void Chat":
+        case "VoidChat":
             SocketDataIO.SendChat(input, "VoidChat");
             break;
         case "Command":

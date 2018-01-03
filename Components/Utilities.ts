@@ -419,8 +419,3 @@ export function SetAllDatabinds(dataChangedCallback: Function) {
         }
     })
 }
-export function WriteDebug(message: string, newLines: number) {
-    if (Storage.ApplicationSettings.IsDebugModeEnabled) {
-        UI.AddDebugMessage(message, newLines);
-    }
-}

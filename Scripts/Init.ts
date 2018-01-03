@@ -1,6 +1,4 @@
-import * as Components from "../Components/All";
-import * as Models from "../Models/All";
-import * as API from "../API/All";
+import * as After from "../Exports";
 import * as electron from "electron";
 import * as $ from "jquery";
 import { Utilities, Storage, UIEventHandler, UI } from "../Components/All";
@@ -10,11 +8,7 @@ export function Start(){
     window.onerror = function(messageOrEvent, source, lineno, colno, error) {
         Utilities.Log(JSON.stringify(error));
     }
-    window["After"] = {
-        "API": API,
-        "Components": Components,
-        "Models": Models
-    };
+    window["After"] = After;
     window["$"] = $;
     electron.remote.getCurrentWindow().on("close", (event)=>{
         Storage.SaveAll();

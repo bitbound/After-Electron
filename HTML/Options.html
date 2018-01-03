@@ -177,14 +177,71 @@
             </div>
             <!-- Network Options -->
             <div id="networkOptions" class="options-content" hidden>
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        <strong>Client Options</strong>
+                    </div>
+                </div>
                 <div class="menu-item" title='Whether the client will respond to "who" requests.'>
                     <div class="menu-item-key">
                         Client Discoverable:
                     </div>
                     <div class="menu-item-value">
-                        <div id="clientDiscoverable" class="toggle-switch-outer" data-object="StorageData.ConnectionSettings" data-property="IsClientDiscoverable">
+                        <div class="toggle-switch-outer" data-object="StorageData.ConnectionSettings" data-property="IsClientDiscoverable">
                             <div class="toggle-switch-inner"></div>
                         </div>
+                    </div>
+                </div>
+                <div class="menu-item" title='The maximum number of unsuccessful attempts that will be made to a server before removing it from the list of known servers.'>
+                    <div class="menu-item-key">
+                        Max Connection Attempts:
+                    </div>
+                    <div class="menu-item-value">
+                        <input data-object="StorageData.ConnectionSettings" data-property="MaxConnectionAttempts" />
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        <strong>Server Options</strong>
+                    </div>
+                </div>
+                <div class="menu-item" title='The port your server will use to listen for client connections.'>
+                    <div class="menu-item-key">
+                        Server Port:
+                    </div>
+                    <div class="menu-item-value">
+                        <input data-object="StorageData.ConnectionSettings" data-property="ServerListeningPort" />
+                    </div>
+                </div>
+                <div class="menu-item" title='If enabled, and if server is enabled, your server will help support the After network by relaying data between other servers and clients.'>
+                    <div class="menu-item-key">
+                        Support The Network:
+                    </div>
+                    <div class="menu-item-value">
+                        <div class="toggle-switch-outer" data-object="StorageData.ConnectionSettings" data-property="IsNetworkSupport">
+                            <div class="toggle-switch-inner"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="menu-item" title='The length of time (in milliseconds) that will be used to determine if a client should be throttled based on number of messages received.'>
+                    <div class="menu-item-key">
+                        Message Throttle Window (milliseconds):
+                    </div>
+                    <div class="menu-item-value">
+                        <input data-object="StorageData.ConnectionSettings" data-property="MessageCountMilliseconds" />
+                    </div>
+                </div>
+                <div class="menu-item" title='The maximum number of messages that can be received in the above timeframe before further messages will be throttled.'>
+                    <div class="menu-item-key">
+                        Message Throttle Count:
+                    </div>
+                    <div class="menu-item-value">
+                        <input data-object="StorageData.ConnectionSettings" data-property="MessageCountLimit" />
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <div class="menu-item-key">
+                        <strong>Server Lists</strong>
                     </div>
                 </div>
                 <div class="menu-item">
@@ -194,14 +251,14 @@
                     <div class="menu-item-value">
                         <div style="display:inline-block">
                             <div style="display:grid; grid-template-columns: max-content max-content">
-                                <div style="grid-column: 1">
-                                    <i class="fa fa-arrow-up"></i>
+                                <div id="knownServerButtons" style="grid-column: 1; margin-right: 5px">
+                                    <i class="fa fa-arrow-up" title="Move Up"></i>
                                     <br>
-                                    <i class="fa fa-arrow-down"></i>
+                                    <i class="fa fa-arrow-down" title="Move Down"></i>
                                     <br>
-                                    <i class="fa fa-ban"></i>
+                                    <i class="fa fa-plus" title="Add New"></i>
                                     <br>
-                                    <i class="fa fa-trash"></i>
+                                    <i class="fa fa-trash" title="Delete"></i>
                                     <br>
                                 </div>
                                 <div style="grid-column: 2">
@@ -216,7 +273,19 @@
                         Blocked Servers:
                     </div>
                     <div class="menu-item-value">
-                        <select id="blockedServerList" multiple style="width: 200px; height: 100px"></select>
+                        <div style="display:inline-block">
+                            <div style="display:grid; grid-template-columns: max-content max-content">
+                                <div id="blockedServerButtons" style="grid-column: 1; margin-right: 5px">
+                                    <i class="fa fa-plus" title="Add New"></i>
+                                    <br>
+                                    <i class="fa fa-trash" title="Delete"></i>
+                                    <br>
+                                </div>
+                                <div style="grid-column: 2">
+                                    <select id="blockedServerList" size="4" style="width: 200px; height: 100px"></select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

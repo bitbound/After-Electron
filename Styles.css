@@ -261,7 +261,7 @@ button:active {
         transform: translateX(0);
     }
 }
-.popup {
+.popup-small {
     position: fixed;
     left: 50%;
     top: 50%;
@@ -270,11 +270,36 @@ button:active {
     border-radius: 20px;
     border: 2px solid white;
     background-color: black;
-    animation-name: popup;
+    animation-name: popup-small;
     animation-duration: .5s;
     animation-fill-mode: forwards;
 }
-@keyframes popup {
+@keyframes popup-small {
+    from {
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+    to {
+        width: 50%;
+        height: 60%;
+        opacity: 1;
+    }
+}
+.popup-large {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    overflow: hidden;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    border: 2px solid white;
+    background-color: black;
+    animation-name: popup-large;
+    animation-duration: .5s;
+    animation-fill-mode: forwards;
+}
+@keyframes popup-large {
     from {
         width: 0;
         height: 0;

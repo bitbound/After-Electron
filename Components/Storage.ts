@@ -31,7 +31,7 @@ export var ConnectionSettings = new class ConnectionSettings {
     IsClientEnabled:boolean = false;
     IsClientDiscoverable:boolean = true;
     IsServerEnabled:boolean = false;
-    IsPublicServer: boolean = true;
+    IsNetworkSupport: boolean = true;
     ServerListeningPort: number = 48836;
     ServerID: string = Utilities.CreateGUID();
     MessageCountMilliseconds: number = 60000;
@@ -49,7 +49,9 @@ export var BlockedServers: KnownServer[] = [
 ]
 
 export var Temp = new class Temp {
+    // Used for temporary storage for intellisense and other utility functions.
     JSONObjects: Array<any> = new Array<any>();
+    // Used for throttling incoming messages.
     MessageCounters: Array<MessageCounter> = new Array<MessageCounter>();
     ReceivedMessages: string[] = new Array<string>();
 };
@@ -62,7 +64,13 @@ export function LoadAll() {
         if (fs.lstatSync(path.join(FileSystem.StorageDataPath, value)).isFile()){
             var itemName = value.replace(".json", "");
             var content = fs.readFileSync(path.join(FileSystem.StorageDataPath, value)).toString();
-            $.extend(true, Storage[itemName], JSON.parse(content));
+            // We want to replace arrays completely, not extend them.
+            if (Storage[itemName] instanceof Array){
+                Storage[itemName] = JSON.parse(content);
+            } 
+            else {
+                $.extend(true, Storage[itemName], JSON.parse(content));
+            } 
         }
     });
 };
@@ -108,9 +116,15 @@ export function LoadSettings() {
     fs.readdirSync(FileSystem.StorageDataPath).forEach(function (value) {
         if (fs.lstatSync(path.join(FileSystem.StorageDataPath, value)).isFile()){
             var itemName = value.replace(".json", "");
-            if (itemName != "Me") {
+            if (itemName != "Me") {           
                 var content = fs.readFileSync(path.join(FileSystem.StorageDataPath, value)).toString();
-                $.extend(true, Storage[itemName], JSON.parse(content));
+                // We want to replace arrays completely, not extend them.
+                if (Storage[itemName] instanceof Array){
+                    Storage[itemName] = JSON.parse(content);
+                } 
+                else {
+                    $.extend(true, Storage[itemName], JSON.parse(content));
+                } 
             }
         }
     });

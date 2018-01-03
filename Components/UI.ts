@@ -29,12 +29,13 @@ function AppendMessageToWindow(message:string){
     }
 }
 export function AddDebugMessage(message:string, newLines:number){
-    var messageText = `<div style="color:${Storage.ApplicationSettings.Colors.Debug}">[Debug]: ${Utilities.EncodeForHTML(message)}</div>`;
-    for (var i = 0; i < newLines; i++){
-        messageText += "<br>";
-    }
-    AppendMessageToWindow(messageText);
-    
+    if (Storage.ApplicationSettings.IsDebugModeEnabled) {
+        var messageText = `<div style="color:${Storage.ApplicationSettings.Colors.Debug}">[Debug]: ${Utilities.EncodeForHTML(message)}</div>`;
+        for (var i = 0; i < newLines; i++){
+            messageText += "<br>";
+        }
+        AppendMessageToWindow(messageText);
+    } 
 }
 export function AddMessageText(message:string, newLines:number){
     var messageText = Utilities.EncodeForHTML(message);
