@@ -233,11 +233,14 @@ export async function FindServerToServerConnection() {
 }
 
 export async function RefreshConnections(){
-    if (!OutboundConnection.IsConnected()){
-        await FindClientToServerConnection();
+    if (Storage.ConnectionSettings.IsServerEnabled && Connectivity.LocalServer.IsListening() == false) {
+        await Connectivity.StartServer();
     }
-    if (ServerToServerConnections.length == 0){
+    else if (ServerToServerConnections.length == 0){
         await FindServerToServerConnection();
+    }
+    if (Storage.ConnectionSettings.IsClientEnabled && !OutboundConnection.IsConnected()){
+        await FindClientToServerConnection();
     }
 }
 
