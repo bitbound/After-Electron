@@ -62,7 +62,7 @@ export function ProcessInput(){
                     }, "&emsp;");
                 }
                 else {
-                    output = result;
+                    output = result.toString();
                 }
                 UI.AddSystemMessage(output.split("\n").join("<br/>").split(" ").join("&nbsp;"), 1);
             }
