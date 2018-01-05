@@ -78,11 +78,27 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                     if (!OutboundConnection.IsDisconnectExpected) {
                         resolve(false);
                         UI.AddSystemMessage("Client disconnected from server unexpectedly.", 1);
+                        if (Storage.ConnectionSettings.IsClientEnabled){
+                            UI.AddSystemMessage("Reconnecting in 30 seconds.", 1);
+                            window.setTimeout(async ()=>{
+                                if (Storage.ConnectionSettings.IsClientEnabled && OutboundConnection.IsConnected() == false) {
+                                    await FindClientToServerConnection();
+                                }
+                            }, 30000)
+                        }
                     }
                 }
                 else if (connectionType == ConnectionTypes.ServerToServer) {
                     Utilities.RemoveFromArray(ServerToServerConnections, socket, "id");
                     UI.RefreshConnectivityBar();
+                    if (ServerToServerConnections.length == 0 && Storage.ConnectionSettings.IsServerEnabled && Storage.ConnectionSettings.IsNetworkSupport) {
+                        UI.AddSystemMessage("Server-to-server connection lost.  Reconnecting in 30 seconds.", 1);
+                        window.setTimeout(async ()=>{
+                            if (ServerToServerConnections.length == 0 && Storage.ConnectionSettings.IsServerEnabled && Storage.ConnectionSettings.IsNetworkSupport) {
+                                await FindServerToServerConnection();
+                            }
+                        }, 30000)
+                    }
                 }
                 resolve(false);
             })
@@ -217,14 +233,18 @@ export async function FindServerToServerConnection() {
         var index = Storage.KnownServers.indexOf(value);
         Storage.KnownServers.splice(index, 1);
     })
-    if (!connected) {
-        UI.AddSystemMessage("Unable to find a server-to-server connection.", 1);
-    }
+    
     UI.RefreshConnectivityBar();
     for (var i = Storage.KnownServers.length - 1; i >= 0; i--) {
         if (Storage.KnownServers[i].BadConnectionAttempts > Storage.ConnectionSettings.MaxConnectionAttempts) {
             Storage.KnownServers.splice(i, 1);
         }
+    }
+    if (!connected) {
+        UI.AddSystemMessage("Unable to find a server-to-server connection.", 1);
+    }
+    else {
+        // TODO: You see me checks.
     }
 }
 
@@ -232,7 +252,7 @@ export async function RefreshConnections(){
     if (Storage.ConnectionSettings.IsServerEnabled && Connectivity.LocalServer.IsListening() == false) {
         await Connectivity.StartServer();
     }
-    else if (ServerToServerConnections.length == 0){
+    if (Storage.ConnectionSettings.IsServerEnabled && ServerToServerConnections.length == 0 && Storage.ConnectionSettings.IsNetworkSupport){
         await FindServerToServerConnection();
     }
     if (Storage.ConnectionSettings.IsClientEnabled && !OutboundConnection.IsConnected()){
@@ -305,5 +325,4 @@ export async function StartServer() {
         UI.AddDebugMessage("TCP server started.", 1);
     });
     Connectivity.LocalServer.Server = server;
-    await FindServerToServerConnection();
 };

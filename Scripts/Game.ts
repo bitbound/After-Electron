@@ -9,6 +9,9 @@ export var Start = async function (){
     
     if (Storage.ConnectionSettings.IsServerEnabled) {
         await Connectivity.StartServer();
+        if (Storage.ConnectionSettings.IsNetworkSupport){
+            await Connectivity.FindServerToServerConnection();
+        }
     }
     if (Storage.ConnectionSettings.IsClientEnabled) {
         await Connectivity.FindClientToServerConnection();
