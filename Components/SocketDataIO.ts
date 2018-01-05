@@ -4,7 +4,7 @@ import { ConnectedClient, KnownServer, MessageCounter } from "../Models/All";
 
 // Final Data Out //
 export function Send(jsonData: any, socket: net.Socket) {
-    Utilities.WriteDebug("Sending to " + socket.remoteAddress + ": " + JSON.stringify(jsonData), 1);
+    UI.AddDebugMessage("Sending to " + socket.remoteAddress + ": " + JSON.stringify(jsonData), 1);
     if (jsonData.Type == undefined || jsonData.ID == undefined) {
         Utilities.Log("Type or ID missing from Broadcast data: " + JSON.stringify(jsonData));
         return;
@@ -57,7 +57,7 @@ export function ReceiveHelloFromClientToServer(jsonData: any, socket: net.Socket
     client.Socket = socket;
     Connectivity.ClientConnections.push(client);
     $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
-    Utilities.WriteDebug(`Connection received from ${socket.remoteAddress}.`, 1);
+    UI.AddDebugMessage(`Connection received from ${socket.remoteAddress}.`, 1);
     SendHelloFromServerToClient(socket);
     SendKnownServers(socket);
 }
@@ -93,7 +93,7 @@ export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket
     }
     Connectivity.ServerToServerConnections.push(socket);
     $("#spanServerConnections").text(Connectivity.ServerToServerConnections.length.toString());
-    Utilities.WriteDebug(`Server connection received from ${socket.remoteAddress}.`, 1);
+    UI.AddDebugMessage(`Server connection received from ${socket.remoteAddress}.`, 1);
     SendKnownServers(socket);
 }
 
@@ -106,6 +106,14 @@ export function SendKnownServers(socket: net.Socket) {
 }
 export function ReceiveKnownServers(jsonData: any, socket: net.Socket) {
     for (var i = 0; i < jsonData.KnownServers.length; i++) {
+        var server = jsonData.KnownServers[i];
+        if (
+            Storage.BlockedServers.some((value) => {
+                return value.Host == server.Host && value.Port == server.Port;
+            })
+        ) {
+            continue;
+        }
         Utilities.AppendIfMissing(Storage.KnownServers, jsonData.KnownServers[i], ["Host", "Port"]);
     }
 }
@@ -165,7 +173,7 @@ export function CheckMessageCounter(socket:net.Socket): boolean {
     messageCounter.MessageTimes.push(Date.now());
     if (messageCounter.MessageTimes.length > Storage.ConnectionSettings.MessageCountLimit)
     {
-        Utilities.WriteDebug(`Message limit exceeded from ${socket.remoteAddress}.`, 1);
+        UI.AddDebugMessage(`Message limit exceeded from ${socket.remoteAddress}.`, 1);
         // Extend message times out by 5 minutes to prevent further messages from IP address.
         messageCounter.MessageTimes.forEach((value, index)=> {
             messageCounter.MessageTimes[index] += 300000;

@@ -14,7 +14,10 @@ $(document).ready(function () {
         electron.ipcRenderer.send("options-update");
     });
 
-    Utilities.SetAllDatabinds(() => { StorageData.SaveSettings() });
+    Utilities.SetAllDatabinds(() => { 
+        StorageData.SaveSettings();
+        electron.ipcRenderer.send("options-update");
+     });
     StorageData.LoadSettings();
 
 

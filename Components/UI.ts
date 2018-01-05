@@ -58,6 +58,7 @@ export function AddSystemMessage(message:string, newLines:number){
     AppendMessageToWindow(messageText);
 }
 export function AdjustMessageWindowHeight(){
+    this.MainGrid.height("100%");
     var heightAdjust = 0;
     while (document.body.scrollHeight > document.documentElement.clientHeight) {
         heightAdjust++;
@@ -164,6 +165,15 @@ export function SetUIDatabinds(){
     Utilities.DataBindOneWay(Storage.Me, "MaxCharge", null, null, function(){
         $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
         $("#svgCharge").css("width", String(Math.min(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100, 100) || 0) + "%");
+    }, null);
+    Utilities.DataBindOneWay(Storage.ApplicationSettings, "IsNetworkStatusBarVisible", null, null, ()=>{
+        if (Storage.ApplicationSettings.IsNetworkStatusBarVisible){
+            $("#statusFrame").show();
+        }
+        else {
+            $("#statusFrame").hide();
+        }
+        UI.AdjustMessageWindowHeight();
     }, null);
 }
 export function ShowDevTools(){

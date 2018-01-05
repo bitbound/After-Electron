@@ -182,20 +182,23 @@
 
         <div id="statusFrame">
             <table>
-                <td>
-                    Client Status:
+                <td title="The current client connectivity status.">
+                    Client:
                     <span id="spanClientStatus">Disconnected</span>
                 </td>
-                <td>
-                    Server Status:
+                <td title="The current server connectivity status.">
+                    Server:
                     <span id="spanServerStatus">Disabled</span>
                 </td>
                 <td>
-                    Client Connections:
+                    <button id="reconnectButton" style="height: 25px; font-size: .9em">Reconnect</button>
+                </td>
+                <td title="The number of active clients connected to this server.">
+                    Clients:
                     <span id="spanClientConnections">0</span>
                 </td>
-                <td>
-                    Server Connections:
+                <td title="The number of current server-to-server connections.">
+                    Servers:
                     <span id="spanServerConnections">0</span>
                 </td>
             </table>

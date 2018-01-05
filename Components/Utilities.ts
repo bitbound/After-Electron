@@ -268,6 +268,15 @@ export function EncodeForHTML(input: string) {
     return $("<div>").text(input).html();
 };
 
+export function ExtendFunction(inputObject:any, functionName:string, prependWithFunction:Function, appendWithFunction:Function){
+    var originalFunction = inputObject[functionName] as Function;
+    inputObject[functionName] = function(){
+        prependWithFunction(this, arguments);
+        originalFunction.apply(this, arguments);
+        appendWithFunction(this, arguments);
+    };
+}
+
 export function GetRandom(Min: number, Max: number, Round: boolean): number {
     if (Min > Max) {
         throw "Min must be less than max.";

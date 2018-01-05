@@ -48,14 +48,21 @@ export function EvaluateScript(){
         var currentObject = eval(namespaceAndObject);
         if (currentObject instanceof Object){
             var matches;
+            var members = new Array<any>();
+            members = members.concat(Object.keys(currentObject));
+            var prototype = currentObject.__proto__;
+            while (prototype != null){
+                members = members.concat(Object.keys(prototype));
+                prototype = prototype.__proto__;
+            }
             // After 3 characters of the member, match more specifically (startsWith).
             if (member.length <= 3) {
-                matches = Object.getOwnPropertyNames(currentObject).filter(value=>{
+                matches = members.filter(value=>{
                     return value.toLowerCase().search(member.toLowerCase()) > -1 && value != "__esModule";
                 })
             }
             else {
-                matches = Object.getOwnPropertyNames(currentObject).filter(value=>{
+                matches = members.filter(value=>{
                     return value.toLowerCase().startsWith(member.toLowerCase()) && value != "__esModule";
                 })
             }

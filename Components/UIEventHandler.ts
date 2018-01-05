@@ -1,5 +1,5 @@
 import * as electron from "electron";
-import { UI, InputProcessor, Intellisense, Storage } from "./All";
+import { UI, InputProcessor, Intellisense, Storage, Connectivity } from "./All";
 
 export function ApplyUIEventHandlers(){
     $("#gridDivider").on("pointerdown", (e)=>{
@@ -78,5 +78,11 @@ export function ApplyUIEventHandlers(){
         {
             Intellisense.EvaluateCommand();
         }
+    });
+
+    $("#reconnectButton").on("click", async (e)=>{
+        (e.currentTarget as HTMLButtonElement).disabled = true;
+        await Connectivity.RefreshConnections();
+        (e.currentTarget as HTMLButtonElement).disabled = false;
     });
 };
