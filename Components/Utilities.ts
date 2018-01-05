@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 import { Storage, FileSystem, UI } from "./All";
+import { Socket } from "net";
 
 
 export function ArePropertiesEqual(object1, object2) {
@@ -393,8 +394,8 @@ export function ReplaceAllInString(inputString: string, toReplace: string, repla
     }
 }
 
-export function RemoveFromArray(inputArray: Array<any>, inputItem: any) {
-    var index = inputArray.findIndex(x => x == inputItem);
+export function RemoveSocketFromArray(inputArray: Array<any>, inputItem: any, idProperty:string) {
+    var index = inputArray.findIndex(x => x[idProperty] == inputItem[idProperty]);
     if (index > -1) {
         inputArray.splice(index, 1);
     }

@@ -44,6 +44,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                     resolve(false);
                     return;
                 }
+                socket["id"] = Utilities.CreateGUID();
                 OutboundConnection.IsDisconnectExpected = false;
                 server.BadConnectionAttempts = 0;
                 Utilities.UpdateAndPrepend(Storage.KnownServers, server, ["Host", "Port"]);
@@ -70,7 +71,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                     }
                 }
                 else if (connectionType == ConnectionTypes.ServerToServer) {
-                    Utilities.RemoveFromArray(ServerToServerConnections, socket);
+                    Utilities.RemoveFromArray(ServerToServerConnections, socket, "id");
                     UI.RefreshConnectivityBar();
                 }
                 resolve(false);
@@ -85,7 +86,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                     }
                 }
                 else if (connectionType == ConnectionTypes.ServerToServer) {
-                    Utilities.RemoveFromArray(ServerToServerConnections, socket);
+                    Utilities.RemoveFromArray(ServerToServerConnections, socket, "id");
                     UI.RefreshConnectivityBar();
                 }
                 resolve(false);
@@ -250,6 +251,7 @@ export async function StartServer() {
         if (Utilities.IsLocalIP(socket.remoteAddress)) {
             return;
         }
+        socket["id"] = Utilities.CreateGUID();
         socket.on("data", (data) => {
             try {
                 if (!SocketDataIO.CheckMessageCounter(socket)) {
@@ -280,13 +282,13 @@ export async function StartServer() {
         });
         socket.on("error", (err: Error) => {
             Utilities.Log(err.stack);
-            Utilities.RemoveFromArray(ClientConnections, socket);
-            Utilities.RemoveFromArray(ServerToServerConnections, socket);
+            Utilities.RemoveFromArray(ClientConnections, socket, "id");
+            Utilities.RemoveFromArray(ServerToServerConnections, socket, "id");
             UI.RefreshConnectivityBar();
         })
         socket.on("close", () => {
-            Utilities.RemoveFromArray(ClientConnections, socket);
-            Utilities.RemoveFromArray(ServerToServerConnections, socket);
+            Utilities.RemoveFromArray(ClientConnections, socket, "id");
+            Utilities.RemoveFromArray(ServerToServerConnections, socket, "id");
             UI.RefreshConnectivityBar();
         })
     });
