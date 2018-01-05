@@ -50,10 +50,12 @@ $(document).ready(function () {
         });
         if (match){
             var index = StorageData.KnownServers.indexOf(match);
-            StorageData.KnownServers.splice(index, 1);
-            StorageData.KnownServers.splice(index - 1, 0, match);
-            populateKnownServers();
-            ($("#knownServerList")[0] as HTMLSelectElement).selectedIndex = index - 1;
+            if (index > 0){
+                StorageData.KnownServers.splice(index, 1);
+                StorageData.KnownServers.splice(index - 1, 0, match);
+                populateKnownServers();
+                ($("#knownServerList")[0] as HTMLSelectElement).selectedIndex = index - 1;
+            }
         }
     })
     $("#knownServerButtons .fa-arrow-down").on("click", ()=>{
@@ -81,9 +83,11 @@ $(document).ready(function () {
                                 <br>
                                 Port:<br>
                                 <input id="newPort" style="width:150px" /><br>
+                                <label title="Whether this host is on the local network and shouldn't be shared online." for="isLocalCheckbox">Is Local:</label>
+                                <input id="isLocalCheckbox" type="checkbox" /> <br>
                                 <br>
                                 <button style="width: 60px; height: 40px;" onclick="(function(){
-                                    StorageData.KnownServers.push({'Host': $('#newHost').val(), 'Port': $('#newPort').val()});
+                                    StorageData.KnownServers.push({'Host': $('#newHost').val(), 'Port': $('#newPort').val(), 'IsLocalNetwork': $('#isLocalCheckbox')[0].checked });
                                     $('.popup-small').remove();
                                     window['Options'].populateKnownServers();
                                 })()">Save</button>

@@ -39,11 +39,6 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
         try {
             OutboundConnection.IsDisconnectExpected = true;
             var socket = net.connect(server.Port, server.Host, () => {
-                if (Utilities.IsLocalIP(socket.remoteAddress)) {
-                    Utilities.UpdateAndAppend(Storage.KnownServers, server, ["Host", "Port"]);
-                    resolve(false);
-                    return;
-                }
                 socket["id"] = Utilities.CreateGUID();
                 OutboundConnection.IsDisconnectExpected = false;
                 server.BadConnectionAttempts = 0;
@@ -248,7 +243,7 @@ export async function RefreshConnections(){
 export async function StartServer() {
     Storage.ConnectionSettings.ServerID = Storage.ConnectionSettings.ServerID || Utilities.CreateGUID();
     var server = net.createServer(function (socket) {
-        if (Utilities.IsLocalIP(socket.remoteAddress)) {
+        if (Utilities.IsLocalIP(socket.remoteAddress) && socket.remotePort == Storage.ConnectionSettings.ServerListeningPort) {
             return;
         }
         socket["id"] = Utilities.CreateGUID();

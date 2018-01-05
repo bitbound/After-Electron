@@ -394,7 +394,7 @@ export function ReplaceAllInString(inputString: string, toReplace: string, repla
     }
 }
 
-export function RemoveSocketFromArray(inputArray: Array<any>, inputItem: any, idProperty:string) {
+export function RemoveFromArray(inputArray: Array<any>, inputItem: any, idProperty:string) {
     var index = inputArray.findIndex(x => x[idProperty] == inputItem[idProperty]);
     if (index > -1) {
         inputArray.splice(index, 1);

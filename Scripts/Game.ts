@@ -8,7 +8,7 @@ export var Start = async function (){
     After.Models.Void.Load(Storage.Me.InnerVoidID).Display();
     
     if (Storage.ConnectionSettings.IsServerEnabled) {
-        Connectivity.StartServer();
+        await Connectivity.StartServer();
     }
     if (Storage.ConnectionSettings.IsClientEnabled) {
         await Connectivity.FindClientToServerConnection();

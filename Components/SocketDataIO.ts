@@ -1,6 +1,7 @@
 import * as net from "net";
 import { Connectivity, Storage, Utilities, UI } from "./All";
 import { ConnectedClient, KnownServer, MessageCounter } from "../Models/All";
+import * as electron from "electron";
 
 // Final Data Out //
 export function Send(jsonData: any, socket: net.Socket) {
@@ -49,7 +50,8 @@ export function SendHelloFromClientToServer(socket: net.Socket) {
         "Type": "HelloFromClientToServer",
         "ID": Utilities.CreateGUID(),
         "ServerID": Storage.ConnectionSettings.ServerID,
-        "ShouldBroadcast": false
+        "ShouldBroadcast": false,
+        "ProcessID": electron.remote.app.getAppMetrics()[0].pid
     }, socket)
 }
 export function ReceiveHelloFromClientToServer(jsonData: any, socket: net.Socket) {
@@ -66,10 +68,20 @@ export function SendHelloFromServerToClient(socket: net.Socket) {
         "Type": "HelloFromServerToClient",
         "ID": Utilities.CreateGUID(),
         "ServerID": Storage.ConnectionSettings.ServerID,
-        "ShouldBroadcast": false
+        "ShouldBroadcast": false,
+        "ProcessID": electron.remote.app.getAppMetrics()[0].pid
     }, socket)
 }
 export function ReceiveHelloFromServerToClient(jsonData: any, socket: net.Socket) {
+    if (jsonData.ServerID == Storage.ConnectionSettings.ServerID && jsonData.ProcessID == electron.remote.app.getAppMetrics()[0].pid){
+        var server = Storage.KnownServers.find(x=>x.Host == Connectivity.OutboundConnection.Server.Host
+                                                && x.Port == Connectivity.OutboundConnection.Server.Port);
+        server.ID == jsonData.ServerID;
+        Utilities.UpdateAndAppend(Storage.KnownServers, server, ["Host", "Port"]);
+        UI.AddSystemMessage("Client attempted to connect to self.  Your known servers have been reorganized.", 1);
+        socket.end();
+        return;
+    }
     Connectivity.OutboundConnection.Server.ID = jsonData.ServerID;
     SendKnownServers(socket);
 }
@@ -79,15 +91,16 @@ export function SendHelloFromServerToServer(toServer: KnownServer, socket: net.S
         "ID": Utilities.CreateGUID(),
         "ServerID": Storage.ConnectionSettings.ServerID,
         "KnownServer": toServer,
-        "ShouldBroadcast": false
+        "ShouldBroadcast": false,
+        "ProcessID": electron.remote.app.getAppMetrics()[0].pid
     }, socket)
 }
 export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket) {
-    if (jsonData.ServerID == Storage.ConnectionSettings.ServerID){
+    if (jsonData.ServerID == Storage.ConnectionSettings.ServerID && jsonData.ProcessID == electron.remote.app.getAppMetrics()[0].pid){
         var server = Storage.KnownServers.find(x=>x.Host == jsonData.KnownServer.Host && x.Port == jsonData.KnownServer.Port);
         server.ID == jsonData.ServerID;
         Utilities.UpdateAndAppend(Storage.KnownServers, server, ["Host", "Port"]);
-        UI.AddSystemMessage("Server attempted to connect to self.  Your known servers have been reorganized.  Please reconnect.", 1);
+        UI.AddSystemMessage("Server attempted to connect to self.  Your known servers have been reorganized.", 1);
         socket.end();
         return;
     }
