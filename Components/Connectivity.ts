@@ -33,14 +33,15 @@ export var LocalServer = new class LocalServer {
 }
 
 export var ServerToServerConnections: Array<net.Socket> = new Array<net.Socket>();
+export var IsConnecting: boolean = false;
 
 export async function ConnectToServer(server: KnownServer, connectionType: ConnectionTypes): Promise<boolean> {
     var promise = new Promise<boolean>(function (resolve, reject) {
         try {
-            OutboundConnection.IsDisconnectExpected = true;
+            IsConnecting = true;
             var socket = net.connect(server.Port, server.Host, () => {
                 socket["id"] = Utilities.CreateGUID();
-                OutboundConnection.IsDisconnectExpected = false;
+                IsConnecting = false;
                 server.BadConnectionAttempts = 0;
                 Utilities.UpdateAndPrepend(Storage.KnownServers, server, ["Host", "Port"]);
                 if (connectionType == ConnectionTypes.ClientToServer) {
@@ -60,9 +61,9 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                 Utilities.Log("Socket error: " + JSON.stringify(err));
                 UI.AddDebugMessage("Socket error.", 1);
                 if (connectionType == ConnectionTypes.ClientToServer) {
-                    if (!OutboundConnection.IsDisconnectExpected) {
+                    if (!IsConnecting) {
                         resolve(null);
-                        UI.AddSystemMessage("Client disconnected from server unexpectedly.", 1);
+                        UI.AddSystemMessage("Client disconnected from server unexpectedly.  Try reconnecting later.", 1);
                     }
                 }
                 else if (connectionType == ConnectionTypes.ServerToServer) {
@@ -75,29 +76,16 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                 Utilities.Log("Socket closed.");
                 UI.AddDebugMessage("Socket closed.", 1);
                 if (connectionType == ConnectionTypes.ClientToServer) {
-                    if (!OutboundConnection.IsDisconnectExpected) {
+                    if (!IsConnecting) {
                         resolve(false);
-                        UI.AddSystemMessage("Client disconnected from server unexpectedly.", 1);
-                        if (Storage.ConnectionSettings.IsClientEnabled){
-                            UI.AddSystemMessage("Reconnecting in 30 seconds.", 1);
-                            window.setTimeout(async ()=>{
-                                if (Storage.ConnectionSettings.IsClientEnabled && OutboundConnection.IsConnected() == false) {
-                                    await FindClientToServerConnection();
-                                }
-                            }, 30000)
-                        }
+                        UI.AddSystemMessage("Client disconnected from server unexpectedly.  Try reconnecting later.", 1);
                     }
                 }
                 else if (connectionType == ConnectionTypes.ServerToServer) {
                     Utilities.RemoveFromArray(ServerToServerConnections, socket, "id");
                     UI.RefreshConnectivityBar();
-                    if (ServerToServerConnections.length == 0 && Storage.ConnectionSettings.IsServerEnabled && Storage.ConnectionSettings.IsNetworkSupport) {
-                        UI.AddSystemMessage("Server-to-server connection lost.  Reconnecting in 30 seconds.", 1);
-                        window.setTimeout(async ()=>{
-                            if (ServerToServerConnections.length == 0 && Storage.ConnectionSettings.IsServerEnabled && Storage.ConnectionSettings.IsNetworkSupport) {
-                                await FindServerToServerConnection();
-                            }
-                        }, 30000)
+                    if (ServerToServerConnections.length == 0 && !IsConnecting) {
+                        UI.AddSystemMessage("All server-to-server connections lost.  Try reconnecting later.", 1);
                     }
                 }
                 resolve(false);
@@ -107,7 +95,6 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                     if (!SocketDataIO.CheckMessageCounter(socket)) {
                         return;
                     }
-
                     // Sometimes, multiple messages are received in the same event (at least on LAN).
                     // This ensures that the JSON objects are split and parsed separately.
                     var messages = SocketDataIO.SplitJSONObjects(data.toString());
@@ -157,8 +144,7 @@ export async function FindClientToServerConnection() {
                 removeServers.push(server);
                 continue;
             }
-            var socket = await Connectivity.ConnectToServer(server, ConnectionTypes.ClientToServer);
-            if (socket) {
+            if (await Connectivity.ConnectToServer(server, ConnectionTypes.ClientToServer)) {
                 UI.AddSystemMessage("Client-to-server connection successful.", 1);
                 break;
             }
@@ -181,7 +167,7 @@ export async function FindClientToServerConnection() {
         Storage.KnownServers.splice(index, 1);
     })
     if (OutboundConnection.IsConnected() == false) {
-        UI.AddSystemMessage("Unable to find a client-to-server connection.  Try connecting manually later.", 1);
+        UI.AddSystemMessage("Unable to find a client-to-server connection.  Try reconnecting later.", 1);
     }
     UI.RefreshConnectivityBar();
     for (var i = Storage.KnownServers.length - 1; i >= 0; i--) {
@@ -241,10 +227,10 @@ export async function FindServerToServerConnection() {
         }
     }
     if (!connected) {
-        UI.AddSystemMessage("Unable to find a server-to-server connection.", 1);
+        UI.AddSystemMessage("Unable to find a server-to-server connection.  Try reconnecting later.", 1);
     }
     else {
-        // TODO: You see me checks.
+        SocketDataIO.SendServerReachTest();
     }
 }
 

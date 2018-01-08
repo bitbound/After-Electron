@@ -55,6 +55,8 @@ export var Temp = new class Temp {
     // Used for throttling incoming messages.
     MessageCounters: Array<MessageCounter> = new Array<MessageCounter>();
     ReceivedMessages: string[] = new Array<string>();
+    OutgoingServerReachTestID: string;
+    IncomingServerReachTests: Array<string> = new Array<string>();
 };
 
 export function LoadAll() {
