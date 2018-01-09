@@ -9,6 +9,8 @@ export { StorageData };
 $(document).ready(function () {
     window["$"] = $;
     window["StorageData"] = StorageData;
+    // This is here to allow ColorPicker access to Utilities.
+    window["Utilities"] = Utilities;
     electron.remote.getCurrentWindow().on("close", (event) => {
         StorageData.SaveSettings();
         electron.ipcRenderer.send("options-update");
