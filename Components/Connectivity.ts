@@ -59,7 +59,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
             });
             socket.on("error", (err: Error) => {
                 Utilities.Log("Socket error: " + JSON.stringify(err));
-                UI.AddDebugMessage("Socket error.", 1);
+                UI.AddDebugMessage("Socket error.", null, 1);
                 if (connectionType == ConnectionTypes.ClientToServer) {
                     if (!IsConnecting) {
                         resolve(null);
@@ -74,7 +74,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
             });
             socket.on("close", (had_error) => {
                 Utilities.Log("Socket closed.");
-                UI.AddDebugMessage("Socket closed.", 1);
+                UI.AddDebugMessage("Socket closed.", null, 1);
                 if (connectionType == ConnectionTypes.ClientToServer) {
                     if (!IsConnecting) {
                         resolve(false);
@@ -102,10 +102,10 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                     for (var i = 0; i < messages.length; i++) {
                         var jsonData = JSON.parse(messages[i]);
                         if (SocketDataIO.HaveYouGotten(jsonData.ID)) {
-                            UI.AddDebugMessage(`Already received from server (${socket.remoteAddress}): ` + JSON.stringify(jsonData), 1);
+                            UI.AddDebugMessage(`Already received from server (${socket.remoteAddress}): `, jsonData, 1);
                             continue;
                         }
-                        UI.AddDebugMessage(`Received from server (${socket.remoteAddress}): ` + JSON.stringify(jsonData), 1);
+                        UI.AddDebugMessage(`Received from server (${socket.remoteAddress}): `, jsonData, 1);
                         if (jsonData.TargetServerID != Storage.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false) {
                             SocketDataIO.Broadcast(jsonData);
                         }
@@ -266,10 +266,10 @@ export async function StartServer() {
                 for (var i = 0; i < messages.length; i++) {
                     var jsonData = JSON.parse(messages[i]);
                     if (SocketDataIO.HaveYouGotten(jsonData.ID)) {
-                        UI.AddDebugMessage(`Already received from client (${socket.remoteAddress}): ` + JSON.stringify(jsonData), 1);
+                        UI.AddDebugMessage(`Already received from client (${socket.remoteAddress}): `, jsonData, 1);
                         return;
                     }
-                    UI.AddDebugMessage(`Received from client (${socket.remoteAddress}): ` + JSON.stringify(jsonData), 1);
+                    UI.AddDebugMessage(`Received from client (${socket.remoteAddress}): `, jsonData, 1);
                     if (jsonData.TargetServerID != Storage.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false) {
                         SocketDataIO.Broadcast(jsonData);
                     }
@@ -303,12 +303,12 @@ export async function StartServer() {
     })
     server.on('error', (e: NodeJS.ErrnoException) => {
         if (e.code === 'EADDRINUSE') {
-            UI.AddDebugMessage('TCP Server Error: Port already in use.', 1);
+            UI.AddDebugMessage('TCP Server Error: Port already in use.', null, 1);
         }
         Utilities.Log(e.stack);
     });
     server.listen(Storage.ConnectionSettings.ServerListeningPort, function () {
-        UI.AddDebugMessage("TCP server started.", 1);
+        UI.AddDebugMessage("TCP server started.", null, 1);
     });
     Connectivity.LocalServer.Server = server;
 };

@@ -49,10 +49,10 @@ export function EvaluateScript(){
         if (currentObject instanceof Object){
             var matches;
             var members = new Array<any>();
-            members = members.concat(Object.keys(currentObject));
+            members = members.concat(Object.getOwnPropertyNames(currentObject).filter(x=>x.search("__") == -1));
             var prototype = currentObject.__proto__;
             while (prototype != null){
-                members = members.concat(Object.keys(prototype));
+                members = members.concat(Object.getOwnPropertyNames(prototype).filter(x=>x.search("__") == -1));
                 prototype = prototype.__proto__;
             }
             // After 3 characters of the member, match more specifically (startsWith).

@@ -6,9 +6,7 @@ import { LocalServer } from "./Connectivity";
 
 // Final Data Out //
 export function Send(jsonData: any, socket: net.Socket) {
-    UI.AddDebugMessage("Sending to " + socket.remoteAddress + ": " + JSON.stringify(jsonData), 1);
-    // TODO: Remove GUID creation from individual functions.
-    jsonData["ID"] = Utilities.CreateGUID();
+    UI.AddDebugMessage("Sending to " + socket.remoteAddress + ": ", jsonData, 1);
     if (jsonData.Type == undefined || jsonData.ID == undefined) {
         Utilities.Log("Type or ID missing from Broadcast data: " + JSON.stringify(jsonData));
         return;
@@ -62,7 +60,7 @@ export function ReceiveHelloFromClientToServer(jsonData: any, socket: net.Socket
     client.Socket = socket;
     Connectivity.ClientConnections.push(client);
     $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
-    UI.AddDebugMessage(`Connection received from ${socket.remoteAddress}.`, 1);
+    UI.AddDebugMessage(`Connection received from ${socket.remoteAddress}.`, null, 1);
     SendHelloFromServerToClient(socket);
     SendKnownServers(socket);
 }
@@ -109,7 +107,7 @@ export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket
     }
     Connectivity.ServerToServerConnections.push(socket);
     $("#spanServerConnections").text(Connectivity.ServerToServerConnections.length.toString());
-    UI.AddDebugMessage(`Server connection received from ${socket.remoteAddress}.`, 1);
+    UI.AddDebugMessage(`Server connection received from ${socket.remoteAddress}.`, null, 1);
     SendKnownServers(socket);
 }
 
@@ -148,7 +146,7 @@ export function ReceiveChat(jsonData: any, socket: net.Socket) {
         switch (jsonData.Channel) {
             case "GlobalChat":
                 UI.AddMessageHTML(`<span style='color:` +
-                    Storage.ApplicationSettings.Colors.GlobalChat + `'>(Global) ` +
+                    Storage.ApplicationSettings.Colors.GlobalChat + `'>[Global] ` +
                     Utilities.EncodeForHTML(jsonData.From) + `: </span>` +
                     Utilities.EncodeForHTML(jsonData.Message), 1);
                 break;
@@ -165,31 +163,36 @@ export function SendServerReachTest() {
     Send({
         "Type": "ServerReachTest",
         "Stage": "Ping",
+        "ID": Utilities.CreateGUID(),
         "TestID": testID
     }, Connectivity.ServerToServerConnections[0]);
 }
 
 export function ReceiveServerReachTest(jsonData: any, socket: net.Socket) {
     // This client is the original sender.
-    if (jsonData.ID == Storage.Temp.OutgoingServerReachTestID) {
+    if (jsonData.TestID == Storage.Temp.OutgoingServerReachTestID) {
         if (jsonData.Stage == "Ping") {
-            Storage.KnownServers.forEach(async element => {
-                if (await Connectivity.ConnectToServer(element, ConnectionTypes.ServerToServer)) {
+            Storage.KnownServers.forEach(element => {
+                var tempSocket = net.connect(element.Port, element.Host, () => {
+                    tempSocket["KnownServer"] = element;
                     Send({
                         "Type": "ServerReachTest",
                         "Stage": "Check",
-                        "TestID": Storage.Temp.OutgoingServerReachTestID
-                    }, Connectivity.ServerToServerConnections[Connectivity.ServerToServerConnections.length - 1]);
-                }
+                        "ID": Utilities.CreateGUID(),
+                        "TestID": Storage.Temp.OutgoingServerReachTestID,
+                        "ShouldBroadcast": false
+                    }, tempSocket);
+                })
             });
         }
-        else if (jsonData.Stoage == "Result") {
+        else if (jsonData.Stage == "Result") {
             if (jsonData.Result == true) {
-                UI.AddDebugMessage(`Server reach check OK on ${socket.remoteAddress}:${socket.remotePort}.`, 1);
+                UI.AddDebugMessage(`Server reach check OK on ${socket.remoteAddress}:${socket.remotePort}.`, null, 1);
                 socket.end();
             }
             else if (jsonData.Result == false) {
-                UI.AddDebugMessage(`Server reach check failed on ${socket.remoteAddress}:${socket.remotePort}.`, 1);
+                UI.AddDebugMessage(`Server reach check failed on ${socket.remoteAddress}:${socket.remotePort}.`, null, 1);
+                Connectivity.ConnectToServer(socket["KnownServer"], ConnectionTypes.ServerToServer);
                 Connectivity.ServerToServerConnections.push(socket);
             }
         }
@@ -210,7 +213,9 @@ export function ReceiveServerReachTest(jsonData: any, socket: net.Socket) {
                 Send({
                     "Type": "ServerReachTest",
                     "Stage": "Result",
-                    "Result": true
+                    "Result": true,
+                    "ID": Utilities.CreateGUID(),
+                    "ShouldBroadcast": false
                 }, socket);
             }
             else {
@@ -218,7 +223,9 @@ export function ReceiveServerReachTest(jsonData: any, socket: net.Socket) {
                 Send({
                     "Type": "ServerReachTest",
                     "Stage": "Result",
-                    "Result": false
+                    "Result": false,
+                    "ID": Utilities.CreateGUID(),
+                    "ShouldBroadcast": false
                 }, socket);
             }
         }
@@ -251,7 +258,7 @@ export function CheckMessageCounter(socket: net.Socket): boolean {
     }
     messageCounter.MessageTimes.push(Date.now());
     if (messageCounter.MessageTimes.length > Storage.ConnectionSettings.MessageCountLimit) {
-        UI.AddDebugMessage(`Message limit exceeded from ${socket.remoteAddress}.`, 1);
+        UI.AddDebugMessage(`Message limit exceeded from ${socket.remoteAddress}.`, null, 1);
         // Extend message times out by 5 minutes to prevent further messages from IP address.
         messageCounter.MessageTimes.forEach((value, index) => {
             messageCounter.MessageTimes[index] += 300000;

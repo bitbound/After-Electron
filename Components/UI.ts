@@ -9,55 +9,70 @@ import * as electron from "electron";
 import { ReadyStates } from "../Models/ReadyStates";
 
 // Properties 
-export var ChargingAnimationInt:number;
-export var InputBox:JQuery = $("#inputText");
-export var InputModeSelector:JQuery = $("#inputSelector");
-export var IntellisenseFrame:JQuery = $("#intellisenseFrame");
-export var MainGrid:JQuery = $("#mainGrid");
-export var MessageWindow:JQuery = $("#messageWindow");
+export var ChargingAnimationInt: number;
+export var InputBox: JQuery = $("#inputText");
+export var InputModeSelector: JQuery = $("#inputSelector");
+export var IntellisenseFrame: JQuery = $("#intellisenseFrame");
+export var MainGrid: JQuery = $("#mainGrid");
+export var MessageWindow: JQuery = $("#messageWindow");
 
 
 // Functions 
-function AppendMessageToWindow(message:string){
+function AppendMessageToWindow(message: string) {
     var shouldScroll = false;
-    if (MessageWindow[0].scrollTop + MessageWindow[0].clientHeight >= MessageWindow[0].scrollHeight){
+    if (MessageWindow[0].scrollTop + MessageWindow[0].clientHeight >= MessageWindow[0].scrollHeight) {
         shouldScroll = true;
     }
     MessageWindow.append(message);
-    if (shouldScroll){
+    if (shouldScroll) {
         MessageWindow[0].scrollTop = MessageWindow[0].scrollHeight;
     }
 }
-export function AddDebugMessage(message:string, newLines:number){
+export function AddDebugMessage(message: string, jsonData: any, newLines: number) {
     if (Storage.ApplicationSettings.IsDebugModeEnabled) {
-        var messageText = `<div style="color:${Storage.ApplicationSettings.Colors.Debug}">[Debug]: ${Utilities.EncodeForHTML(message)}</div>`;
-        for (var i = 0; i < newLines; i++){
+        var jsonHTML = "";
+        if (jsonData) {
+            Storage.Temp.JSONObjects = new Array<any>();
+            jsonHTML = JSON.stringify(jsonData, function (key, value) {
+                if (typeof value == "object" && value != null) {
+                    if (Storage.Temp.JSONObjects.findIndex(x => x == value) > -1) {
+                        return "[Possible circular reference.]"
+                    }
+                    else {
+                        Storage.Temp.JSONObjects.push(value);
+                    }
+                }
+                return value;
+            }, "&emsp;").split("\n").join("<br/>").split(" ").join("&nbsp;");
+        }
+        var messageText = `<div style="color:${Storage.ApplicationSettings.Colors.Debug}">[Debug]: ${Utilities.EncodeForHTML(message) + jsonHTML}</div>`;
+        for (var i = 0; i < newLines; i++) {
             messageText += "<br>";
         }
         AppendMessageToWindow(messageText);
-    } 
+    }
 }
-export function AddMessageText(message:string, newLines:number){
+export function AddMessageText(message: string, newLines: number) {
     var messageText = Utilities.EncodeForHTML(message);
-    for (var i = 0; i < newLines; i++){
+    for (var i = 0; i < newLines; i++) {
         messageText += "<br>";
     }
     AppendMessageToWindow(messageText);
 };
-export function AddMessageHTML(html:string, newLines:number) {
-    for (var i = 0; i < newLines; i++){
+export function AddMessageHTML(html: string, newLines: number) {
+    for (var i = 0; i < newLines; i++) {
         html += "<br>";
     }
     AppendMessageToWindow(html);
 };
-export function AddSystemMessage(message:string, newLines:number){
+export function AddSystemMessage(message: string, newLines: number) {
     var messageText = `<div style="color:${Storage.ApplicationSettings.Colors.System}">[System]: ${message}</div>`;
-    for (var i = 0; i < newLines; i++){
+    for (var i = 0; i < newLines; i++) {
         messageText += "<br>";
     }
     AppendMessageToWindow(messageText);
 }
-export function AdjustMessageWindowHeight(){
+export function AdjustMessageWindowHeight() {
     this.MainGrid.height("100%");
     var heightAdjust = 0;
     while (document.body.scrollHeight > document.documentElement.clientHeight) {
@@ -66,9 +81,9 @@ export function AdjustMessageWindowHeight(){
     }
 };
 
-export function ChargingAnimationStart(){
+export function ChargingAnimationStart() {
     Storage.Me.ReadyState = ReadyStates.Charging;
-    ChargingAnimationInt = window.setInterval(()=>{
+    ChargingAnimationInt = window.setInterval(() => {
         if (Storage.Me.ReadyState != ReadyStates.Charging) {
             if (Storage.Me.CurrentCharge == 0) {
                 $('#startChargeButton').show();
@@ -86,22 +101,22 @@ export function ChargingAnimationStart(){
             top: startTop,
         });
         $("#divCharge").append(part);
-        window.setTimeout(function(thisParticle) {
+        window.setTimeout(function (thisParticle) {
             $(thisParticle).remove();
         }, 1000, part);
         return;
     }, 75);
 
 }
-export function ChargingAnimationStop(){
-    
+export function ChargingAnimationStop() {
+
 }
-export function FadeInText(text:string, delayInMilliseconds:number, callback:Function){
-    window.setTimeout((text)=>{
+export function FadeInText(text: string, delayInMilliseconds: number, callback: Function) {
+    window.setTimeout((text) => {
         UI.AddMessageText("", 2);
-        for (var i = 0; i < text.length; i++){
+        for (var i = 0; i < text.length; i++) {
             var letter = text.substr(i, 1);
-            window.setTimeout((letter)=>{
+            window.setTimeout((letter) => {
                 if (letter == " ") {
                     UI.AddMessageText(" ", 0);
                 }
@@ -110,23 +125,23 @@ export function FadeInText(text:string, delayInMilliseconds:number, callback:Fun
                 }
             }, i * 30, letter)
         }
-        if (callback){
-            window.setTimeout(function(callback){
+        if (callback) {
+            window.setTimeout(function (callback) {
                 callback();
-            }, (text.length ) * 30, callback);
+            }, (text.length) * 30, callback);
         }
     }, delayInMilliseconds, text);
 }
 
 
-export function RefreshConnectivityBar(){
+export function RefreshConnectivityBar() {
     $("#spanClientStatus").text((String(Connectivity.OutboundConnection.IsConnected()).replace("true", "Connected").replace("false", "Disconnected")));
     $("#spanServerStatus").text(String(Connectivity.LocalServer.IsListening()).replace("true", "Listening").replace("false", "Disabled"));
     $("#spanServerConnections").text(Connectivity.ServerToServerConnections.length.toString());
     $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
 }
-export function SetUIDatabinds(){
-    Utilities.DataBindOneWay(Storage.Me, "CoreEnergy", null, null, function(){
+export function SetUIDatabinds() {
+    Utilities.DataBindOneWay(Storage.Me, "CoreEnergy", null, null, function () {
         if (Storage.Me.CoreEnergy > Storage.Me.CoreEnergyPeak) {
             Storage.Me.CoreEnergyPeak = Storage.Me.CoreEnergy;
         }
@@ -135,39 +150,39 @@ export function SetUIDatabinds(){
         $("#coreEnergySideMenu").text(Storage.Me.CoreEnergy);
         $("#peakCoreEnergySideMenu").text(Storage.Me.CoreEnergyPeak);
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "CoreEnergyPeak", null, null, function(){
+    Utilities.DataBindOneWay(Storage.Me, "CoreEnergyPeak", null, null, function () {
         $("#peakCoreEnergySideMenu").text(Storage.Me.CoreEnergyPeak);
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "CurrentEnergy", null, null, function(){
+    Utilities.DataBindOneWay(Storage.Me, "CurrentEnergy", null, null, function () {
         $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
         $("#currentEnergySideMenu").text(Storage.Me.CurrentEnergy);
         $("#svgEnergy").css("width", String(Math.min(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100, 100) || 0) + "%");
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "EnergyMod", null, null, function(){
+    Utilities.DataBindOneWay(Storage.Me, "EnergyMod", null, null, function () {
         Storage.Me.MaxEnergy = Storage.Me.CoreEnergy + Storage.Me.EnergyMod;
         $("#energyModSideMenu").text(Storage.Me.EnergyMod);
         $("#maxEnergySideMenu").text(Storage.Me.MaxEnergy);
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "MaxEnergy", null, null, function(){
+    Utilities.DataBindOneWay(Storage.Me, "MaxEnergy", null, null, function () {
         $("#maxEnergySideMenu").text(Storage.Me.MaxEnergy);
         $("#svgEnergy").css("width", String(Math.min(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100, 100) || 0) + "%");
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "CurrentCharge", null, null, function(){
+    Utilities.DataBindOneWay(Storage.Me, "CurrentCharge", null, null, function () {
         $("#divChargeAmount").text(Storage.Me.CurrentCharge);
         $("#currentChargeSideMenu").text(Storage.Me.CurrentCharge);
         $("#svgCharge").css("width", String(Math.min(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100, 100) || 0) + "%");
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "ChargeMod", null, null, function(){
+    Utilities.DataBindOneWay(Storage.Me, "ChargeMod", null, null, function () {
         Storage.Me.MaxCharge = Storage.Me.CoreEnergy + Storage.Me.ChargeMod;
         $("#chargeModSideMenu").text(Storage.Me.ChargeMod);
         $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "MaxCharge", null, null, function(){
+    Utilities.DataBindOneWay(Storage.Me, "MaxCharge", null, null, function () {
         $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
         $("#svgCharge").css("width", String(Math.min(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100, 100) || 0) + "%");
     }, null);
-    Utilities.DataBindOneWay(Storage.ApplicationSettings, "IsNetworkStatusBarVisible", null, null, ()=>{
-        if (Storage.ApplicationSettings.IsNetworkStatusBarVisible){
+    Utilities.DataBindOneWay(Storage.ApplicationSettings, "IsNetworkStatusBarVisible", null, null, () => {
+        if (Storage.ApplicationSettings.IsNetworkStatusBarVisible) {
             $("#statusFrame").show();
         }
         else {
@@ -176,6 +191,6 @@ export function SetUIDatabinds(){
         UI.AdjustMessageWindowHeight();
     }, null);
 }
-export function ShowDevTools(){
+export function ShowDevTools() {
     electron.remote.getCurrentWindow().webContents.openDevTools();
 }
