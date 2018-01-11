@@ -1,4 +1,6 @@
 import * as UI from "./UI";
+import { Commands } from "./All";
+import { Command } from "../Models/All";
 export function AutoComplete(){
     var split = UI.IntellisenseFrame.html().split("<br>");
     if (UI.IntellisenseFrame.is(":visible") && split.length > 0){
@@ -25,7 +27,52 @@ export function AutoComplete(){
    
 }
 export function EvaluateCommand() {
-
+    if (UI.InputBox.val().toString().trim().length == 0){
+        UI.IntellisenseFrame.hide();
+        return;
+    }
+    else {
+        UI.IntellisenseFrame.show();
+    }
+    try {
+        UI.IntellisenseFrame.css({
+            "transform": `translateX(${UI.InputBox.val().toString().length * .4}em)`,
+            "display": "grid"
+        });
+        var inputArray = (UI.InputBox.val() as string).split(" ");
+        var commandMatches:Array<string>;
+        var categoryMatches:Array<string>;
+        if (inputArray[0].length <= 3){
+            commandMatches = Object.keys(Commands).filter(x=>x.toLowerCase().search(inputArray[0].toLowerCase()) > -1);
+            categoryMatches = Array.from(new Set(
+                Object.keys(Commands).filter(
+                    x=>(Commands[x] as Command).Category.toLowerCase().search(inputArray[0].toLowerCase()) > -1).map((value, index)=>{
+                        return (Commands[value] as Command).Category;
+                    })
+                ));
+        }
+        else {
+            commandMatches = Object.keys(Commands).filter(x=>x.toLowerCase().startsWith(inputArray[0].toLowerCase()));
+        }
+        UI.IntellisenseFrame.html("");
+        if (commandMatches.length > 0){
+            for (var i = 0; i < commandMatches.length; i++) {
+                UI.IntellisenseFrame.html(UI.IntellisenseFrame.html() +
+                    `<div style="grid-column: 1; margin-right: 3px;">${[commandMatches[i]]}</div>` +
+                    `<div style="grid-column: 2">(${(Commands[commandMatches[i]] as Command).Category})</div>`);
+            }
+            UI.IntellisenseFrame.css("top", "initial");
+            if (UI.IntellisenseFrame[0].getBoundingClientRect().top < 0) {
+                UI.IntellisenseFrame.css("top", "0");
+            }
+        }
+        if (commandMatches.length == 0) {
+            UI.IntellisenseFrame.hide();
+        }
+    }
+    catch (ex){
+        UI.IntellisenseFrame.hide();
+    }
 }
 export function EvaluateScript(){
     if (UI.InputBox.val().toString().trim().length == 0){
@@ -68,6 +115,10 @@ export function EvaluateScript(){
             }
             if (matches.length > 0){
                 UI.IntellisenseFrame.html(matches.join("<br>"));
+                UI.IntellisenseFrame.css("top", "initial");
+                if (UI.IntellisenseFrame[0].getBoundingClientRect().top < 0) {
+                    UI.IntellisenseFrame.css("top", "0");
+                }
             }
             else {
                 UI.IntellisenseFrame.html("");

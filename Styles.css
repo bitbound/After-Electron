@@ -225,6 +225,7 @@ button:active {
     padding: 5px;
     min-height: 20px;
     min-width: 50px;
+    overflow-y: auto;
 }
 
 /* Animations */

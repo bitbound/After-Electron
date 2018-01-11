@@ -77,6 +77,7 @@ export function ProcessInput(){
             SocketDataIO.SendChat(input, "VoidChat");
             break;
         case "Command":
+            UI.IntellisenseFrame.hide();
             break;
         default:
             break;

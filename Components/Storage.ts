@@ -4,41 +4,14 @@ import * as path from 'path';
 import { FileSystem, UI, Storage } from "./All";
 import * as Utilities from "./Utilities";
 import { Player, KnownServer, MessageCounter } from '../Models/All';
+import * as Models from "../Models/All";
 
 
 export var Me = new Player();
 
-export var ApplicationSettings = new class ApplicationSettings {
-    AutoSaveIntervalSeconds: number = 300;
-    Colors = {
-        "GlobalChat": "seagreen",
-        "VoidChat": "lightsteelblue",
-        "Whisper": "magenta",
-        "System": "lightgray",
-        "Debug": "rgb(150,50,50)"
-    }
-    IsDebugModeEnabled: boolean = false;
-    IsNetworkStatusBarVisible: boolean = true;
-    InputModeAliases = {
-        Command: "/c ",
-        GlobalChat: "/g ",
-        VoidChat: "/v ",
-        Whisper: "/w ",
-        Script: "/s "
-    };
-};
+export var ApplicationSettings = new Models.ApplicationSettings();
 
-export var ConnectionSettings = new class ConnectionSettings {
-    IsClientEnabled:boolean = false;
-    IsClientDiscoverable:boolean = true;
-    IsServerEnabled:boolean = false;
-    IsNetworkSupport: boolean = true;
-    ServerListeningPort: number = 48836;
-    ServerID: string = Utilities.CreateGUID();
-    MessageCountMilliseconds: number = 60000;
-    MessageCountLimit: number = 300;
-    MaxConnectionAttempts:number = 10;
-}
+export var ConnectionSettings = new Models.ConnectionSettings();
 
 export var KnownServers: KnownServer[] = [
     new KnownServer("after.myddns.rocks", 48836, false),
