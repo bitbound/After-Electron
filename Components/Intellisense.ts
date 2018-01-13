@@ -53,20 +53,39 @@ export function EvaluateCommand() {
         }
         else {
             commandMatches = Object.keys(Commands).filter(x=>x.toLowerCase().startsWith(inputArray[0].toLowerCase()));
+            categoryMatches = Array.from(new Set(
+                Object.keys(Commands).filter(
+                    x=>(Commands[x] as Command).Category.toLowerCase().startsWith(inputArray[0].toLowerCase())).map((value, index)=>{
+                        return (Commands[value] as Command).Category;
+                    })
+                ));
         }
         UI.IntellisenseFrame.html("");
-        if (commandMatches.length > 0){
+        if (commandMatches.length + categoryMatches.length > 0){
             for (var i = 0; i < commandMatches.length; i++) {
                 UI.IntellisenseFrame.html(UI.IntellisenseFrame.html() +
                     `<div style="grid-column: 1; margin-right: 3px;">${[commandMatches[i]]}</div>` +
-                    `<div style="grid-column: 2">(${(Commands[commandMatches[i]] as Command).Category})</div>`);
+                    `<div style="grid-column: 2; text-align: right;">(${(Commands[commandMatches[i]] as Command).Category})</div>`);
             }
-            UI.IntellisenseFrame.css("top", "initial");
-            if (UI.IntellisenseFrame[0].getBoundingClientRect().top < 0) {
-                UI.IntellisenseFrame.css("top", "0");
+            for (var i = 0; i < categoryMatches.length; i++){
+                UI.IntellisenseFrame.html(UI.IntellisenseFrame.html() +
+                    `<div style="grid-column: 1; margin-right: 3px;">${categoryMatches[i]}</div>` +
+                    `<div style="grid-column: 2; text-align:right;">(Category)</div>`);
             }
+            if (commandMatches.length + categoryMatches.length == 1){
+                if (commandMatches.length == 1){
+                    UI.IntellisenseFrame.html(UI.IntellisenseFrame.html() + 
+                        `<div style="grid-column-start: 1; grid-column-end:3;">${(Commands[commandMatches[0]] as Command).SummaryText}</div>`);
+                }
+                else if (categoryMatches.length == 1) {
+                    var category = categoryMatches[0].charAt(0).toUpperCase() + categoryMatches[0].substring(1).toLowerCase();
+                    UI.IntellisenseFrame.html(UI.IntellisenseFrame.html() + 
+                        `<div style="grid-column-start: 1; grid-column-end:3;">Type "Help ${category}" for a list of commands in this category.</div>`);
+                }
+            }
+            resizeIntellisenseWindow();
         }
-        if (commandMatches.length == 0) {
+        else {
             UI.IntellisenseFrame.hide();
         }
     }
@@ -84,7 +103,6 @@ export function EvaluateScript(){
     }
     try {
         var text = UI.InputBox.val() as string;
-        UI.IntellisenseFrame.css("transform", `translateX(${UI.InputBox.val().toString().length * .4}em)`);
         while (text.search("[ (){}]") > -1) {
             text = text.slice(text.search("[ (){}]") + 1);
         }
@@ -115,10 +133,7 @@ export function EvaluateScript(){
             }
             if (matches.length > 0){
                 UI.IntellisenseFrame.html(matches.join("<br>"));
-                UI.IntellisenseFrame.css("top", "initial");
-                if (UI.IntellisenseFrame[0].getBoundingClientRect().top < 0) {
-                    UI.IntellisenseFrame.css("top", "0");
-                }
+                resizeIntellisenseWindow();
             }
             else {
                 UI.IntellisenseFrame.html("");
@@ -132,5 +147,17 @@ export function EvaluateScript(){
     }
     catch (ex){
         UI.IntellisenseFrame.hide();
+    }
+}
+
+function resizeIntellisenseWindow(){
+    UI.IntellisenseFrame.css("top", "initial");
+    UI.IntellisenseFrame.css("width", "initial");
+    UI.IntellisenseFrame.css("transform", `translateX(${Math.min(UI.InputBox.val().toString().length * 6, document.body.clientWidth / 2)}px)`);
+    if (UI.IntellisenseFrame[0].getBoundingClientRect().right > document.body.clientWidth) {
+        UI.IntellisenseFrame.width(document.body.clientWidth - UI.IntellisenseFrame[0].getBoundingClientRect().left);
+    }
+    if (UI.IntellisenseFrame[0].getBoundingClientRect().top < 0) {
+        UI.IntellisenseFrame.css("top", "0");
     }
 }

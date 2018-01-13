@@ -1,4 +1,5 @@
-import {UI, SocketDataIO, Storage, Utilities } from "./All";
+import {UI, SocketDataIO, Storage, Utilities, Commands } from "./All";
+import { Command } from "../Models/All";
 
 export var NextInputHandler:Function;
 
@@ -78,6 +79,17 @@ export function ProcessInput(){
             break;
         case "Command":
             UI.IntellisenseFrame.hide();
+            var inputArray = input.trim().split(" ");
+            var command = Object.keys(Commands).find(value=>{ 
+                return value.toLowerCase() == inputArray[0].toLowerCase();
+            });
+            if (command){
+                inputArray.splice(0, 1);
+                (Commands[command] as Command).Execute(inputArray);
+            }
+            else {
+                UI.AddSystemMessage("Unknown command.", 1);
+            }
             break;
         default:
             break;

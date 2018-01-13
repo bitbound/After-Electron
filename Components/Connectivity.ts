@@ -67,7 +67,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                     }
                 }
                 else if (connectionType == ConnectionTypes.ServerToServer) {
-                    Utilities.RemoveFromArray(ServerToServerConnections, socket, "id");
+                    Utilities.RemoveFromArray(ServerToServerConnections, value=>value["id"] == socket["id"]);
                     UI.RefreshConnectivityBar();
                 }
                 resolve(false);
@@ -82,7 +82,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                     }
                 }
                 else if (connectionType == ConnectionTypes.ServerToServer) {
-                    Utilities.RemoveFromArray(ServerToServerConnections, socket, "id");
+                    Utilities.RemoveFromArray(ServerToServerConnections, value=>value["id"] == socket["id"]);
                     UI.RefreshConnectivityBar();
                     if (ServerToServerConnections.length == 0 && !IsConnecting) {
                         UI.AddSystemMessage("All server-to-server connections lost.  Try reconnecting later.", 1);
@@ -249,9 +249,9 @@ export async function RefreshConnections(){
 export async function StartServer() {
     Storage.ConnectionSettings.ServerID = Storage.ConnectionSettings.ServerID || Utilities.CreateGUID();
     var server = net.createServer(function (socket) {
-        if (Utilities.IsLocalIP(socket.remoteAddress) && socket.remotePort == Storage.ConnectionSettings.ServerListeningPort) {
-            return;
-        }
+        //if (Utilities.IsLocalIP(socket.remoteAddress) && socket.remotePort == Storage.ConnectionSettings.ServerListeningPort) {
+        //    return;
+        //}
         socket["id"] = Utilities.CreateGUID();
         socket.on("data", (data) => {
             try {
@@ -283,13 +283,13 @@ export async function StartServer() {
         });
         socket.on("error", (err: Error) => {
             Utilities.Log(err.stack);
-            Utilities.RemoveFromArray(ClientConnections, socket, "id");
-            Utilities.RemoveFromArray(ServerToServerConnections, socket, "id");
+            Utilities.RemoveFromArray(ClientConnections, value=>value["Socket"]["id"] == socket["id"]);
+            Utilities.RemoveFromArray(ServerToServerConnections, value=>value["id"] == socket["id"]);
             UI.RefreshConnectivityBar();
         })
         socket.on("close", () => {
-            Utilities.RemoveFromArray(ClientConnections, socket, "id");
-            Utilities.RemoveFromArray(ServerToServerConnections, socket, "id");
+            Utilities.RemoveFromArray(ClientConnections, value=>value["Socket"]["id"] == socket["id"]);
+            Utilities.RemoveFromArray(ServerToServerConnections, value=>value["id"] == socket["id"]);
             UI.RefreshConnectivityBar();
         })
     });

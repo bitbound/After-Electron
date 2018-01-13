@@ -394,8 +394,8 @@ export function ReplaceAllInString(inputString: string, toReplace: string, repla
     }
 }
 
-export function RemoveFromArray(inputArray: Array<any>, inputItem: any, idProperty:string) {
-    var index = inputArray.findIndex(x => x[idProperty] == inputItem[idProperty]);
+export function RemoveFromArray(inputArray: Array<any>, predicate:(value:any, index:number, obj:any[])=>boolean) {
+    var index = inputArray.findIndex(predicate);
     if (index > -1) {
         inputArray.splice(index, 1);
     }
