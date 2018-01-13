@@ -1,4 +1,4 @@
-import * as StorageData from "../Components/Storage"
+import * as StorageData from "../Components/DataStore"
 import * as $ from "jquery";
 import { Utilities } from "../Components/All";
 import * as electron from "electron";

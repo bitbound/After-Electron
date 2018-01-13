@@ -1,7 +1,7 @@
 import * as $ from "jquery";
 import * as Utilities from "./Utilities";
 import * as UI from "./UI";
-import * as Storage from "./Storage";
+import * as Storage from "./DataStore";
 import * as InputProcessor from "./InputProcessor";
 import * as Intellisense from "./Intellisense";
 import * as Connectivity from "./Connectivity";

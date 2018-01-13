@@ -1,5 +1,5 @@
 import * as net from "net";
-import { UI, SocketDataIO, Connectivity, Utilities, Storage } from "./All";
+import { UI, SocketDataIO, Connectivity, Utilities, DataStore } from "./All";
 import { ConnectedClient, ConnectionTypes, KnownServer, MessageCounter } from "../Models/All";
 
 export var ClientConnections: Array<ConnectedClient> = new Array<ConnectedClient>();
@@ -43,7 +43,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                 socket["id"] = Utilities.CreateGUID();
                 IsConnecting = false;
                 server.BadConnectionAttempts = 0;
-                Utilities.UpdateAndPrepend(Storage.KnownServers, server, ["Host", "Port"]);
+                Utilities.UpdateAndPrepend(DataStore.KnownServers, server, ["Host", "Port"]);
                 if (connectionType == ConnectionTypes.ClientToServer) {
                     OutboundConnection.ConnectionType = connectionType;
                     OutboundConnection.Server = server;
@@ -106,7 +106,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                             continue;
                         }
                         UI.AddDebugMessage(`Received from server (${socket.remoteAddress}): `, jsonData, 1);
-                        if (jsonData.TargetServerID != Storage.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false) {
+                        if (jsonData.TargetServerID != DataStore.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false) {
                             SocketDataIO.Broadcast(jsonData);
                         }
                         SocketDataIO["Receive" + jsonData.Type](jsonData, socket);
@@ -129,15 +129,15 @@ export async function FindClientToServerConnection() {
     UI.AddSystemMessage("Attempting to find a client-to-server connection.", 1);
     var appendServers = [];
     var removeServers = [];
-    for (var i = 0; i < Storage.KnownServers.length; i++) {
-        var server = Storage.KnownServers[i];
+    for (var i = 0; i < DataStore.KnownServers.length; i++) {
+        var server = DataStore.KnownServers[i];
         try {
-            if (server.ID == Storage.ConnectionSettings.ServerID) {
+            if (server.ID == DataStore.ConnectionSettings.ServerID) {
                 appendServers.push(server);
                 continue;
             }
             if (
-                Storage.BlockedServers.some((value) => {
+                DataStore.BlockedServers.some((value) => {
                     return value.Host == server.Host && value.Port == server.Port;
                 })
             ) {
@@ -160,19 +160,19 @@ export async function FindClientToServerConnection() {
         }
     }
     appendServers.forEach(value => {
-        Utilities.UpdateAndAppend(Storage.KnownServers, value, ["Host", "Port"]);
+        Utilities.UpdateAndAppend(DataStore.KnownServers, value, ["Host", "Port"]);
     })
     removeServers.forEach(value => {
-        var index = Storage.KnownServers.indexOf(value);
-        Storage.KnownServers.splice(index, 1);
+        var index = DataStore.KnownServers.indexOf(value);
+        DataStore.KnownServers.splice(index, 1);
     })
     if (OutboundConnection.IsConnected() == false) {
         UI.AddSystemMessage("Unable to find a client-to-server connection.  Try reconnecting later.", 1);
     }
     UI.RefreshConnectivityBar();
-    for (var i = Storage.KnownServers.length - 1; i >= 0; i--) {
-        if (Storage.KnownServers[i].BadConnectionAttempts > Storage.ConnectionSettings.MaxConnectionAttempts) {
-            Storage.KnownServers.splice(i, 1);
+    for (var i = DataStore.KnownServers.length - 1; i >= 0; i--) {
+        if (DataStore.KnownServers[i].BadConnectionAttempts > DataStore.ConnectionSettings.MaxConnectionAttempts) {
+            DataStore.KnownServers.splice(i, 1);
         }
     }
 }
@@ -182,14 +182,14 @@ export async function FindServerToServerConnection() {
     var connected = false;
     var appendServers = [];
     var removeServers = [];
-    for (var i = 0; i < Storage.KnownServers.length; i++) {
-        var server = Storage.KnownServers[i];
+    for (var i = 0; i < DataStore.KnownServers.length; i++) {
+        var server = DataStore.KnownServers[i];
         try {
-            if (server.ID == Storage.ConnectionSettings.ServerID) {
+            if (server.ID == DataStore.ConnectionSettings.ServerID) {
                 continue;
             }
             if (
-                Storage.BlockedServers.some((value) => {
+                DataStore.BlockedServers.some((value) => {
                     return value.Host == server.Host && value.Port == server.Port;
                 })
             ) {
@@ -213,17 +213,17 @@ export async function FindServerToServerConnection() {
         }
     }
     appendServers.forEach(value => {
-        Utilities.UpdateAndAppend(Storage.KnownServers, value, ["Host", "Port"]);
+        Utilities.UpdateAndAppend(DataStore.KnownServers, value, ["Host", "Port"]);
     })
     removeServers.forEach(value => {
-        var index = Storage.KnownServers.indexOf(value);
-        Storage.KnownServers.splice(index, 1);
+        var index = DataStore.KnownServers.indexOf(value);
+        DataStore.KnownServers.splice(index, 1);
     })
     
     UI.RefreshConnectivityBar();
-    for (var i = Storage.KnownServers.length - 1; i >= 0; i--) {
-        if (Storage.KnownServers[i].BadConnectionAttempts > Storage.ConnectionSettings.MaxConnectionAttempts) {
-            Storage.KnownServers.splice(i, 1);
+    for (var i = DataStore.KnownServers.length - 1; i >= 0; i--) {
+        if (DataStore.KnownServers[i].BadConnectionAttempts > DataStore.ConnectionSettings.MaxConnectionAttempts) {
+            DataStore.KnownServers.splice(i, 1);
         }
     }
     if (!connected) {
@@ -235,19 +235,19 @@ export async function FindServerToServerConnection() {
 }
 
 export async function RefreshConnections(){
-    if (Storage.ConnectionSettings.IsServerEnabled && Connectivity.LocalServer.IsListening() == false) {
+    if (DataStore.ConnectionSettings.IsServerEnabled && Connectivity.LocalServer.IsListening() == false) {
         await Connectivity.StartServer();
     }
-    if (Storage.ConnectionSettings.IsServerEnabled && ServerToServerConnections.length == 0 && Storage.ConnectionSettings.IsNetworkSupport){
+    if (DataStore.ConnectionSettings.IsServerEnabled && ServerToServerConnections.length == 0 && DataStore.ConnectionSettings.IsNetworkSupport){
         await FindServerToServerConnection();
     }
-    if (Storage.ConnectionSettings.IsClientEnabled && !OutboundConnection.IsConnected()){
+    if (DataStore.ConnectionSettings.IsClientEnabled && !OutboundConnection.IsConnected()){
         await FindClientToServerConnection();
     }
 }
 
 export async function StartServer() {
-    Storage.ConnectionSettings.ServerID = Storage.ConnectionSettings.ServerID || Utilities.CreateGUID();
+    DataStore.ConnectionSettings.ServerID = DataStore.ConnectionSettings.ServerID || Utilities.CreateGUID();
     var server = net.createServer(function (socket) {
         //if (Utilities.IsLocalIP(socket.remoteAddress) && socket.remotePort == Storage.ConnectionSettings.ServerListeningPort) {
         //    return;
@@ -270,7 +270,7 @@ export async function StartServer() {
                         return;
                     }
                     UI.AddDebugMessage(`Received from client (${socket.remoteAddress}): `, jsonData, 1);
-                    if (jsonData.TargetServerID != Storage.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false) {
+                    if (jsonData.TargetServerID != DataStore.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false) {
                         SocketDataIO.Broadcast(jsonData);
                     }
                     SocketDataIO["Receive" + jsonData.Type](jsonData, socket);
@@ -297,7 +297,7 @@ export async function StartServer() {
         if (!Connectivity.LocalServer.IsShutdownExpected) {
             setTimeout(() => {
                 server.close();
-                server.listen(Storage.ConnectionSettings.ServerListeningPort);
+                server.listen(DataStore.ConnectionSettings.ServerListeningPort);
             }, 1000);
         }
     })
@@ -307,7 +307,7 @@ export async function StartServer() {
         }
         Utilities.Log(e.stack);
     });
-    server.listen(Storage.ConnectionSettings.ServerListeningPort, function () {
+    server.listen(DataStore.ConnectionSettings.ServerListeningPort, function () {
         UI.AddDebugMessage("TCP server started.", null, 1);
     });
     Connectivity.LocalServer.Server = server;

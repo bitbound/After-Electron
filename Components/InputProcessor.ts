@@ -1,5 +1,6 @@
-import {UI, SocketDataIO, Storage, Utilities, Commands } from "./All";
+import {UI, SocketDataIO, DataStore, Utilities } from "./All";
 import { Command } from "../Models/All";
+import * as Commands from "../Commands/All";
 
 export var NextInputHandler:Function;
 
@@ -49,14 +50,14 @@ export function ProcessInput(){
                     output = result.toString();
                 }
                 else if (result instanceof Object){
-                    Storage.Temp.JSONObjects = new Array<any>();
+                    DataStore.Temp.JSONObjects = new Array<any>();
                     output = JSON.stringify(result, function(key, value) {
                         if (typeof value == "object" && value != null) {
-                            if (Storage.Temp.JSONObjects.findIndex(x=>x == value) > -1) {
+                            if (DataStore.Temp.JSONObjects.findIndex(x=>x == value) > -1) {
                                 return "[Possible circular reference.]"
                             }
                             else {
-                                Storage.Temp.JSONObjects.push(value);
+                                DataStore.Temp.JSONObjects.push(value);
                             }
                         }
                         return value;

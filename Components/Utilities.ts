@@ -2,8 +2,9 @@ import * as $ from "jquery";
 import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
-import { Storage, FileSystem, UI } from "./All";
+import { DataStore, FileSystem, UI } from "./All";
 import { Socket } from "net";
+import { Command } from "../Models/All";
 
 
 export function ArePropertiesEqual(object1, object2) {
@@ -277,7 +278,19 @@ export function ExtendFunction(inputObject:any, functionName:string, prependWith
         appendWithFunction(this, arguments);
     };
 }
-
+export function GetHelpTitle(command:Command):string {
+    var titleString = `<br/><div style="display:inline-block; text-align:center; color: steelblue;">`;
+    for (var i = 0; i < command.Name.length + 15; i++){
+        titleString += "#";
+    }
+    titleString += "<br/>Command: " + command.Name + "<br/>";
+    for (var i = 0; i < command.Name.length + 15; i++){
+        titleString += "#";
+    }
+    titleString += "</div><br><br>";
+    titleString += command.SummaryText + "<br><br>";
+    return titleString;
+}
 export function GetRandom(Min: number, Max: number, Round: boolean): number {
     if (Min > Max) {
         throw "Min must be less than max.";
@@ -343,14 +356,14 @@ export function NumberIsBetween(NumberAnalyzed: number, Min: number, Max: number
     }
 };
 export function StringifyCircular(inputObject: any): string {
-    Storage.Temp.JSONObjects = new Array<any>();
+    DataStore.Temp.JSONObjects = new Array<any>();
     return JSON.stringify(inputObject, function (key, value) {
         if (typeof value == "object" && value != null) {
-            if (Storage.Temp.JSONObjects.findIndex(x => x == value) > -1) {
+            if (DataStore.Temp.JSONObjects.findIndex(x => x == value) > -1) {
                 return "[Possible circular reference.]"
             }
             else {
-                Storage.Temp.JSONObjects.push(value);
+                DataStore.Temp.JSONObjects.push(value);
             }
         }
         return value;

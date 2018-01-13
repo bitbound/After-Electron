@@ -1,10 +1,10 @@
 import { Command } from "../Models/All";
-import { UI } from "./All";
+import { Utilities, UI } from "../Components/All";
 
-export var Help = new Command("Help", "Global",
+export default new Command("Help", "Global",
     `Provides help information for the supplied command (example: "Help Charge").<br><br>For a list of all commands, use "Help" by itself.`,
     function(){ 
-        return `${getHelpTitle(this)}List of commands (and category):<br>${Object.keys(exports).map((value)=>{
+        return `${Utilities.GetHelpTitle(this)}List of commands (and category):<br>${Object.keys(exports).map((value)=>{
             return `${(exports[value] as Command).Name}&nbsp;&nbsp;&nbsp;(${(exports[value] as Command).Category})`;
         }).join("<br>")}`;
     },
@@ -46,22 +46,3 @@ export var Help = new Command("Help", "Global",
             }
         }
 });
-export var Charge =  new Command("Charge", "Global", `Toggles charging (example: "Charge").`, function(){
-    return `${getHelpTitle(this)}Toggles your current charging state.  Energy gained from charging is used for attacking, defending, and using powers.`;
-}, function(parameters:Array<string>){
-    //SocketDataIO.SendChargeStart();
-});
-
-function getHelpTitle(command:Command):string {
-    var titleString = `<br/><div style="display:inline-block; text-align:center; color: steelblue;">`;
-    for (var i = 0; i < command.Name.length + 15; i++){
-        titleString += "#";
-    }
-    titleString += "<br/>Command: " + command.Name + "<br/>";
-    for (var i = 0; i < command.Name.length + 15; i++){
-        titleString += "#";
-    }
-    titleString += "</div><br><br>";
-    titleString += command.SummaryText + "<br><br>";
-    return titleString;
-}

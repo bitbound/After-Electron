@@ -1,7 +1,7 @@
 import * as After from "../Exports";
 import * as $ from "jquery";
 import * as Audio from "../Components/Audio";
-import { UI, InputProcessor, Storage, Utilities } from "../Components/All";
+import { UI, InputProcessor, DataStore, Utilities } from "../Components/All";
 
 export var Start = function(){
     Audio.PlayLoop("../Assets/ceich93__drone-darkemptiness.mp3", null);
@@ -46,7 +46,7 @@ export var Start = function(){
                     InputProcessor.SetNextInputHandler(InputProcessor.NextInputHandler);
                     return;
                 }
-                Storage.Me.Name = Utilities.EncodeForHTML(input);
+                DataStore.Me.Name = Utilities.EncodeForHTML(input);
                 UI.MessageWindow.html("");
                 $.get("../HTML/CharacterColorPicker.html", (data)=>{UI.AddMessageHTML(data, 1);})
             });

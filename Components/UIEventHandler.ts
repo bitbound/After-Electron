@@ -1,5 +1,5 @@
 import * as electron from "electron";
-import { UI, InputProcessor, Intellisense, Storage, Connectivity } from "./All";
+import { UI, InputProcessor, Intellisense, DataStore, Connectivity } from "./All";
 
 export function ApplyUIEventHandlers(){
     $("#gridDivider").on("pointerdown", (e)=>{
@@ -25,7 +25,7 @@ export function ApplyUIEventHandlers(){
         })
     });
     $("#optionsButton").on("click", (e)=>{
-        Storage.SaveAll();
+        DataStore.SaveAll();
         electron.ipcRenderer.send("options-menu");
     });
     $("#closeMenuButton").on("click", (e)=>{
@@ -64,9 +64,9 @@ export function ApplyUIEventHandlers(){
     
     // Check aliases.
     UI.InputBox.on("input", (e)=>{
-        var inputModeAlises = Object.keys(Storage.ApplicationSettings.InputModeAliases);
-        for (var mode in Storage.ApplicationSettings.InputModeAliases){
-            if (UI.InputBox.val().toString().toLowerCase() == Storage.ApplicationSettings.InputModeAliases[mode].toLowerCase()){
+        var inputModeAlises = Object.keys(DataStore.ApplicationSettings.InputModeAliases);
+        for (var mode in DataStore.ApplicationSettings.InputModeAliases){
+            if (UI.InputBox.val().toString().toLowerCase() == DataStore.ApplicationSettings.InputModeAliases[mode].toLowerCase()){
                 (UI.InputModeSelector[0] as HTMLSelectElement).value = mode;
                 UI.InputBox.val("");
             }

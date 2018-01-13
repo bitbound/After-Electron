@@ -1,7 +1,7 @@
 import * as $ from 'jquery';
 import * as fs from 'fs';
 import * as path from 'path';
-import { FileSystem, UI, Storage } from "./All";
+import { FileSystem, UI, DataStore } from "./All";
 import * as Utilities from "./Utilities";
 import { Player, KnownServer, MessageCounter } from '../Models/All';
 import * as Models from "../Models/All";
@@ -41,11 +41,11 @@ export function LoadAll() {
             var itemName = value.replace(".json", "");
             var content = fs.readFileSync(path.join(FileSystem.StorageDataPath, value)).toString();
             // We want to replace arrays completely, not extend them.
-            if (Storage[itemName] instanceof Array){
-                Storage[itemName] = JSON.parse(content);
+            if (DataStore[itemName] instanceof Array){
+                DataStore[itemName] = JSON.parse(content);
             } 
             else {
-                $.extend(true, Storage[itemName], JSON.parse(content));
+                $.extend(true, DataStore[itemName], JSON.parse(content));
             } 
         }
     });
@@ -55,11 +55,11 @@ export function SaveAll() {
     if (fs.existsSync(FileSystem.StorageDataPath) == false) {
         fs.mkdirSync(path.join(FileSystem.StorageDataPath, "Storage"));
     }
-    for (var item in Storage) {
+    for (var item in DataStore) {
         if (item == "Temp" || typeof this[item] == "function") {
             continue;
         }
-        fs.writeFileSync(path.join(FileSystem.StorageDataPath, item + ".json"), JSON.stringify(Storage[item]));
+        fs.writeFileSync(path.join(FileSystem.StorageDataPath, item + ".json"), JSON.stringify(DataStore[item]));
     }
 }
 
@@ -95,11 +95,11 @@ export function LoadSettings() {
             if (itemName != "Me") {           
                 var content = fs.readFileSync(path.join(FileSystem.StorageDataPath, value)).toString();
                 // We want to replace arrays completely, not extend them.
-                if (Storage[itemName] instanceof Array){
-                    Storage[itemName] = JSON.parse(content);
+                if (DataStore[itemName] instanceof Array){
+                    DataStore[itemName] = JSON.parse(content);
                 } 
                 else {
-                    $.extend(true, Storage[itemName], JSON.parse(content));
+                    $.extend(true, DataStore[itemName], JSON.parse(content));
                 } 
             }
         }
@@ -110,10 +110,10 @@ export function SaveSettings() {
     if (fs.existsSync(FileSystem.StorageDataPath) == false) {
         fs.mkdirSync(path.join(FileSystem.StorageDataPath, "Storage"));
     }
-    for (var item in Storage) {
+    for (var item in DataStore) {
         if (item == "Temp" || item == "Me" || typeof this[item] == "function") {
             continue;
         }
-        fs.writeFileSync(path.join(FileSystem.StorageDataPath, item + ".json"), JSON.stringify(Storage[item]));
+        fs.writeFileSync(path.join(FileSystem.StorageDataPath, item + ".json"), JSON.stringify(DataStore[item]));
     }
 }

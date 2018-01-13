@@ -3,7 +3,7 @@ import * as $ from "jquery";
 import * as electron from "electron";
 import * as Game from "./Game";
 import * as Intro from "./Intro";
-import { UI, Storage } from "../Components/All";
+import { UI, DataStore } from "../Components/All";
 import * as url from "url";
 import * as path from "path";
 
@@ -52,7 +52,7 @@ export function Start(){
             UI.InputBox.focus();
             UI.AdjustMessageWindowHeight();
             
-            if (typeof Storage.Me.ID != "string"){
+            if (typeof DataStore.Me.ID != "string"){
                 Intro.Start();
             }
             else {
@@ -60,7 +60,7 @@ export function Start(){
             }
         });
         $("#buttonOptions").click(function () {
-            Storage.SaveAll();
+            DataStore.SaveAll();
             electron.ipcRenderer.send("options-menu");
         });
         $("#divSplash").fadeIn(600);

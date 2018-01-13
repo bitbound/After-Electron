@@ -21,6 +21,18 @@ Get-ChildItem -Path ".\Models\" -Filter "*.ts" | ForEach-Object {
 Set-Content -Path ".\Models\All.ts" -Value $NewContent.Trim();
 
 
+Set-Content -Path ".\Commands\All.ts" -Value $null
+$NewContent = "";
+Get-ChildItem -Path ".\Commands\" -Filter "*.ts" | ForEach-Object {
+    if ($_.Name -notlike "All.ts") {
+        $FileName = $_.Name.Split(".")[0];
+        $NewContent = "import $FileName from `"./$FileName`";`r`n" + $NewContent
+        $NewContent = $NewContent +  "export { $FileName };`r`n"
+    }
+}
+Set-Content -Path ".\Commands\All.ts" -Value $NewContent.Trim();
+
+
 Set-Content -Path ".\API\All.ts" -Value $null
 $NewContent = "";
 Get-ChildItem -Path ".\API\" -Filter "*.ts" | ForEach-Object {
