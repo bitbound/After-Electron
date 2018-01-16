@@ -20,7 +20,7 @@ innerVoid.Description = `Where are you?  The question lazily formulates in your 
                         and you recognize immediately that your will alone caused it to happen.  You are still surrounded
                         by emptiness, but you are in a small pocket of existence that you just now forced into being.
                         <br/><br/>
-                        Perhaps you should try to alter this place further (VOID ALTER)?`;
+                        Perhaps you should try to alter this place further (ALTER VOID)?`;
 innerVoid.Save();
 
 DataStore.Me.InnerVoidID = innerVoid.ID;

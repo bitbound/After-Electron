@@ -1,6 +1,6 @@
 import {UI, SocketDataIO, DataStore, Utilities } from "./All";
 import { Command } from "../Models/All";
-import * as Commands from "../Commands/All";
+import * as Commands from "../Components/Commands/All";
 
 export var NextInputHandler:Function;
 

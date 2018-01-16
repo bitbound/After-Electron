@@ -1,5 +1,5 @@
-import { Command } from "../Models/All";
-import { Utilities, UI } from "../Components/All";
+import { Command } from "../../Models/All";
+import { Utilities, UI } from "../../Components/All";
 import * as Commands from "../Commands/All";
 
 export default new Command("Help", "Global",

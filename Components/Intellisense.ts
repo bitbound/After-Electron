@@ -1,6 +1,6 @@
 import * as UI from "./UI";
 import { Command } from "../Models/All";
-import * as Commands from "../Commands/All";
+import * as Commands from "../Components/Commands/All";
 
 export function AutoComplete(){
     var split = UI.IntellisenseFrame.html().split("<br>");
