@@ -1,8 +1,11 @@
 import * as net from "net";
-import { UI, SocketDataIO, Connectivity, Utilities, DataStore } from "./All";
-import { ConnectedClient, ConnectionTypes, KnownServer, MessageCounter } from "../Models/All";
+import { UI, SocketData, Connectivity, Utilities, DataStore } from "./All";
+import { ConnectionTypes, KnownServer, MessageCounter } from "../Models/All";
+import { SendHelloFromServerToServer } from "./DataMessages/HelloFromServerToServer";
+import { SendHelloFromClientToServer } from "./DataMessages/HelloFromClientToServer";
+import { SendServerReachTest } from "./DataMessages/ServerReachTest";
 
-export var ClientConnections: Array<ConnectedClient> = new Array<ConnectedClient>();
+export var ClientConnections: Array<net.Socket> = new Array<net.Socket>();
 
 export var OutboundConnection = new class OutboundConnection {
     TargetServerID: string;
@@ -48,12 +51,12 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                     OutboundConnection.ConnectionType = connectionType;
                     OutboundConnection.Server = server;
                     OutboundConnection.Socket = socket;
-                    SocketDataIO.SendHelloFromClientToServer(socket);
+                    SendHelloFromClientToServer(socket);
                 }
                 else if (connectionType == ConnectionTypes.ServerToServer) {
                     ServerToServerConnections.push(socket);
                     UI.RefreshConnectivityBar();
-                    SocketDataIO.SendHelloFromServerToServer(server, socket);
+                    SendHelloFromServerToServer(server, socket);
                 }
                 resolve(true);
             });
@@ -92,24 +95,24 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
             })
             socket.on("data", (data) => {
                 try {
-                    if (!SocketDataIO.CheckMessageCounter(socket)) {
+                    if (!SocketData.CheckMessageCounter(socket)) {
                         return;
                     }
                     // Sometimes, multiple messages are received in the same event (at least on LAN).
                     // This ensures that the JSON objects are split and parsed separately.
-                    var messages = SocketDataIO.SplitJSONObjects(data.toString());
+                    var messages = SocketData.SplitJSONObjects(data.toString());
 
                     for (var i = 0; i < messages.length; i++) {
                         var jsonData = JSON.parse(messages[i]);
-                        if (SocketDataIO.HaveYouGotten(jsonData.ID)) {
+                        if (SocketData.HaveYouGotten(jsonData.ID)) {
                             UI.AddDebugMessage(`Already received from server (${socket.remoteAddress}): `, jsonData, 1);
                             continue;
                         }
                         UI.AddDebugMessage(`Received from server (${socket.remoteAddress}): `, jsonData, 1);
                         if (jsonData.TargetServerID != DataStore.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false) {
-                            SocketDataIO.Broadcast(jsonData);
+                            SocketData.Broadcast(jsonData);
                         }
-                        SocketDataIO["Receive" + jsonData.Type](jsonData, socket);
+                        SocketData["Receive" + jsonData.Type](jsonData, socket);
                     }
 
                 }
@@ -230,7 +233,7 @@ export async function FindServerToServerConnection() {
         UI.AddSystemMessage("Unable to find a server-to-server connection.  Try reconnecting later.", 1);
     }
     else {
-        SocketDataIO.SendServerReachTest();
+        SendServerReachTest();
     }
 }
 
@@ -249,31 +252,32 @@ export async function RefreshConnections(){
 export async function StartServer() {
     DataStore.ConnectionSettings.ServerID = DataStore.ConnectionSettings.ServerID || Utilities.CreateGUID();
     var server = net.createServer(function (socket) {
+        // TODO: Needed?
         //if (Utilities.IsLocalIP(socket.remoteAddress) && socket.remotePort == Storage.ConnectionSettings.ServerListeningPort) {
         //    return;
         //}
         socket["id"] = Utilities.CreateGUID();
         socket.on("data", (data) => {
             try {
-                if (!SocketDataIO.CheckMessageCounter(socket)) {
+                if (!SocketData.CheckMessageCounter(socket)) {
                     return;
                 }
 
                 // Sometimes, multiple messages are received in the same event (at least on LAN).
                 // This ensures that the JSON objects are split and parsed separately.
-                var messages = SocketDataIO.SplitJSONObjects(data.toString());
+                var messages = SocketData.SplitJSONObjects(data.toString());
 
                 for (var i = 0; i < messages.length; i++) {
                     var jsonData = JSON.parse(messages[i]);
-                    if (SocketDataIO.HaveYouGotten(jsonData.ID)) {
+                    if (SocketData.HaveYouGotten(jsonData.ID)) {
                         UI.AddDebugMessage(`Already received from client (${socket.remoteAddress}): `, jsonData, 1);
                         return;
                     }
                     UI.AddDebugMessage(`Received from client (${socket.remoteAddress}): `, jsonData, 1);
                     if (jsonData.TargetServerID != DataStore.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false) {
-                        SocketDataIO.Broadcast(jsonData);
+                        SocketData.Broadcast(jsonData);
                     }
-                    SocketDataIO["Receive" + jsonData.Type](jsonData, socket);
+                    SocketData["Receive" + jsonData.Type](jsonData, socket);
                 }
 
             }
@@ -283,12 +287,12 @@ export async function StartServer() {
         });
         socket.on("error", (err: Error) => {
             Utilities.Log(err.stack);
-            Utilities.RemoveFromArray(ClientConnections, value=>value["Socket"]["id"] == socket["id"]);
+            Utilities.RemoveFromArray(ClientConnections, value=>value["id"] == socket["id"]);
             Utilities.RemoveFromArray(ServerToServerConnections, value=>value["id"] == socket["id"]);
             UI.RefreshConnectivityBar();
         })
         socket.on("close", () => {
-            Utilities.RemoveFromArray(ClientConnections, value=>value["Socket"]["id"] == socket["id"]);
+            Utilities.RemoveFromArray(ClientConnections, value=>value["id"] == socket["id"]);
             Utilities.RemoveFromArray(ServerToServerConnections, value=>value["id"] == socket["id"]);
             UI.RefreshConnectivityBar();
         })

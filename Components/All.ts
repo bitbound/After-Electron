@@ -1,7 +1,7 @@
 import * as Utilities from "./Utilities";
 import * as UIEventHandler from "./UIEventHandler";
 import * as UI from "./UI";
-import * as SocketDataIO from "./SocketDataIO";
+import * as SocketData from "./SocketData";
 import * as Intellisense from "./Intellisense";
 import * as InputProcessor from "./InputProcessor";
 import * as FileSystem from "./FileSystem";
@@ -14,7 +14,7 @@ export { DataStore };
 export { FileSystem };
 export { InputProcessor };
 export { Intellisense };
-export { SocketDataIO };
+export { SocketData };
 export { UI };
 export { UIEventHandler };
 export { Utilities };

@@ -1,6 +1,7 @@
-import {UI, SocketDataIO, DataStore, Utilities } from "./All";
+import {UI, SocketData, DataStore, Utilities } from "./All";
 import { Command } from "../Models/All";
 import * as Commands from "../Components/Commands/All";
+import { SendChat } from "./DataMessages/Chat";
 
 export var NextInputHandler:Function;
 
@@ -73,10 +74,10 @@ export function ProcessInput(){
             }
             break;
         case "GlobalChat":
-            SocketDataIO.SendChat(input, "GlobalChat");
+            SendChat(input, "GlobalChat");
             break;
         case "VoidChat":
-            SocketDataIO.SendChat(input, "VoidChat");
+            SendChat(input, "VoidChat");
             break;
         case "Command":
             UI.IntellisenseFrame.hide();

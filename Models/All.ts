@@ -1,6 +1,5 @@
 export * from "./ApplicationSettings";
 export * from "./Command";
-export * from "./ConnectedClient";
 export * from "./ConnectionSettings";
 export * from "./ConnectionTypes";
 export * from "./KnownServer";
@@ -8,4 +7,5 @@ export * from "./MessageCounter";
 export * from "./NPC";
 export * from "./Player";
 export * from "./ReadyStates";
+export * from "./Session";
 export * from "./Void";

@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { FileSystem, UI, DataStore } from "./All";
 import * as Utilities from "./Utilities";
-import { Player, KnownServer, MessageCounter } from '../Models/All';
+import { Player, KnownServer, MessageCounter, Session } from '../Models/All';
 import * as Models from "../Models/All";
 
 
@@ -30,6 +30,7 @@ export var Temp = new class Temp {
     ReceivedMessages: string[] = new Array<string>();
     OutgoingServerReachTestID: string;
     IncomingServerReachTests: Array<string> = new Array<string>();
+    ActiveSessions: Array<Session> = new Array<Session>();
 };
 
 export function LoadAll() {
