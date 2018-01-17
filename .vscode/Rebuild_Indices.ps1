@@ -9,16 +9,16 @@ Get-ChildItem -Path ".\Components\Commands\" -Filter "*.ts" | ForEach-Object {
 }
 Set-Content -Path ".\Components\Commands\All.ts" -Value $NewContent.Trim();
 
-Set-Content -Path ".\Components\DataMessages\All.ts" -Value $null
+Set-Content -Path ".\Components\SocketMessages\All.ts" -Value $null
 $NewContent = "";
-Get-ChildItem -Path ".\Components\DataMessages\" -Filter "*.ts" | ForEach-Object {
+Get-ChildItem -Path ".\Components\SocketMessages\" -Filter "*.ts" | ForEach-Object {
     if ($_.Name -notlike "All.ts") {
         $FileName = $_.Name.Split(".")[0];
         $NewContent = "import {Send$FileName, Receive$FileName} from `"./$FileName`";`r`n" + $NewContent
         $NewContent = $NewContent +  "export { Send$FileName, Receive$FileName };`r`n"
     }
 }
-Set-Content -Path ".\Components\DataMessages\All.ts" -Value $NewContent.Trim();
+Set-Content -Path ".\Components\SocketMessages\All.ts" -Value $NewContent.Trim();
 
 
 Set-Content -Path ".\Components\All.ts" -Value $null

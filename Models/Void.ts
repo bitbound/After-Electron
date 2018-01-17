@@ -14,6 +14,10 @@ export class Void {
     NPCs: NPC[];
     Owner: string;
     Title:string;
+    SessionID:string;
+    get SavePath():string {
+        return path.join(FileSystem.StorageDataPath, `GameSessions`, `${this.SessionID}`, `Voids`, `${this.ID}.json`);
+    }
     Display(){
         var displayMessage = `<br/><br/><div style="text-align: center; color: ` + this.Color +`;">`;
         for (var i = 0; i < this.Title.length + 6; i++){
@@ -26,16 +30,20 @@ export class Void {
         displayMessage += "</div><br/><br/>" + this.Description;
         UI.AddMessageHTML(displayMessage, 2);
     }
-    static Load(id:string) : Void {
-        if (fs.existsSync(path.join(FileSystem.StorageDataPath, "Voids", id + ".json")) == false) {
+    static Load(sessionID: string, voidID:string) : Void {
+        if (fs.existsSync(path.join(FileSystem.StorageDataPath, `GameSessions`, `${sessionID}`, `Voids`, `${voidID}.json`)) == false) {
             throw Error("Void doesn't exist.");
         }
-        return $.extend(true, new this(), JSON.parse(fs.readFileSync(path.join(FileSystem.StorageDataPath, "Voids", id + ".json")).toString()));
+        return $.extend(true, new this(), JSON.parse(fs.readFileSync(path.join(FileSystem.StorageDataPath, `GameSessions`, `${sessionID}`, `Voids`, `${voidID}.json`)).toString()));
     }
     Save(){
-        if (fs.existsSync(path.join(FileSystem.StorageDataPath, "Voids")) == false) {
-            fs.mkdirSync(path.join(FileSystem.StorageDataPath, "Voids"));
+        if (this.SessionID == null)
+        {
+            throw Error("SessionID isn't set.");
         }
-        fs.writeFileSync(path.join(FileSystem.StorageDataPath, "Voids", this.ID + ".json"), JSON.stringify(this));
+        if (fs.existsSync(path.dirname(this.SavePath)) == false) {
+            FileSystem.MakeDirectoriesRecursively(path.dirname(this.SavePath));
+        }
+        fs.writeFileSync(this.SavePath, JSON.stringify(this));
     }
 };

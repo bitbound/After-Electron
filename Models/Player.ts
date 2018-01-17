@@ -2,10 +2,12 @@ import { ReadyStates } from "./ReadyStates";
 
 export class Player {
     Color: string;
-    CurrentLocationID:string;
+    CurrentSessionID:string;
+    CurrentVoidID:string;
     ID: string;
     Name: string;
     InnerVoidID: string;
+    InnerVoidSessionID:string;
     ReadyState: ReadyStates;
   
     // Core Energy //

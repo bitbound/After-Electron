@@ -1,9 +1,10 @@
 import * as net from "net";
 import { UI, SocketData, Connectivity, Utilities, DataStore } from "./All";
 import { ConnectionTypes, KnownServer, MessageCounter } from "../Models/All";
-import { SendHelloFromServerToServer } from "./DataMessages/HelloFromServerToServer";
-import { SendHelloFromClientToServer } from "./DataMessages/HelloFromClientToServer";
-import { SendServerReachTest } from "./DataMessages/ServerReachTest";
+import { SendHelloFromServerToServer } from "./SocketMessages/HelloFromServerToServer";
+import { SendHelloFromClientToServer } from "./SocketMessages/HelloFromClientToServer";
+import { SendServerReachTest } from "./SocketMessages/ServerReachTest";
+import * as SocketMessages from "./SocketMessages/All"
 
 export var ClientConnections: Array<net.Socket> = new Array<net.Socket>();
 
@@ -112,7 +113,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                         if (jsonData.TargetServerID != DataStore.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false) {
                             SocketData.Broadcast(jsonData);
                         }
-                        SocketData["Receive" + jsonData.Type](jsonData, socket);
+                        SocketMessages["Receive" + jsonData.Type](jsonData, socket);
                     }
 
                 }
@@ -253,7 +254,7 @@ export async function StartServer() {
     DataStore.ConnectionSettings.ServerID = DataStore.ConnectionSettings.ServerID || Utilities.CreateGUID();
     var server = net.createServer(function (socket) {
         // TODO: Needed?
-        //if (Utilities.IsLocalIP(socket.remoteAddress) && socket.remotePort == Storage.ConnectionSettings.ServerListeningPort) {
+        //if (Utilities.IsLocalIP(socket.remoteAddress) && socket.remotePort == DataStore.ConnectionSettings.ServerListeningPort) {
         //    return;
         //}
         socket["id"] = Utilities.CreateGUID();
@@ -277,7 +278,7 @@ export async function StartServer() {
                     if (jsonData.TargetServerID != DataStore.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false) {
                         SocketData.Broadcast(jsonData);
                     }
-                    SocketData["Receive" + jsonData.Type](jsonData, socket);
+                    SocketMessages["Receive" + jsonData.Type](jsonData, socket);
                 }
 
             }

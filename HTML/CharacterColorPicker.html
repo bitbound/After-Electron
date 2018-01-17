@@ -52,10 +52,10 @@
         $("#divCharacterColorPreview").css("background", "radial-gradient(white 5%, " + temp.SoulColor + "50%, rgba(0,0,0,0) 75%)");
     };
     temp.SubmitColor = function () {
-        After.Components.Storage.Me.Color = temp.SoulColor;
+        After.Components.DataStore.Me.Color = temp.SoulColor;
         $.when($("#divCreateCharacter").animate({ opacity: 0 }, 1000)).then(function () {
             delete temp;
-            require("../Scripts/CreateCharacter");
+            require("../Scripts/CreateCharacter").Init();
         });
     }
     temp.ColorSelected = function () {

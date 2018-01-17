@@ -1,7 +1,7 @@
 import * as $ from "jquery";
 import * as Utilities from "./Utilities";
 import * as UI from "./UI";
-import * as Storage from "./DataStore";
+import * as DataStore from "./DataStore";
 import * as InputProcessor from "./InputProcessor";
 import * as Intellisense from "./Intellisense";
 import * as Connectivity from "./Connectivity";
@@ -29,23 +29,23 @@ function AppendMessageToWindow(message: string) {
     }
 }
 export function AddDebugMessage(message: string, jsonData: any, newLines: number) {
-    if (Storage.ApplicationSettings.IsDebugModeEnabled) {
+    if (DataStore.ApplicationSettings.IsDebugModeEnabled) {
         var jsonHTML = "";
         if (jsonData) {
-            Storage.Temp.JSONObjects = new Array<any>();
+            DataStore.Temp.JSONObjects = new Array<any>();
             jsonHTML = JSON.stringify(jsonData, function (key, value) {
                 if (typeof value == "object" && value != null) {
-                    if (Storage.Temp.JSONObjects.findIndex(x => x == value) > -1) {
+                    if (DataStore.Temp.JSONObjects.findIndex(x => x == value) > -1) {
                         return "[Possible circular reference.]"
                     }
                     else {
-                        Storage.Temp.JSONObjects.push(value);
+                        DataStore.Temp.JSONObjects.push(value);
                     }
                 }
                 return value;
             }, "&emsp;").split("\n").join("<br/>").split(" ").join("&nbsp;");
         }
-        var messageText = `<div style="color:${Storage.ApplicationSettings.Colors.Debug}">[Debug]: ${Utilities.EncodeForHTML(message) + jsonHTML}</div>`;
+        var messageText = `<div style="color:${DataStore.ApplicationSettings.Colors.Debug}">[Debug]: ${Utilities.EncodeForHTML(message) + jsonHTML}</div>`;
         for (var i = 0; i < newLines; i++) {
             messageText += "<br>";
         }
@@ -66,7 +66,7 @@ export function AddMessageHTML(html: string, newLines: number) {
     AppendMessageToWindow(html);
 };
 export function AddSystemMessage(message: string, newLines: number) {
-    var messageText = `<div style="color:${Storage.ApplicationSettings.Colors.System}">[System]: ${message}</div>`;
+    var messageText = `<div style="color:${DataStore.ApplicationSettings.Colors.System}">[System]: ${message}</div>`;
     for (var i = 0; i < newLines; i++) {
         messageText += "<br>";
     }
@@ -82,10 +82,10 @@ export function AdjustMessageWindowHeight() {
 };
 
 export function ChargingAnimationStart() {
-    Storage.Me.ReadyState = ReadyStates.Charging;
+    DataStore.Me.ReadyState = ReadyStates.Charging;
     ChargingAnimationInt = window.setInterval(() => {
-        if (Storage.Me.ReadyState != ReadyStates.Charging) {
-            if (Storage.Me.CurrentCharge == 0) {
+        if (DataStore.Me.ReadyState != ReadyStates.Charging) {
+            if (DataStore.Me.CurrentCharge == 0) {
                 $('#startChargeButton').show();
                 window.clearInterval(ChargingAnimationInt);
             }
@@ -141,48 +141,48 @@ export function RefreshConnectivityBar() {
     $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
 }
 export function SetUIDatabinds() {
-    Utilities.DataBindOneWay(Storage.Me, "CoreEnergy", null, null, function () {
-        if (Storage.Me.CoreEnergy > Storage.Me.CoreEnergyPeak) {
-            Storage.Me.CoreEnergyPeak = Storage.Me.CoreEnergy;
+    Utilities.DataBindOneWay(DataStore.Me, "CoreEnergy", null, null, function () {
+        if (DataStore.Me.CoreEnergy > DataStore.Me.CoreEnergyPeak) {
+            DataStore.Me.CoreEnergyPeak = DataStore.Me.CoreEnergy;
         }
-        Storage.Me.MaxEnergy = Storage.Me.CoreEnergy + Storage.Me.EnergyMod;
-        Storage.Me.MaxCharge = Storage.Me.CoreEnergy + Storage.Me.ChargeMod;
-        $("#coreEnergySideMenu").text(Storage.Me.CoreEnergy);
-        $("#peakCoreEnergySideMenu").text(Storage.Me.CoreEnergyPeak);
+        DataStore.Me.MaxEnergy = DataStore.Me.CoreEnergy + DataStore.Me.EnergyMod;
+        DataStore.Me.MaxCharge = DataStore.Me.CoreEnergy + DataStore.Me.ChargeMod;
+        $("#coreEnergySideMenu").text(DataStore.Me.CoreEnergy);
+        $("#peakCoreEnergySideMenu").text(DataStore.Me.CoreEnergyPeak);
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "CoreEnergyPeak", null, null, function () {
-        $("#peakCoreEnergySideMenu").text(Storage.Me.CoreEnergyPeak);
+    Utilities.DataBindOneWay(DataStore.Me, "CoreEnergyPeak", null, null, function () {
+        $("#peakCoreEnergySideMenu").text(DataStore.Me.CoreEnergyPeak);
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "CurrentEnergy", null, null, function () {
-        $("#divEnergyAmount").text(Storage.Me.CurrentEnergy);
-        $("#currentEnergySideMenu").text(Storage.Me.CurrentEnergy);
-        $("#svgEnergy").css("width", String(Math.min(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100, 100) || 0) + "%");
+    Utilities.DataBindOneWay(DataStore.Me, "CurrentEnergy", null, null, function () {
+        $("#divEnergyAmount").text(DataStore.Me.CurrentEnergy);
+        $("#currentEnergySideMenu").text(DataStore.Me.CurrentEnergy);
+        $("#svgEnergy").css("width", String(Math.min(DataStore.Me.CurrentEnergy / DataStore.Me.MaxEnergy * 100, 100) || 0) + "%");
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "EnergyMod", null, null, function () {
-        Storage.Me.MaxEnergy = Storage.Me.CoreEnergy + Storage.Me.EnergyMod;
-        $("#energyModSideMenu").text(Storage.Me.EnergyMod);
-        $("#maxEnergySideMenu").text(Storage.Me.MaxEnergy);
+    Utilities.DataBindOneWay(DataStore.Me, "EnergyMod", null, null, function () {
+        DataStore.Me.MaxEnergy = DataStore.Me.CoreEnergy + DataStore.Me.EnergyMod;
+        $("#energyModSideMenu").text(DataStore.Me.EnergyMod);
+        $("#maxEnergySideMenu").text(DataStore.Me.MaxEnergy);
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "MaxEnergy", null, null, function () {
-        $("#maxEnergySideMenu").text(Storage.Me.MaxEnergy);
-        $("#svgEnergy").css("width", String(Math.min(Storage.Me.CurrentEnergy / Storage.Me.MaxEnergy * 100, 100) || 0) + "%");
+    Utilities.DataBindOneWay(DataStore.Me, "MaxEnergy", null, null, function () {
+        $("#maxEnergySideMenu").text(DataStore.Me.MaxEnergy);
+        $("#svgEnergy").css("width", String(Math.min(DataStore.Me.CurrentEnergy / DataStore.Me.MaxEnergy * 100, 100) || 0) + "%");
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "CurrentCharge", null, null, function () {
-        $("#divChargeAmount").text(Storage.Me.CurrentCharge);
-        $("#currentChargeSideMenu").text(Storage.Me.CurrentCharge);
-        $("#svgCharge").css("width", String(Math.min(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100, 100) || 0) + "%");
+    Utilities.DataBindOneWay(DataStore.Me, "CurrentCharge", null, null, function () {
+        $("#divChargeAmount").text(DataStore.Me.CurrentCharge);
+        $("#currentChargeSideMenu").text(DataStore.Me.CurrentCharge);
+        $("#svgCharge").css("width", String(Math.min(DataStore.Me.CurrentCharge / DataStore.Me.MaxCharge * 100, 100) || 0) + "%");
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "ChargeMod", null, null, function () {
-        Storage.Me.MaxCharge = Storage.Me.CoreEnergy + Storage.Me.ChargeMod;
-        $("#chargeModSideMenu").text(Storage.Me.ChargeMod);
-        $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
+    Utilities.DataBindOneWay(DataStore.Me, "ChargeMod", null, null, function () {
+        DataStore.Me.MaxCharge = DataStore.Me.CoreEnergy + DataStore.Me.ChargeMod;
+        $("#chargeModSideMenu").text(DataStore.Me.ChargeMod);
+        $("#maxChargeSideMenu").text(DataStore.Me.MaxCharge);
     }, null);
-    Utilities.DataBindOneWay(Storage.Me, "MaxCharge", null, null, function () {
-        $("#maxChargeSideMenu").text(Storage.Me.MaxCharge);
-        $("#svgCharge").css("width", String(Math.min(Storage.Me.CurrentCharge / Storage.Me.MaxCharge * 100, 100) || 0) + "%");
+    Utilities.DataBindOneWay(DataStore.Me, "MaxCharge", null, null, function () {
+        $("#maxChargeSideMenu").text(DataStore.Me.MaxCharge);
+        $("#svgCharge").css("width", String(Math.min(DataStore.Me.CurrentCharge / DataStore.Me.MaxCharge * 100, 100) || 0) + "%");
     }, null);
-    Utilities.DataBindOneWay(Storage.ApplicationSettings, "IsNetworkStatusBarVisible", null, null, () => {
-        if (Storage.ApplicationSettings.IsNetworkStatusBarVisible) {
+    Utilities.DataBindOneWay(DataStore.ApplicationSettings, "IsNetworkStatusBarVisible", null, null, () => {
+        if (DataStore.ApplicationSettings.IsNetworkStatusBarVisible) {
             $("#statusFrame").show();
         }
         else {

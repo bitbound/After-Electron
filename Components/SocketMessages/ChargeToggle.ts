@@ -3,6 +3,7 @@ import { Utilities } from "../All";
 import * as net from "net";
 
 export function SendChargeToggle() {
+    // TODO: Use CommandRequests and verify on receipt.
     SendToTargetServer({
         "Type": "ChargeToggle",
         "Stage": "Request",

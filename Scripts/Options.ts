@@ -1,26 +1,26 @@
-import * as StorageData from "../Components/DataStore"
+import * as DataStore from "../Components/DataStore"
 import * as $ from "jquery";
 import { Utilities } from "../Components/All";
 import * as electron from "electron";
 import * as fs from "fs";
 
-export { StorageData };
+export { DataStore };
 
 $(document).ready(function () {
     window["$"] = $;
-    window["StorageData"] = StorageData;
+    window["DataStore"] = DataStore;
     // This is here to allow ColorPicker access to Utilities.
     window["Utilities"] = Utilities;
     electron.remote.getCurrentWindow().on("close", (event) => {
-        StorageData.SaveSettings();
+        DataStore.SaveSettings();
         electron.ipcRenderer.send("options-update");
     });
 
     Utilities.SetAllDatabinds(() => { 
-        StorageData.SaveSettings();
+        DataStore.SaveSettings();
         electron.ipcRenderer.send("options-update");
      });
-    StorageData.LoadSettings();
+    DataStore.LoadSettings();
 
 
     $(".options-side-tab").on("click", event => {
@@ -47,14 +47,14 @@ $(document).ready(function () {
     })
     $("#knownServerButtons .fa-arrow-up").on("click", () => {
         var serverPort = $("#knownServerList").val().toString().split(":");
-        var match = StorageData.KnownServers.find((x)=>{
+        var match = DataStore.KnownServers.find((x)=>{
             return x.Host == serverPort[0] && x.Port == parseInt(serverPort[1]);
         });
         if (match){
-            var index = StorageData.KnownServers.indexOf(match);
+            var index = DataStore.KnownServers.indexOf(match);
             if (index > 0){
-                StorageData.KnownServers.splice(index, 1);
-                StorageData.KnownServers.splice(index - 1, 0, match);
+                DataStore.KnownServers.splice(index, 1);
+                DataStore.KnownServers.splice(index - 1, 0, match);
                 populateKnownServers();
                 ($("#knownServerList")[0] as HTMLSelectElement).selectedIndex = index - 1;
             }
@@ -62,13 +62,13 @@ $(document).ready(function () {
     })
     $("#knownServerButtons .fa-arrow-down").on("click", ()=>{
         var serverPort = $("#knownServerList").val().toString().split(":");
-        var match = StorageData.KnownServers.find((x)=>{
+        var match = DataStore.KnownServers.find((x)=>{
             return x.Host == serverPort[0] && x.Port == parseInt(serverPort[1]);
         });
         if (match){
-            var index = StorageData.KnownServers.indexOf(match);
-            StorageData.KnownServers.splice(index, 1);
-            StorageData.KnownServers.splice(index + 1, 0, match);
+            var index = DataStore.KnownServers.indexOf(match);
+            DataStore.KnownServers.splice(index, 1);
+            DataStore.KnownServers.splice(index + 1, 0, match);
             populateKnownServers();
             ($("#knownServerList")[0] as HTMLSelectElement).selectedIndex = index + 1;
         }
@@ -89,7 +89,7 @@ $(document).ready(function () {
                                 <input id="isLocalCheckbox" type="checkbox" /> <br>
                                 <br>
                                 <button style="width: 60px; height: 40px;" onclick="(function(){
-                                    StorageData.KnownServers.push({'Host': $('#newHost').val(), 'Port': $('#newPort').val(), 'IsLocalNetwork': $('#isLocalCheckbox')[0].checked });
+                                    DataStore.KnownServers.push({'Host': $('#newHost').val(), 'Port': $('#newPort').val(), 'IsLocalNetwork': $('#isLocalCheckbox')[0].checked });
                                     $('.popup-small').remove();
                                     window['Options'].populateKnownServers();
                                 })()">Save</button>
@@ -100,11 +100,11 @@ $(document).ready(function () {
     })
     $("#knownServerButtons .fa-trash").on("click", ()=>{
         var serverPort = $("#knownServerList").val().toString().split(":");
-        var index = StorageData.KnownServers.findIndex((x)=>{
+        var index = DataStore.KnownServers.findIndex((x)=>{
             return x.Host == serverPort[0] && x.Port == serverPort[1] as any;
         });
         if (index > -1){
-            StorageData.KnownServers.splice(index, 1);
+            DataStore.KnownServers.splice(index, 1);
             populateKnownServers();
         }
      })
@@ -122,7 +122,7 @@ $(document).ready(function () {
                                 <input id="newPort" style="width:150px" /><br>
                                 <br>
                                 <button style="width: 60px; height: 40px;" onclick="(function(){
-                                    StorageData.BlockedServers.push({'Host': $('#newHost').val(), 'Port': $('#newPort').val()});
+                                    DataStore.BlockedServers.push({'Host': $('#newHost').val(), 'Port': $('#newPort').val()});
                                     $('.popup-small').remove();
                                     window['Options'].populateBlockedServers();
                                 })()">Save</button>
@@ -133,11 +133,11 @@ $(document).ready(function () {
     })
     $("#blockedServerButtons .fa-trash").on("click", ()=>{
         var serverPort = $("#blockedServerList").val().toString().split(":");
-        var index = StorageData.BlockedServers.findIndex((x)=>{
+        var index = DataStore.BlockedServers.findIndex((x)=>{
             return x.Host == serverPort[0] && x.Port == serverPort[1] as any;
         });
         if (index > -1){
-            StorageData.BlockedServers.splice(index, 1);
+            DataStore.BlockedServers.splice(index, 1);
             populateBlockedServers();
         }
      })
@@ -158,8 +158,8 @@ function switchContentFrame(e) {
 export function populateKnownServers(){
     var selectKnown = $("#knownServerList")[0] as HTMLSelectElement;
     selectKnown.innerHTML = "";
-    for (var i = 0; i < StorageData.KnownServers.length; i++){
-        var server =  StorageData.KnownServers[i];
+    for (var i = 0; i < DataStore.KnownServers.length; i++){
+        var server =  DataStore.KnownServers[i];
         var option = document.createElement("option");
         option.value = `${server.Host}:${server.Port}`;
         option.innerHTML = `${server.Host}:${server.Port}`;
@@ -175,8 +175,8 @@ export function populateKnownServers(){
 export function populateBlockedServers(){
     var blockedServers = $("#blockedServerList")[0] as HTMLSelectElement;
     blockedServers.innerHTML = "";
-    for (var i = 0; i < StorageData.BlockedServers.length; i++){
-        var server =  StorageData.BlockedServers[i];
+    for (var i = 0; i < DataStore.BlockedServers.length; i++){
+        var server =  DataStore.BlockedServers[i];
         var option = document.createElement("option");
         option.value = `${server.Host}:${server.Port}`;
         option.innerHTML = `${server.Host}:${server.Port}`;

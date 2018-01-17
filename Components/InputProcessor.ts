@@ -1,7 +1,7 @@
 import {UI, SocketData, DataStore, Utilities } from "./All";
 import { Command } from "../Models/All";
 import * as Commands from "../Components/Commands/All";
-import { SendChat } from "./DataMessages/Chat";
+import { SendChat } from "./SocketMessages/Chat";
 
 export var NextInputHandler:Function;
 
