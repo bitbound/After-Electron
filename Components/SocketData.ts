@@ -3,6 +3,7 @@ import { Connectivity, DataStore, Utilities, UI } from "./All";
 import { KnownServer, MessageCounter, ConnectionTypes } from "../Models/All";
 import * as electron from "electron";
 import { LocalServer } from "./Connectivity";
+import * as SocketMessages from "./SocketMessages/All";
 
 // Final Data Out //
 function Send(jsonData: any, socket: net.Socket) {
@@ -34,7 +35,7 @@ export function Broadcast(jsonData: any) {
         Connectivity.ClientConnections.length == 0 &&
         Connectivity.ServerToServerConnections.length == 0) {
         jsonData["ID"] = Utilities.CreateGUID();
-        eval("Receive" + jsonData.Type + "(jsonData, new require('net').Socket())");
+        SocketMessages[`Receive${jsonData.Type}`](jsonData, new net.Socket());
     }
 }
 
@@ -43,15 +44,10 @@ export function SendToSpecificSocket(jsonData: any, socket: net.Socket) {
 }
 
 export function SendToTargetServer(jsonData: any) {
-    // TODO: Unneeded?
-    //if (jsonData.TargetServerID == undefined) {
-    //    Utilities.Log("TargetServerID missing from data: " + JSON.stringify(jsonData));
-    //    throw "TargetServerID missing from data: " + JSON.stringify(jsonData);
-    //}
-    if (jsonData["TargetServerID"] == DataStore.ConnectionSettings.ServerID) {
+    jsonData["TargetServerID"] = Connectivity.OutboundConnection.TargetServerID;
+    if (Connectivity.OutboundConnection.TargetServerID == DataStore.ConnectionSettings.ServerID) {
         jsonData["ID"] = Utilities.CreateGUID();
-        jsonData["TargetServerID"] == Connectivity.OutboundConnection.TargetServerID;
-        eval("Receive" + jsonData.Type + "(jsonData, new require('net').Socket())");
+        SocketMessages[`Receive${jsonData.Type}`](jsonData, new net.Socket());
     }
     else if (Connectivity.OutboundConnection.IsConnected()) {
         Send(jsonData, Connectivity.OutboundConnection.Socket);

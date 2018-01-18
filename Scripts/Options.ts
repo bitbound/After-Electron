@@ -29,7 +29,6 @@ $(document).ready(function () {
 
     $(".color-wheel-button").on("click", (elem) => {
         $("#colorPopup").remove();
-        var input = $(elem).next();
         var popup = document.createElement("div");
         popup.id = "colorPopup";
         popup.classList.add("popup-large");
@@ -37,7 +36,21 @@ $(document).ready(function () {
         document.body.appendChild(popup);
         eval($(popup).find("script").text());
         var relatedInput = $(elem.currentTarget).next();
-        var dataProperty = relatedInput.attr("data-object") + "." + relatedInput.attr("data-property");
+        var currentValue = relatedInput.val() as string;
+        if (currentValue.trim().length > 0){
+            if (currentValue.search("rgb") > -1){
+                var values = currentValue.replace("rgb(", "").replace(")", "").trim().split(",");
+                $("#inputBrushRed").val(values[0].trim());
+                $("#inputBrushGreen").val(values[1].trim());
+                $("#inputBrushBlue").val(values[2].trim());
+            }
+            else {
+                var index = $("#selectColor").children().filter((index, element)=>{
+                    return element.innerText.trim().toLowerCase() == currentValue.trim().toLowerCase();
+                }).index();
+                ($("#selectColor")[0] as HTMLSelectElement).selectedIndex = index;
+            }
+        }
         $(popup).find("#divBrushPreview").css("background-color", relatedInput.val().toString());
         $(popup).find("#setColorButton").on("click", (event)=>{
             relatedInput.val($(popup).find("#divBrushPreview").css("background-color"));

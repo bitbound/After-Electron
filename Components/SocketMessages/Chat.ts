@@ -13,17 +13,15 @@ export function SendChat(message: string, channel: string) {
 }
 
 export function ReceiveChat(jsonData: any, socket: net.Socket) {
-    if (DataStore.ConnectionSettings.IsClientEnabled) {
-        switch (jsonData.Channel) {
-            case "GlobalChat":
-                UI.AddMessageHTML(`<span style='color:` +
-                    DataStore.ApplicationSettings.Colors.GlobalChat + `'>[Global] ` +
-                    Utilities.EncodeForHTML(jsonData.From) + `: </span>` +
-                    Utilities.EncodeForHTML(jsonData.Message), 1);
-                break;
+    switch (jsonData.Channel) {
+        case "GlobalChat":
+            UI.AddMessageHTML(`<span style='color:` +
+                DataStore.ApplicationSettings.Colors.GlobalChat + `'>[Global] ` +
+                Utilities.EncodeForHTML(jsonData.From) + `: </span>` +
+                Utilities.EncodeForHTML(jsonData.Message), 1);
+            break;
 
-            default:
-                break;
-        }
+        default:
+            break;
     }
 }

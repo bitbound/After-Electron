@@ -1,8 +1,8 @@
 export class ApplicationSettings {
     AutoSaveIntervalSeconds: number = 300;
     Colors = {
-        "GlobalChat": "seagreen",
-        "VoidChat": "lightsteelblue",
+        "GlobalChat": "rgb(0, 255, 64)",
+        "VoidChat": "rgb(0, 220, 255)",
         "Whisper": "magenta",
         "System": "lightgray",
         "Debug": "rgb(150,50,50)"
