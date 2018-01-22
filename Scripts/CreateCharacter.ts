@@ -9,6 +9,7 @@ export var Init = function() {
     DataStore.Me.ChargeMod = 0;
     DataStore.Me.EnergyMod = 0;
     DataStore.Me.CoreEnergy = 100;
+    DataStore.Me.CoreEnergyPeak = 100;
     DataStore.Me.CurrentEnergy = 100;
     DataStore.Me.CurrentCharge = 0;
     var session = new GameSession();
@@ -35,6 +36,8 @@ export var Init = function() {
     DataStore.Me.CurrentSessionID = session.SessionID;
     DataStore.Me.InnerVoidID = innerVoid.ID;
     DataStore.Me.CurrentVoidID = innerVoid.ID;
+    DataStore.Temp.ActiveSessions.push(session);
+    session.Players.push(DataStore.Me);
     DataStore.SaveMe("0");
     UI.MessageWindow.html("");
     UI.AddMessageText("Welcome to the afterlife, " + DataStore.Me.Name + ".", 2);

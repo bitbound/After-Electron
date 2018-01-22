@@ -7,16 +7,17 @@ import * as SocketMessages from "./SocketMessages/All";
 
 // Final Data Out //
 function Send(jsonData: any, socket: net.Socket) {
-    UI.AddDebugMessage("Sending to " + socket.remoteAddress + ": ", jsonData, 1);
+    UI.AddDebugMessage(`Sending to ${(socket != null ? socket.remoteAddress : "mock socket")}: `, jsonData, 1);
     if (jsonData.Type == undefined || jsonData.ID == undefined) {
         Utilities.Log("Type or ID missing from Broadcast data: " + JSON.stringify(jsonData));
         throw "Type or ID missing from Broadcast data: " + JSON.stringify(jsonData);
     }
-    try {
-        if (socket.writable) {
-            socket.write(JSON.stringify(jsonData));
-        }
-    } catch (ex) { }
+    if (socket == null){
+        SocketMessages[`Receive${jsonData.Type}`](jsonData, null);
+    }
+    else if (socket.writable) {
+        socket.write(JSON.stringify(jsonData));
+    }
 }
 
 
@@ -35,7 +36,7 @@ export function Broadcast(jsonData: any) {
         Connectivity.ClientConnections.length == 0 &&
         Connectivity.ServerToServerConnections.length == 0) {
         jsonData["ID"] = Utilities.CreateGUID();
-        SocketMessages[`Receive${jsonData.Type}`](jsonData, new net.Socket());
+        SocketMessages[`Receive${jsonData.Type}`](jsonData, null);
     }
 }
 
@@ -44,10 +45,13 @@ export function SendToSpecificSocket(jsonData: any, socket: net.Socket) {
 }
 
 export function SendToTargetServer(jsonData: any) {
-    jsonData["TargetServerID"] = Connectivity.OutboundConnection.TargetServerID;
+    if (jsonData.TargetServerID == undefined) {
+        Utilities.Log("TargetServerID missing from SendToTargetServer data: " + JSON.stringify(jsonData));
+        throw "TargetServerID missing from SendToTargetServer data: " + JSON.stringify(jsonData);
+    }
     if (Connectivity.OutboundConnection.TargetServerID == DataStore.ConnectionSettings.ServerID) {
         jsonData["ID"] = Utilities.CreateGUID();
-        SocketMessages[`Receive${jsonData.Type}`](jsonData, new net.Socket());
+        SocketMessages[`Receive${jsonData.Type}`](jsonData, null);
     }
     else if (Connectivity.OutboundConnection.IsConnected()) {
         Send(jsonData, Connectivity.OutboundConnection.Socket);

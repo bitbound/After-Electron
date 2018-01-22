@@ -17,14 +17,14 @@
   "author": "Translucency",
   "license": "GPL-3.0",
   "devDependencies": {
-    "@types/jquery": "^3.2.15",
-    "@types/node": "^8.0.47",
-    "electron": "^1.7.9",
-    "electron-builder": "^19.48.2",
-    "typescript": "^2.5.3"
+    "@types/jquery": "^3.2.18",
+    "@types/node": "^8.5.9",
+    "electron": "^1.8.1",
+    "electron-builder": "^19.55.1",
+    "typescript": "^2.6.2"
   },
   "dependencies": {
-    "jquery": "^3.2.1"
+    "jquery": "^3.3.1"
   },
   "build": {
     "productName": "After",

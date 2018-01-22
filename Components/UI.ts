@@ -82,7 +82,6 @@ export function AdjustMessageWindowHeight() {
 };
 
 export function ChargingAnimationStart() {
-    DataStore.Me.ReadyState = ReadyStates.Charging;
     ChargingAnimationInt = window.setInterval(() => {
         if (DataStore.Me.ReadyState != ReadyStates.Charging) {
             if (DataStore.Me.CurrentCharge == 0) {
@@ -111,28 +110,6 @@ export function ChargingAnimationStart() {
 export function ChargingAnimationStop() {
 
 }
-export function FadeInText(text: string, delayInMilliseconds: number, callback: Function) {
-    window.setTimeout((text) => {
-        UI.AddMessageText("", 2);
-        for (var i = 0; i < text.length; i++) {
-            var letter = text.substr(i, 1);
-            window.setTimeout((letter) => {
-                if (letter == " ") {
-                    UI.AddMessageText(" ", 0);
-                }
-                else {
-                    UI.AddMessageHTML("<div class='fade-in-text'>" + letter + "</div>", 0);
-                }
-            }, i * 30, letter)
-        }
-        if (callback) {
-            window.setTimeout(function (callback) {
-                callback();
-            }, (text.length) * 30, callback);
-        }
-    }, delayInMilliseconds, text);
-}
-
 
 export function RefreshConnectivityBar() {
     $("#spanClientStatus").text((String(Connectivity.OutboundConnection.IsConnected()).replace("true", "Connected").replace("false", "Disconnected")));

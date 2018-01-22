@@ -1,4 +1,5 @@
 export enum ReadyStates {
     OK,
-    Charging
+    Charging,
+    Combat
 }

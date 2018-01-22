@@ -15,7 +15,7 @@ export class GameSession {
         if (existsSync(join(FileSystem.StorageDataPath, `GameSessions`, `${sessionID}`, `${sessionID}.json`)) == false) {
             throw Error("Game session doesn't exist.");
         }
-        return $.extend(true, new this(), JSON.parse(readFileSync(join(FileSystem.StorageDataPath, `GameSessions`, `${sessionID}.json`)).toString()));
+        return $.extend(true, new this(), JSON.parse(readFileSync(join(FileSystem.StorageDataPath, `GameSessions`, `${sessionID}`, `${sessionID}.json`)).toString()));
     }
     Save(){
         if (this.SessionID == null)

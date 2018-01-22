@@ -1,12 +1,12 @@
 import * as net from "net";
 import { UI, SocketData, Connectivity, Utilities, DataStore } from "./All";
-import { ConnectionTypes, KnownServer, MessageCounter } from "../Models/All";
+import { ConnectionTypes, KnownServer, MessageCounter, SocketConnection } from "../Models/All";
 import { SendHelloFromServerToServer } from "./SocketMessages/HelloFromServerToServer";
 import { SendHelloFromClientToServer } from "./SocketMessages/HelloFromClientToServer";
 import { SendServerReachTest } from "./SocketMessages/ServerReachTest";
 import * as SocketMessages from "./SocketMessages/All"
 
-export var ClientConnections: Array<net.Socket> = new Array<net.Socket>();
+export var ClientConnections: Array<SocketConnection> = new Array<SocketConnection>();
 
 export var OutboundConnection = new class OutboundConnection {
     TargetServerID: string;
@@ -44,7 +44,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
         try {
             IsConnecting = true;
             var socket = net.connect(server.Port, server.Host, () => {
-                socket["id"] = Utilities.CreateGUID();
+                socket.ID = Utilities.CreateGUID();
                 IsConnecting = false;
                 server.BadConnectionAttempts = 0;
                 Utilities.UpdateAndPrepend(DataStore.KnownServers, server, ["Host", "Port"]);
@@ -60,7 +60,7 @@ export async function ConnectToServer(server: KnownServer, connectionType: Conne
                     SendHelloFromServerToServer(server, socket);
                 }
                 resolve(true);
-            });
+            }) as SocketConnection;
             socket.on("error", (err: Error) => {
                 Utilities.Log("Socket error: " + JSON.stringify(err));
                 UI.AddDebugMessage("Socket error.", null, 1);
@@ -252,12 +252,12 @@ export async function RefreshConnections(){
 
 export async function StartServer() {
     DataStore.ConnectionSettings.ServerID = DataStore.ConnectionSettings.ServerID || Utilities.CreateGUID();
-    var server = net.createServer(function (socket) {
+    var server = net.createServer(function (socket:SocketConnection) {
         // TODO: Needed?
         //if (Utilities.IsLocalIP(socket.remoteAddress) && socket.remotePort == DataStore.ConnectionSettings.ServerListeningPort) {
         //    return;
         //}
-        socket["id"] = Utilities.CreateGUID();
+        socket.ID = Utilities.CreateGUID();
         socket.on("data", (data) => {
             try {
                 if (!SocketData.CheckMessageCounter(socket)) {
@@ -275,6 +275,10 @@ export async function StartServer() {
                         return;
                     }
                     UI.AddDebugMessage(`Received from client (${socket.remoteAddress}): `, jsonData, 1);
+                    if (jsonData.PlayerID && jsonData.Type != "PlayerID" && jsonData.PlayerID != socket.PlayerID){
+                        Utilities.Log("PlayerID in message doesn't match socket PlayerID: " + JSON.stringify(jsonData));
+                        throw "PlayerID in message doesn't match socket PlayerID: " + JSON.stringify(jsonData);
+                    }
                     if (jsonData.TargetServerID != DataStore.ConnectionSettings.ServerID && jsonData.ShouldBroadcast != false) {
                         SocketData.Broadcast(jsonData);
                     }

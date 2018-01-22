@@ -31,7 +31,6 @@ export var Temp = new class Temp {
     OutgoingServerReachTestID: string;
     IncomingServerReachTests: Array<string> = new Array<string>();
     ActiveSessions: Array<GameSession> = new Array<GameSession>();
-    CommandRequests: Array<Models.CommandRequest> = new Array<Models.CommandRequest>();
 };
 
 export function LoadAll() {

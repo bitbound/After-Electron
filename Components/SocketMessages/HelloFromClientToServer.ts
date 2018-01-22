@@ -4,6 +4,7 @@ import { Utilities, DataStore, Connectivity, UI } from "../All";
 import * as electron from "electron";
 import { SendHelloFromServerToClient } from "./HelloFromServerToClient";
 import { SendKnownServers } from "./KnownServers";
+import { SocketConnection } from "../../Models/All";
 
 export function SendHelloFromClientToServer(socket: net.Socket) {
     SendToSpecificSocket({
@@ -14,7 +15,7 @@ export function SendHelloFromClientToServer(socket: net.Socket) {
         "ProcessID": electron.remote.app.getAppMetrics()[0].pid
     }, socket)
 }
-export function ReceiveHelloFromClientToServer(jsonData: any, socket: net.Socket) {
+export function ReceiveHelloFromClientToServer(jsonData: any, socket: SocketConnection) {
     Connectivity.ClientConnections.push(socket);
     $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
     UI.AddDebugMessage(`Connection received from ${socket.remoteAddress}.`, null, 1);
