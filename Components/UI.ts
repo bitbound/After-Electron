@@ -117,57 +117,7 @@ export function RefreshConnectivityBar() {
     $("#spanServerConnections").text(Connectivity.ServerToServerConnections.length.toString());
     $("#spanClientConnections").text(Connectivity.ClientConnections.length.toString());
 }
-export function SetUIDatabinds() {
-    Utilities.DataBindOneWay(DataStore.Me, "CoreEnergy", null, null, function () {
-        if (DataStore.Me.CoreEnergy > DataStore.Me.CoreEnergyPeak) {
-            DataStore.Me.CoreEnergyPeak = DataStore.Me.CoreEnergy;
-        }
-        DataStore.Me.MaxEnergy = DataStore.Me.CoreEnergy + DataStore.Me.EnergyMod;
-        DataStore.Me.MaxCharge = DataStore.Me.CoreEnergy + DataStore.Me.ChargeMod;
-        $("#coreEnergySideMenu").text(DataStore.Me.CoreEnergy);
-        $("#peakCoreEnergySideMenu").text(DataStore.Me.CoreEnergyPeak);
-    }, null);
-    Utilities.DataBindOneWay(DataStore.Me, "CoreEnergyPeak", null, null, function () {
-        $("#peakCoreEnergySideMenu").text(DataStore.Me.CoreEnergyPeak);
-    }, null);
-    Utilities.DataBindOneWay(DataStore.Me, "CurrentEnergy", null, null, function () {
-        $("#divEnergyAmount").text(DataStore.Me.CurrentEnergy);
-        $("#currentEnergySideMenu").text(DataStore.Me.CurrentEnergy);
-        $("#svgEnergy").css("width", String(Math.min(DataStore.Me.CurrentEnergy / DataStore.Me.MaxEnergy * 100, 100) || 0) + "%");
-    }, null);
-    Utilities.DataBindOneWay(DataStore.Me, "EnergyMod", null, null, function () {
-        DataStore.Me.MaxEnergy = DataStore.Me.CoreEnergy + DataStore.Me.EnergyMod;
-        $("#energyModSideMenu").text(DataStore.Me.EnergyMod);
-        $("#maxEnergySideMenu").text(DataStore.Me.MaxEnergy);
-    }, null);
-    Utilities.DataBindOneWay(DataStore.Me, "MaxEnergy", null, null, function () {
-        $("#maxEnergySideMenu").text(DataStore.Me.MaxEnergy);
-        $("#svgEnergy").css("width", String(Math.min(DataStore.Me.CurrentEnergy / DataStore.Me.MaxEnergy * 100, 100) || 0) + "%");
-    }, null);
-    Utilities.DataBindOneWay(DataStore.Me, "CurrentCharge", null, null, function () {
-        $("#divChargeAmount").text(DataStore.Me.CurrentCharge);
-        $("#currentChargeSideMenu").text(DataStore.Me.CurrentCharge);
-        $("#svgCharge").css("width", String(Math.min(DataStore.Me.CurrentCharge / DataStore.Me.MaxCharge * 100, 100) || 0) + "%");
-    }, null);
-    Utilities.DataBindOneWay(DataStore.Me, "ChargeMod", null, null, function () {
-        DataStore.Me.MaxCharge = DataStore.Me.CoreEnergy + DataStore.Me.ChargeMod;
-        $("#chargeModSideMenu").text(DataStore.Me.ChargeMod);
-        $("#maxChargeSideMenu").text(DataStore.Me.MaxCharge);
-    }, null);
-    Utilities.DataBindOneWay(DataStore.Me, "MaxCharge", null, null, function () {
-        $("#maxChargeSideMenu").text(DataStore.Me.MaxCharge);
-        $("#svgCharge").css("width", String(Math.min(DataStore.Me.CurrentCharge / DataStore.Me.MaxCharge * 100, 100) || 0) + "%");
-    }, null);
-    Utilities.DataBindOneWay(DataStore.ApplicationSettings, "IsNetworkStatusBarVisible", null, null, () => {
-        if (DataStore.ApplicationSettings.IsNetworkStatusBarVisible) {
-            $("#statusFrame").show();
-        }
-        else {
-            $("#statusFrame").hide();
-        }
-        UI.AdjustMessageWindowHeight();
-    }, null);
-}
+
 export function ShowDevTools() {
     electron.remote.getCurrentWindow().webContents.openDevTools();
 }

@@ -2,10 +2,10 @@ import { SendToSpecificSocket } from "../SocketData";
 import * as net from "net";
 import { Utilities, DataStore, Connectivity, UI } from "../All";
 import * as electron from "electron";
-import { KnownServer } from "../../Models/All";
+import { KnownServer, SocketConnection } from "../../Models/All";
 import { SendKnownServers } from "./KnownServers";
 
-export function SendHelloFromServerToServer(toServer: KnownServer, socket: net.Socket) {
+export function SendHelloFromServerToServer(toServer: KnownServer, socket: SocketConnection) {
     SendToSpecificSocket({
         "Type": "HelloFromServerToServer",
         "ID": Utilities.CreateGUID(),
@@ -15,7 +15,7 @@ export function SendHelloFromServerToServer(toServer: KnownServer, socket: net.S
         "ProcessID": electron.remote.app.getAppMetrics()[0].pid
     }, socket)
 }
-export function ReceiveHelloFromServerToServer(jsonData: any, socket: net.Socket) {
+export function ReceiveHelloFromServerToServer(jsonData: any, socket: SocketConnection) {
     if (jsonData.ServerID == DataStore.ConnectionSettings.ServerID && jsonData.ProcessID == electron.remote.app.getAppMetrics()[0].pid) {
         var server = DataStore.KnownServers.find(x => x.Host == jsonData.KnownServer.Host && x.Port == jsonData.KnownServer.Port);
         server.ID == jsonData.ServerID;

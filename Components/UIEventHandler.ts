@@ -58,6 +58,7 @@ export function ApplyUIEventHandlers(){
     })
     UI.InputBox.on("keypress", (e) =>{
         if (e.key.toLowerCase() == "enter"){
+            UI.MessageWindow[0].scrollTop = UI.MessageWindow[0].scrollHeight;
             InputProcessor.ProcessInput();
         }
     });

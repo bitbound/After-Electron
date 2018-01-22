@@ -1,19 +1,19 @@
 import * as net from "net";
 import { Connectivity, DataStore, Utilities, UI } from "./All";
-import { KnownServer, MessageCounter, ConnectionTypes } from "../Models/All";
+import { KnownServer, MessageCounter, ConnectionTypes, SocketConnection } from "../Models/All";
 import * as electron from "electron";
 import { LocalServer } from "./Connectivity";
 import * as SocketMessages from "./SocketMessages/All";
 
 // Final Data Out //
-function Send(jsonData: any, socket: net.Socket) {
+function Send(jsonData: any, socket: SocketConnection) {
     UI.AddDebugMessage(`Sending to ${(socket != null ? socket.remoteAddress : "mock socket")}: `, jsonData, 1);
     if (jsonData.Type == undefined || jsonData.ID == undefined) {
         Utilities.Log("Type or ID missing from Broadcast data: " + JSON.stringify(jsonData));
         throw "Type or ID missing from Broadcast data: " + JSON.stringify(jsonData);
     }
-    if (socket == null){
-        SocketMessages[`Receive${jsonData.Type}`](jsonData, null);
+    if (socket.IsMock){
+        SocketMessages[`Receive${jsonData.Type}`](jsonData, SocketConnection.GetMock());
     }
     else if (socket.writable) {
         socket.write(JSON.stringify(jsonData));
@@ -36,11 +36,11 @@ export function Broadcast(jsonData: any) {
         Connectivity.ClientConnections.length == 0 &&
         Connectivity.ServerToServerConnections.length == 0) {
         jsonData["ID"] = Utilities.CreateGUID();
-        SocketMessages[`Receive${jsonData.Type}`](jsonData, null);
+        SocketMessages[`Receive${jsonData.Type}`](jsonData, SocketConnection.GetMock());
     }
 }
 
-export function SendToSpecificSocket(jsonData: any, socket: net.Socket) {
+export function SendToSpecificSocket(jsonData: any, socket: SocketConnection) {
     Send(jsonData, socket);
 }
 
@@ -51,7 +51,7 @@ export function SendToTargetServer(jsonData: any) {
     }
     if (Connectivity.OutboundConnection.TargetServerID == DataStore.ConnectionSettings.ServerID) {
         jsonData["ID"] = Utilities.CreateGUID();
-        SocketMessages[`Receive${jsonData.Type}`](jsonData, null);
+        SocketMessages[`Receive${jsonData.Type}`](jsonData, SocketConnection.GetMock());
     }
     else if (Connectivity.OutboundConnection.IsConnected()) {
         Send(jsonData, Connectivity.OutboundConnection.Socket);

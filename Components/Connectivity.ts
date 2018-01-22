@@ -12,7 +12,7 @@ export var OutboundConnection = new class OutboundConnection {
     TargetServerID: string;
     ConnectionType: ConnectionTypes;
     IsDisconnectExpected: boolean = false;
-    Socket: net.Socket;
+    Socket: SocketConnection;
     Server: KnownServer;
     IsConnected(): boolean {
         if (this.Socket == null || this.Socket.writable == false || this.Socket.readable == false) {
@@ -36,7 +36,7 @@ export var LocalServer = new class LocalServer {
     }
 }
 
-export var ServerToServerConnections: Array<net.Socket> = new Array<net.Socket>();
+export var ServerToServerConnections: Array<SocketConnection> = new Array<SocketConnection>();
 export var IsConnecting: boolean = false;
 
 export async function ConnectToServer(server: KnownServer, connectionType: ConnectionTypes): Promise<boolean> {

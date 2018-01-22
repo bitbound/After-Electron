@@ -6,7 +6,7 @@ import { SendHelloFromServerToClient } from "./HelloFromServerToClient";
 import { SendKnownServers } from "./KnownServers";
 import { SocketConnection } from "../../Models/All";
 
-export function SendHelloFromClientToServer(socket: net.Socket) {
+export function SendHelloFromClientToServer(socket: SocketConnection) {
     SendToSpecificSocket({
         "Type": "HelloFromClientToServer",
         "ID": Utilities.CreateGUID(),

@@ -31,7 +31,7 @@
                     <div class="menu-item-key">
                     </div>
                     <div class="menu-item-value">
-                        <img src="../Assets/help.png" style="height:20px; width:20px;" title="Many options have tooltips like this one that explain their purpose.&#013;&#013;If you're unsure about an option, don't forget to try hovering over it!"
+                        <img id="helpImg" src="../Assets/help.png" style="height:20px; width:20px; cursor:pointer" title="Many options have tooltips like this one that explain their purpose.&#013;&#013;If you're unsure about an option, don't forget to try hovering over it!"
                         />
                     </div>
                 </div>
@@ -380,7 +380,7 @@
         }
     </style>
     <script>
-        window["Options"] = require("../Scripts/Options.js");
+        require("../Scripts/Options.js").Init();
     </script>
 </body>
 

@@ -18,8 +18,8 @@ export function ReceiveLook(jsonData:any, socket: SocketConnection) {
             {
                 return;
             }
-            var session = DataStore.Temp.ActiveSessions.find(x=>x.Players.some(y=>y.ID == jsonData.PlayerID));
-            var player = session.Players.find(x=>x.ID == jsonData.PlayerID);
+            var session = DataStore.Temp.ActiveSessions.find(x=>x.Players.some(y=>y.ID == socket.PlayerID));
+            var player = session.Players.find(x=>x.ID == socket.PlayerID);
             var currentVoid = Void.Load(session.SessionID, player.CurrentVoidID);
             SendToSpecificSocket({
                 "Type": "Look",

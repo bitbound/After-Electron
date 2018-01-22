@@ -1,7 +1,7 @@
 import { Broadcast, SendToSpecificSocket } from "../SocketData";
 import { Utilities, DataStore, UI, Connectivity } from "../All";
 import * as net from "net";
-import { ConnectionTypes } from "../../Models/All";
+import { ConnectionTypes, SocketConnection } from "../../Models/All";
 
 
 export function SendServerReachTest() {
@@ -15,7 +15,7 @@ export function SendServerReachTest() {
     }, Connectivity.ServerToServerConnections[0]);
 }
 
-export function ReceiveServerReachTest(jsonData: any, socket: net.Socket) {
+export function ReceiveServerReachTest(jsonData: any, socket: SocketConnection) {
     // This client is the original sender.
     if (jsonData.TestID == DataStore.Temp.OutgoingServerReachTestID) {
         if (jsonData.Stage == "Ping") {
@@ -29,7 +29,7 @@ export function ReceiveServerReachTest(jsonData: any, socket: net.Socket) {
                         "TestID": DataStore.Temp.OutgoingServerReachTestID,
                         "ShouldBroadcast": false
                     }, tempSocket);
-                })
+                }) as SocketConnection
             });
         }
         else if (jsonData.Stage == "Result") {
