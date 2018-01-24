@@ -5,7 +5,7 @@ import * as Commands from "../Commands/All";
 export default new Command("Help", "Global",
     `Provides help information for the supplied command (example: "Help Charge").<br><br>For a list of all commands, use "Help" by itself.`,
     function(){ 
-        return `${Utilities.GetHelpTitle(this)}List of commands (and category):<br>${Object.keys(Commands).map((value)=>{
+        return `${this.GetHelpTitle()}List of commands (and category):<br>${Object.keys(Commands).map((value)=>{
             return `${(Commands[value] as Command).Name}&nbsp;&nbsp;&nbsp;(${(Commands[value] as Command).Category})`;
         }).join("<br>")}`;
     },

@@ -278,19 +278,7 @@ export function ExtendFunction(inputObject:any, functionName:string, prependWith
         appendWithFunction(this, arguments);
     };
 }
-export function GetHelpTitle(command:Command):string {
-    var titleString = `<br/><div style="display:inline-block; text-align:center; color: steelblue;">`;
-    for (var i = 0; i < command.Name.length + 15; i++){
-        titleString += "#";
-    }
-    titleString += "<br/>Command: " + command.Name + "<br/>";
-    for (var i = 0; i < command.Name.length + 15; i++){
-        titleString += "#";
-    }
-    titleString += "</div><br><br>";
-    titleString += command.SummaryText + "<br><br>";
-    return titleString;
-}
+
 export function GetRandom(Min: number, Max: number, Round: boolean): number {
     if (Min > Max) {
         throw "Min must be less than max.";

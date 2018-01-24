@@ -8,6 +8,7 @@ export * from "./KnownServer";
 export * from "./MessageCounter";
 export * from "./NPC";
 export * from "./Player";
+export * from "./Power";
 export * from "./ReadyStates";
 export * from "./SocketConnection";
 export * from "./Void";

@@ -1,5 +1,5 @@
 import { SendToTargetServer, SendToSpecificSocket } from "../SocketData";
-import { Utilities, DataStore, Connectivity } from "../All";
+import { Utilities, DataStore, Connectivity, SessionManager } from "../All";
 import * as net from "net";
 import { Void, SocketConnection } from "../../Models/All";
 
@@ -18,9 +18,7 @@ export function ReceiveLook(jsonData:any, socket: SocketConnection) {
             {
                 return;
             }
-            var session = DataStore.Temp.ActiveSessions.find(x=>x.Players.some(y=>y.ID == socket.PlayerID));
-            var player = session.Players.find(x=>x.ID == socket.PlayerID);
-            var currentVoid = Void.Load(session.SessionID, player.CurrentVoidID);
+            var currentVoid = SessionManager.FindVoidByPlayerID(socket.PlayerID);
             SendToSpecificSocket({
                 "Type": "Look",
                 "Stage": "Result",
