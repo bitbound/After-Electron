@@ -5,7 +5,7 @@ A scriptable, decentralized, text-based multiplayer RPG.
 ![After Scripting Demo](http://after-game.net/Assets/ScriptingDemo.gif)
 
 #### Command System
-![Command System Demo](http://after-game.net/Assets/CommandDemo.gif)
+![Command System Demo](http://after-game.net/Assets/CommandSystemDemo.gif)
 
 Documentation and task cards coming soon-ish.
 
