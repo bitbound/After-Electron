@@ -1,7 +1,11 @@
 # After
 A scriptable, decentralized, text-based multiplayer RPG.
 
-![After Preview](http://after-game.net/Assets/After-Preview.gif)
+#### In-Game Scripting
+![After Scripting Demo](http://after-game.net/Assets/ScriptingDemo.gif)
+
+#### Command System
+![Command System Demo](http://after-game.net/Assets/CommandDemo.gif)
 
 Documentation and task cards coming soon-ish.
 
