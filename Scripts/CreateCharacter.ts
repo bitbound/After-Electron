@@ -36,7 +36,7 @@ export var Init = function() {
     DataStore.Me.CurrentSessionID = session.SessionID;
     DataStore.Me.InnerVoidID = innerVoid.ID;
     DataStore.Me.CurrentVoidID = innerVoid.ID;
-    DataStore.Temp.ActiveSessions.push(session);
+    DataStore.Temp.ActiveGameSession = session;
     session.Players.push(DataStore.Me);
     DataStore.SaveMe("0");
     UI.MessageWindow.html("");

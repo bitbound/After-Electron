@@ -108,7 +108,7 @@ export function ChargingAnimationStart() {
 
 }
 export function ChargingAnimationStop() {
-
+    window.clearInterval(ChargingAnimationInt);
 }
 
 export function RefreshConnectivityBar() {

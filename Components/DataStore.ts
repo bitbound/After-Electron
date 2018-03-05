@@ -30,7 +30,7 @@ export var Temp = new class Temp {
     ReceivedMessages: string[] = new Array<string>();
     OutgoingServerReachTestID: string;
     IncomingServerReachTests: Array<string> = new Array<string>();
-    ActiveSessions: Array<GameSession> = new Array<GameSession>();
+    ActiveGameSession: GameSession;
 };
 
 export function LoadAll() {

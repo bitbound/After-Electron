@@ -1,5 +1,6 @@
 import * as net from "net";
-import { UI, SocketData, Connectivity, Utilities, DataStore } from "./All";
+import { UI, SocketData, Connectivity, Utilities } from "./All";
+import * as DataStore from "./DataStore";
 import { ConnectionTypes, KnownServer, MessageCounter, SocketConnection } from "../Models/All";
 import { SendHelloFromServerToServer } from "./SocketMessages/HelloFromServerToServer";
 import { SendHelloFromClientToServer } from "./SocketMessages/HelloFromClientToServer";
