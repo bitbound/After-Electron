@@ -212,3 +212,7 @@ function populateBlockedServers() {
         blockedServers.options.add(option);
     }
 }
+window['Options'] = {
+    populateKnownServers: populateKnownServers,
+    populateBlockedServers: populateBlockedServers
+}

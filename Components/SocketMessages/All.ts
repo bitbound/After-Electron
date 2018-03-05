@@ -1,3 +1,4 @@
+import {SendStatUpdate, ReceiveStatUpdate} from "./StatUpdate";
 import {SendServerReachTest, ReceiveServerReachTest} from "./ServerReachTest";
 import {SendLook, ReceiveLook} from "./Look";
 import {SendKnownServers, ReceiveKnownServers} from "./KnownServers";
@@ -14,3 +15,4 @@ export { SendHelloFromServerToServer, ReceiveHelloFromServerToServer };
 export { SendKnownServers, ReceiveKnownServers };
 export { SendLook, ReceiveLook };
 export { SendServerReachTest, ReceiveServerReachTest };
+export { SendStatUpdate, ReceiveStatUpdate };
